@@ -66,21 +66,37 @@ function getListCategories() {
 }
 
 function getLists() {
-    const listApiCall = pcoPeopleAPICall("https://api.planningcenteronline.com/people/v2/lists?include=campus,category,people&per_page=1");
+    const listApiCall = pcoPeopleAPICall("https://api.planningcenteronline.com/people/v2/lists?include=campus,category&per_page=100");
     const responseCode = listApiCall.getResponseCode();
     const listCallContent = listApiCall.getContentText();
+    let listArrayListData = [];
 
-    let listPayload = JSON.parse(listCallContent).included;
-    let counter = 0;
+    if (responseCode == 200) {
+        let listPayload = JSON.parse(listCallContent).data;
+        let metaPayload = JSON.parse(listCallContent).meta;
+        let included = JSON.parse(listCallContent).included;
 
-    for(const row in listPayload){
-        if(row.type == "Person"){
-            counter ++;
+        for (const list of listPayload) {
+            let relationships = list.relationships;
+            console.log(relationships)
+            let subList = new List(
+                list.id,
+                list.attributes.description.replaceAll("'", '"'),
+                list.attributes.name,
+                list.attributes.total_people);
+            subList.relationships = relationships;
+            subList.includes = included;
+
+            listArrayListData.push(subList);
+            console.log(subList);
+    
         }
     }
-    //console.log(listCallContent);
-    console.log(listPayload.length)
-    console.log(counter)
+
+    console.log(listArrayListData)
+
+
+    return listArrayListData;
 
 }
 

@@ -1,0 +1,30 @@
+{
+  "timeZone": "America/Los_Angeles",
+  "dependencies": {
+    "libraries": [
+      {
+        "userSymbol": "OAuth2",
+        "libraryId": "1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF",
+        "version": "40"
+      }
+    ]
+  },
+  "dataStudio": {
+    "name": "PCO Connector",
+    "logoUrl": "https://www.savvytoolbelt.com/wp-content/uploads/2020/09/Savvy-Tool-Belt_Horizontal_Color_on-Dark.png",
+    "company": "Savvy Tool Belt",
+    "companyUrl": "https://savvytoolbelt.com",
+    "addonUrl": "https://savvytoolbelt.com",
+    "supportUrl": "https://savvytoolbelt.com",
+    "description": "Integrate Planning Center Online with Google Data Studio",
+    "sources": [
+      "npm"
+    ]
+  }, 
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "sheets": {
+
+
+  }
+}

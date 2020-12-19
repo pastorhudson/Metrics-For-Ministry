@@ -1,0 +1,167 @@
+<html>
+
+<head>
+    <base target="_top" />
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css" />
+    <style>
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            height: 95vh;
+            padding: 20px;
+            word-wrap: break-word;
+        }
+
+        header,
+        .header {
+            font-size: 16px;
+            text-align: center;
+
+        }
+
+        content {
+            flex-grow: 4;
+        }
+
+        .textCenter {
+            font-size: 16px;
+            text-align: center;
+            width: 100%;
+        }
+
+        footer {
+            display: flex;
+            justify-content: center;
+            align-self: flex-end;
+            flex-wrap: wrap;
+            font-size: 12px;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .logo {
+            width: 100%;
+            max-width: 150px;
+
+            align-self: center;
+            margin: auto;
+        }
+
+        .copyright {
+            font-size: 10px;
+            color: grey;
+        }
+
+        .heroText {
+            font-weight: 600;
+            font-size: 1.3em;
+            letter-spacing: 1.1px;
+            line-height: 1.2;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .column {
+            flex: 50%;
+        }
+
+        .authorizeDiv {
+            padding-top: 20px;
+        }
+    </style>
+</head>
+
+<body class="container">
+    <header>
+        <img src="https://savvytoolbelt.com/wp-content/uploads/2020/09/Savvy-Tool-Belt_Horizontal_Color_on-Light.png"
+            class="logo">
+        <h1 class="heroText">PCO to Google Connector</h1>
+    </header>
+
+    <content>
+
+
+        <p>
+            <strong>Select the modules you want enabled:</strong></br>
+            People is required, and enabled by default.
+        </p>
+
+        <!-- Module Selector -->
+        <!-- This gets hidden when authorized.-->
+        <div class="row" id="elementDiv">
+            <div class="column">
+                <input class="pcoModuleSelector" type="checkbox" id="givingModule" name="giving" value="giving">
+                <label>Giving</label></br>
+                <input class="pcoModuleSelector" type="checkbox" id="checkinsModuleSelector" name="check_ins"
+                    value="check_ins">
+                <label>Check-ins</label></br>
+                <input class="pcoModuleSelector" type="checkbox" id="groupsModuleSelector" name="groups" value="groups">
+                <label>Groups</label></br>
+            </div>
+            <div class="column">
+                <input class="pcoModuleSelector" type="checkbox" id="peopleModuleSelector" name="people" value="people"
+                    checked disabled>
+                <label>People</label></br>
+                <input class="pcoModuleSelector" type="checkbox" id="resourcesModuleSelector" name="calendar"
+                    value="calendar">
+                <label>Calendar</label></br>
+                <input class="pcoModuleSelector" type="checkbox" id="servicesModuleSelector" name="services"
+                    value="services">
+                <label>Services</label></br>
+            </div>
+
+
+        </div>
+
+        <!-- Authorization Button. -->
+        <!-- This gets hidden when authorized.-->
+        <div class="header authorizeDiv">
+            <p class="header">Authorize with PCO</p>
+            <button id="btn-authorize" class="action">Authorize</button>
+        </div>
+    </content>
+
+    <footer>
+        <span>This plugin was built by Savvy Tool Belt and is in no way affiliated with Planning Center.</span>
+        <p class="copyright">©<a href="https://savvytoolbelt.com">SavvyToolBelt</a> 2019-2020.</p>
+    </footer>
+
+
+    <script>
+
+
+        //selecting the modules that are checked to be used as the scope in the OAuth Call.
+        function selectedModules() {
+            const modules = document.getElementsByClassName('pcoModuleSelector');
+            let modulesSelectedNameArray = [];
+            for (let i = 0; i < modules.length; i++) {
+                if (modules[i].checked) { modulesSelectedNameArray.push(modules[i].value) }
+            }
+            return modulesSelectedNameArray.join(" ");
+        }
+
+        document.getElementById("btn-authorize").addEventListener("click", authorize);
+        function authorize() {
+
+            let modules = selectedModules();
+            google.script.run
+                .withSuccessHandler(function (url) {
+                    window.open(url, '_blank');
+                    //window.top.close();
+                })
+                .withFailureHandler(function (err) {
+                    console.error(err.message);
+                })
+
+                //passing selected modules to out OAuth Function
+                .authorizeSidebarButton(modules);
+        }
+
+    </script>
+
+</body>
+
+</html>

@@ -1,12 +1,32 @@
-// enhancement / refactoring - should this be user input? Does it matter?
-const spreadsheetPeople_person = 'pcoPeople_person';
-//const spreadsheetCampusTab = 'campus';
-const spreadsheetPeople_lists = 'pcoPeople_list';
-//const spreadsheetListCategoriesTab = 'listCategories';
 
+function tabNamesReturn(){
+    return tabNames = {
+        "people" : {
+            "personTab" : {
+                "name" :  "people_personTab",
+                "headers" : ["header", "header 2"]
+            },
+            "listTab": {
+                "name": "people_listTab",
+                "headers" : ["List ID", "List Description", "List Name", "Person Count", "Campus ID", "Campus Name", "Category ID" , "Category Name", "Sync This List"]
+            },
+            "listPeopleTab" : {
+                "name" : "people_listPersonTab",
+                "headers" : ""
+            },
+            "campuses" : {
+                "name" : "people_campusTab",
+                "headers" : ""
 
-
-
+            }
+        }, 
+        "giving" : {},
+        "check_ins" : {},
+        "groups" : {},
+        "calendar" : {},
+        "services" : {},
+    }
+}
 
 /**
  * Setting up the Google Sheets document
@@ -18,10 +38,13 @@ const spreadsheetPeople_lists = 'pcoPeople_list';
 
 function setUpDocument() {
     let modules = getModuleUserObject();
+    let tabs = tabNamesReturn();
 
     if (modules.people) {
-        createSheet(spreadsheetPeople_person);
-        createSheet(spreadsheetPeople_lists);
+        createSheet(tabs.people.personTab);
+        createSheet(tabs.people.listTab);
+        
+        //createSheet(tabs.people.listPeopleTab);
     }
     if (modules.check_ins) {
 
@@ -53,6 +76,7 @@ function setUpDocument() {
 function tabList() {
     const spreadsheet = getDefaultSpreadsheetId();
     const sheets = spreadsheet.getSheets();
+
     console.log(sheets);
     let sheetNames = [];
 
@@ -71,17 +95,27 @@ function tabList() {
 * @returns {array} - An array of Sheet Names from the existing Google Sheet
 *      
 */
-function createSheet(name) {
+function createSheet(tabInfo) {
     const existingSheets = tabList();
     const spreadsheet = getDefaultSpreadsheetId();
+    let name = tabInfo.name
+    let ss = spreadsheet.getSheetByName(name);
+    let headers = [tabInfo.headers]
+    console.log(headers)
 
     //if a sheet does not exist it will create it.
     if (!existingSheets.includes(name)) {
         spreadsheet.insertSheet(name);
+        ss.getRange(1, 1, 1, headers[0].length).setValues(headers);
     } else if (existingSheets.includes(name)) {
         spreadsheet.getSheetByName(name).clear();
+        ss.getRange(1, 1, 1, headers[0].length).setValues(headers);
 
     }
+}
+
+function TestFunction() {
+
 }
 
 
@@ -91,7 +125,7 @@ function pushToSheet(tab, data) {
     const spreadsheet = getDefaultSpreadsheetId();
     let ss = spreadsheet.getSheetByName(tab);
 
-    let output = [Object.keys(data[0])];
+    let output = [];
 
     //looping over the length of our data and turning it into an array that Google Sheets will accept.
     for (i = 0; i < data.length; i++) {
@@ -99,13 +133,16 @@ function pushToSheet(tab, data) {
     }
 
     //setting the rows / columns based on the total length of our data once done.
-    ss.getRange(1, 1, output.length, output[0].length).setValues(output);
+    ss.getRange(2, 1, output.length, output[0].length).setValues(output);
+    ss.getRange(1,1,1,output[0].length).setFontWeight("bold");
+    ss.getRange(1,1,output.length + 1, output[0].length).setHorizontalAlignment("center").setWarningOnly(true);
 }
 
 function updateSpreadsheet() {
 
+    const tabs = tabNamesReturn();
     //pushToSheet(spreadsheetCampusTab,getCampuses());
-    pushToSheet(spreadsheetPeople_person, personDataCall());
-    pushToSheet(spreadsheetPeople_lists, getLists());
+    //pushToSheet(spreadsheetPeople_person, personDataCall());
+    pushToSheet(tabs.people.listTab.name, getLists());
     //pushToSheet(spreadsheetListCategoriesTab,getListCategories());
 }

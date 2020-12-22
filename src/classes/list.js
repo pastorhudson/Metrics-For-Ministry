@@ -1,5 +1,6 @@
 class List {
     constructor(id, description, listName, personCount) {
+        //this.syncThisList;
         this.listId = id;
         this.listDescription = description;
         this.listName = listName;
@@ -8,6 +9,17 @@ class List {
         this.campusName = undefined;
         this.categoryId = undefined;
         this.categoryName = undefined;
+    }
+
+    get syncthisList(){
+        return this._syncThisList;
+    }
+
+    /**
+     * @param {boolean} status - automatically set to false, to sync a list set to true.
+     */
+    set listSync(status) {
+        this._syncThisList = status;
     }
 
     /**
@@ -33,8 +45,6 @@ class List {
     /**
      * @param {array} included - data coming from the list
      */
-
-    // TODO - currently this function writes the values for campusName and CategoryName. 
 
     set includes(included) {
         if (this.campusId != null) {

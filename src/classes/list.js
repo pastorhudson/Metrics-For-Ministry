@@ -1,10 +1,10 @@
 class List {
-    constructor(id, description, listName, personCount) {
+    constructor(id, description, listName, totalPeople) {
         //this.syncThisList;
         this.listId = id;
         this.listDescription = description;
         this.listName = listName;
-        this.personCount = personCount;
+        this.totalPeople = totalPeople;
         this.campusId = undefined;
         this.campusName = undefined;
         this.categoryId = undefined;
@@ -30,7 +30,6 @@ class List {
         if (listData.campus.data != null) {
             this.campusId = listData.campus.data.id;
 
-
         } else {
             this.campusId = null;
         }
@@ -42,31 +41,35 @@ class List {
         }
     }
 
-    /**
-     * @param {array} included - data coming from the list
-     */
 
-    set includes(included) {
+
+    set campus(campus){
         if (this.campusId != null) {
-            included.filter(value => {
-                let type = value.type;
-                if (value.id == this.campusId && type == "Campus") {
+            campus.filter(value => {
+                if (value.id == this.campusId) {
                     //console.log(value.attributes.name)
-                    this.campusName = value.attributes.name;
+                    this.campusName = value.name;
                 }
             });
         }
-        if (this.categoryId != null) {
-            included.filter(value => {
-                let type = value.type;
-                if (value.id == this.categoryId && type == "ListCategory") {
-                    //console.log(value.attributes.name)
-                    this.categoryName = value.attributes.name;
-                }
-            });
-        }
-
     }
 
+    set category(category){
+        if (this.categoryId != null) {
+            category.filter(value => {
+                if (value.id == this.categoryId) {
+                    //console.log(value.attributes.name)
+                    this.categoryName = value.name;
+                }
+            });
+        }
+    }
 
+}
+
+class ListPeople extends List {
+    constructor(id, description, listName, totalPeople, personID){
+        super(id, description, listName, totalPeople)
+        this.personID = personID
+    }
 }

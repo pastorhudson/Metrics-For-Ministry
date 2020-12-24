@@ -13,6 +13,7 @@ function onOpen(e) {
     ui.createMenu('PCO to GDS')
         .addItem('Sidebar','showSidebar')
         .addItem('Log Out','reset')
+        .addItem('Update Sheet','createDialog')
         .addToUi();
   }
   

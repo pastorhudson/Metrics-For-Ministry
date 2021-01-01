@@ -85,6 +85,7 @@ async function pcoApiLoopedCall(url, include = false, includeURL = undefined) {
         let data = [];
 
         let fetchedData = await promiseApiWithTimeout(url, offset, includeURL)
+
         let totalCount = fetchedData.meta.total_count;
         data.push(...fetchedData.data)
 

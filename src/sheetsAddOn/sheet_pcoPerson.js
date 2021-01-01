@@ -21,7 +21,7 @@ async function getCampuses() {
 }
 
 /**
- * The campus data call
+ * The cateogory data call
  * 
  * @return {categoryArray} - filtered array of the list category data For how this should look, check out the examples readme.
  * @description - This function returns the array of the list category data. This is a bit more reliable than running an 'includes'
@@ -58,7 +58,7 @@ async function getLists() {
             list.attributes.name,
             list.attributes.total_people);
         subList.relationships = relationships;
-        subList.listSync = null;
+        //subList.listSync = null;
         subList.campus = campuses;
         subList.category = categories;
 
@@ -93,17 +93,70 @@ async function getListsWithPeople() {
             subList.campus = campuses;
             subList.category = categories;
             subList.personID = person.id;
-    
             listArrayListData.push(subList);
         }
 
     }
 
-    console.log(listArrayListData[783])
+    let updateListData = await updateListTab();
+    let syncTheseLists = [];
+    let syncThesePeople = [];
 
-    return listArrayListData;
+    for(list of updateListData){
+        if(list._syncThisList == true){
+            syncTheseLists.push(list.listId);
+        }
+    }
+
+    for(i = 0 ; i < listArrayListData.length ; i++){
+        let value = syncTheseLists.indexOf(listArrayListData[i].listId);
+        if(value != -1){
+            syncThesePeople.push(listArrayListData[i])
+        }
+    }
+
+    return syncThesePeople;
 
 }
+
+// async function getListsWithPeople() {
+//     let listWithSyncables = await updateListTab();
+//     console.log(listWithSyncables.length);
+//     let campuses = await getCampuses();
+//     let categories = await getListCategories();
+
+//     let listArrayListData = [];
+
+//     for (const list of listWithSyncables) {
+//         let listID = list.listId;
+
+//         if(list._syncThisList){
+//             let listApiCall = await pcoApiLoopedCall(`https://api.planningcenteronline.com/people/v2/lists/${list.listId}`, true, "&include=people");
+//             console.log(listApiCall)
+
+//             let relationships = listApiCall.relationships;
+//             console.log(relationships)
+//             let people = relationships.people.data
+//             for(const person of people){
+
+//                 list.personID = person.id;
+        
+//                 listArrayListData.push(list);
+//             }
+
+
+//         }
+
+
+//     }
+
+//     console.log(listArrayListData)
+
+//     return listArrayListData;
+
+// }
+
+
 
 /**
  * The person data call

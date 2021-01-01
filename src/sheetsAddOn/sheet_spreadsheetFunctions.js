@@ -159,31 +159,39 @@ function pushToSheet(tab, data) {
     }
 
     let output = [];
+    ss.getRange(2, 1, ss.getLastRow(), ss.getLastColumn()).clearContent();
 
-    //looping over the length of our data and turning it into an array that Google Sheets will accept.
-    for (i = 0; i < data.length; i++) {
-        output.push(Object.values(data[i]));
+    if (data.length != 0) {
+        //looping over the length of our data and turning it into an array that Google Sheets will accept.
+        for (i = 0; i < data.length; i++) {
+            output.push(Object.values(data[i]));
+        }
+
+        //setting the rows / columns based on the total length of our data once done.
+        ss.getRange(2, 1, output.length, output[0].length).setValues(output);
+        ss.getRange(1, 1, 1, output[0].length).setFontWeight("bold");
+        ss.getRange(1, 1, ss.getLastRow(), ss.getLastColumn())
+            .setHorizontalAlignment("center")
+            .protect()
+            .setWarningOnly(true)
     }
-
-    //setting the rows / columns based on the total length of our data once done.
-    ss.getRange(2, 1, output.length, output[0].length).setValues(output);
-    ss.getRange(1, 1, 1, output[0].length).setFontWeight("bold");
-    ss.getRange(1, 1, ss.getLastRow(), ss.getLastColumn())
-        .setHorizontalAlignment("center")
-        .protect()
-        .setWarningOnly(true)
 }
 
-function dataValidation(tab) {
 
+
+
+/**
+ * Adding Data Validation to the spreadsheet under listTab
+ * 
+ * @param {tab} - This is the name of the tab needing validating that's returned from the `tabNamesReturn` function.
+ * @description - This function enables the checkbox data validation to be added in a single column.
+ */
+function dataValidation(tab) {
     const spreadsheet = getDefaultSpreadsheetId();
     let ss = spreadsheet.getSheetByName(tab);
-
-
-    var cell = ss.getRange(2, ss.getLastColumn(), ss.getLastRow()-1, 1)
+    var cell = ss.getRange(2, ss.getLastColumn(), ss.getLastRow() - 1, 1)
     var rule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
     cell.setDataValidation(rule);
-    // (row, column, numRows, numColumns), 
 }
 
 async function updateSpreadsheet() {
@@ -191,7 +199,7 @@ async function updateSpreadsheet() {
     const tabs = tabNamesReturn();
     pushToSheet(tabs.people.campusTab.name, await getCampuses());
     //pushToSheet(tabs.people.personTab.name,  await personDataCall());
-    pushToSheet(tabs.people.listTab.name, await getLists());
+    await updateListTab();
     dataValidation(tabs.people.listTab.name);
     pushToSheet(tabs.people.listPeopleTab.name, await getListsWithPeople());
 }
@@ -206,45 +214,38 @@ function createDialog() {
     SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Loading');
 }
 
-async function updateListTab(){
-    //run the get list function
-    //get the data from the spreadsheet list tab
-    //compare this with the list info
-    //write to the sheet and set the attribute based on the 'sync this list'
+/**
+ * Updating the list tab based on the user input
+ * 
+ * @return {listArray} - This is an array of the Lists returned from PCO combined with the data on the spreadsheet.
+ * @description - This function is responsible for taking the user input from the ListTab on the spreadsheet, adding if it should be synced, and updating the list tab. This
+ *      information will then feed into the listPeopleTab
+ */
+async function updateListTab() {
     const tabs = tabNamesReturn();
-
     let listApiCall = await getLists();
     let listSpreadsheetData = getSpreadsheetDataByName(tabs.people.listTab.name);
+    let listArray = [];
 
-    
-    //console.log(listApiCall)
-    let newArray = [];
-
-    for(const list of listApiCall){
-        //console.log(list)
-        const syncThisList = listSpreadsheetData.filter( function(spreadsheetList){ 
-            //console.log(spreadsheetList)
-            if(spreadsheetList["List ID"] == list.listId){
+    for (const list of listApiCall) {
+        const syncThisList = listSpreadsheetData.filter(function (spreadsheetList) {
+            if (spreadsheetList["List ID"] == list.listId) {
                 return spreadsheetList
             }
         });
 
-        console.log(syncThisList[0]["Sync This List"])
+        let syncList = syncThisList[0]["Sync This List"] || false;
 
-        //console.log(list);
-        //list["syncThisList"] = matchedList;
+        list["listSync"] = syncList;
 
-        newArray.push(list);
-
-
+        listArray.push(list);
     }
-
-    //console.log(newArray)
-
+    pushToSheet(tabs.people.listTab.name, listArray);
+    return listArray;
 }
 
 // pulling the sheet headers on any sheet. This is used to create key:value pairs.
-function getSheetHeaders(name){
+function getSheetHeaders(name) {
     const spreadsheet = getDefaultSpreadsheetId();
     let ss = spreadsheet.getSheetByName(name);
     let lastCol = ss.getLastColumn();
@@ -252,11 +253,11 @@ function getSheetHeaders(name){
     // this assumes your sheet headers are all stores in the first row of your spreadsheet.
     let sheetHeaders = ss.getRange(1, 1, 1, lastCol).getValues();
     return sheetHeaders[0];
-  
+
 }
 
 //to use this you call the spreadsheet by the name. You can adjust this if needed. 
-function getSpreadsheetDataByName(tab) { 
+function getSpreadsheetDataByName(tab) {
     const spreadsheet = getDefaultSpreadsheetId();
     let ss = spreadsheet.getSheetByName(tab);
     let lastRow = ss.getDataRange().getNumRows();
@@ -266,30 +267,30 @@ function getSpreadsheetDataByName(tab) {
 
     let output = [];
     let spreadsheetData = ss.getRange(2, 1, lastRow, lastCol).getValues();
- 
+
     //doing a loop over each row in your spreadsheet. this runs top to bottom.
-    for ( let i = 0 ; i < lastRow ; i++){  
-      let currentRow = spreadsheetData[i];
+    for (let i = 0; i < lastRow; i++) {
+        let currentRow = spreadsheetData[i];
 
-      //creating an empty object for each loop
-      let object = {};
+        //creating an empty object for each loop
+        let object = {};
 
-      //doing a loop over each cell in your spreadsheet. this runs left to right.
-      for (j = 0 ; j < currentRow.length ; j++) {
+        //doing a loop over each cell in your spreadsheet. this runs left to right.
+        for (j = 0; j < currentRow.length; j++) {
 
-        //setting the key to be the column header that matches the column data
-        let keyData = headers[j];
-        let valueData = currentRow[j];
+            //setting the key to be the column header that matches the column data
+            let keyData = headers[j];
+            let valueData = currentRow[j];
 
-        //this is where we actually create teh key:value pairing.
-        object[keyData] = valueData;
+            //this is where we actually create teh key:value pairing.
+            object[keyData] = valueData;
         }
 
-    //the object we created above is stored in our ouput array.
-    output.push(object);
+        //the object we created above is stored in our ouput array.
+        output.push(object);
 
     }
-    
+
     //returning the data of your spreadsheet in a key:value pair.
     return output;
 }

@@ -1,60 +1,4 @@
 
-function tabNamesReturn() {
-    return tabNames = {
-        "people": {
-            "personTab": {
-                "name": "people_personTab",
-                "headers": [
-                    "Person ID",
-                    "Birthday",
-                    "Is Child",
-                    "Gender",
-                    "Grade",
-                    "Membership",
-                    "Status",
-                    "Person Count",
-                    "Campus Number",
-                    "Campus Name"]
-            },
-            "listTab": {
-                "name": "people_listTab",
-                "headers": [
-                    "List ID",
-                    "List Description",
-                    "List Name",
-                    "Total People",
-                    "Campus ID",
-                    "Campus Name",
-                    "Category ID",
-                    "Category Name",
-                    "Sync This List"]
-            },
-            "listPeopleTab": {
-                "name": "people_listPersonTab",
-                "headers": [
-                    "List ID",
-                    "List Description",
-                    "List Name",
-                    "Total People",
-                    "Campus ID",
-                    "Campus Name",
-                    "Category ID",
-                    "Category Name",
-                    "Person ID"]
-            },
-            "campusTab": {
-                "name": "people_campusTab",
-                "headers": ["Campus ID", "Campus Name"]
-
-            }
-        },
-        "giving": {},
-        "check_ins": {},
-        "groups": {},
-        "calendar": {},
-        "services": {},
-    }
-}
 
 /**
  * Setting up the Google Sheets document
@@ -198,13 +142,11 @@ async function updateSpreadsheet() {
 
     const tabs = tabNamesReturn();
     pushToSheet(tabs.people.campusTab.name, await getCampuses());
-    //pushToSheet(tabs.people.personTab.name,  await personDataCall());
+    pushToSheet(tabs.people.personTab.name,  await personDataCall());
     await updateListTab();
     dataValidation(tabs.people.listTab.name);
     pushToSheet(tabs.people.listPeopleTab.name, await getListsWithPeople());
 }
-
-
 
 function createDialog() {
     var htmlOutput = HtmlService

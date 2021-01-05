@@ -119,42 +119,13 @@ async function getListsWithPeople() {
 
 }
 
-// async function getListsWithPeople() {
-//     let listWithSyncables = await updateListTab();
-//     console.log(listWithSyncables.length);
-//     let campuses = await getCampuses();
-//     let categories = await getListCategories();
 
-//     let listArrayListData = [];
-
-//     for (const list of listWithSyncables) {
-//         let listID = list.listId;
-
-//         if(list._syncThisList){
-//             let listApiCall = await pcoApiLoopedCall(`https://api.planningcenteronline.com/people/v2/lists/${list.listId}`, true, "&include=people");
-//             console.log(listApiCall)
-
-//             let relationships = listApiCall.relationships;
-//             console.log(relationships)
-//             let people = relationships.people.data
-//             for(const person of people){
-
-//                 list.personID = person.id;
-        
-//                 listArrayListData.push(list);
-//             }
-
-
-//         }
-
-
-//     }
-
-//     console.log(listArrayListData)
-
-//     return listArrayListData;
-
-// }
+function calculate_age(dob) { 
+    var diff_ms = Date.now() - dob.getTime();
+    var age_dt = new Date(diff_ms); 
+  
+    return Math.abs(age_dt.getUTCFullYear() - 1970);
+}
 
 
 
@@ -176,6 +147,7 @@ async function personDataCall() {
         let elementPerson = {}
         elementPerson.personId = element.id;
         elementPerson.personBirthdate = attributes.birthdate;
+        elementPerson.personAge = calculate_age(new Date(attributes.birthdate));
         elementPerson.personIsChild = attributes.child;
         elementPerson.personGender = attributes.gender;
         elementPerson.personGrade = attributes.grade;

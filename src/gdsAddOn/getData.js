@@ -79,6 +79,7 @@ function getPcoPeopleData(request) {
       let tempPerson = {
         "personId": person["Person ID"],
         "personBirthday": convertDate(person["Birthday"]),
+        "personAge": person["Age"],
         "personIsChild": person["Is Child"],
         "personGender": person["Gender"],
         "personGrade": person["Grade"],

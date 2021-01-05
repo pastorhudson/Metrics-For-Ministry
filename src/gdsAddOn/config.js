@@ -57,7 +57,7 @@ function getConfig(request) {
 
   if (!isFirstRequest) {
 
-    if (configParams.spreadsheetId != spreadsheetID || configParams.spreadsheetId === undefined || configParams.spreadsheetId == '') {
+    if (configParams.spreadsheetIdSingle != spreadsheetID || configParams.spreadsheetIdSingle === undefined || configParams.spreadsheetIdSingle == '') {
       cc.newUserError().setText('You must add a spreadsheet ID or verify you are using the right spreadsheet ID.').throwException();
     }
 

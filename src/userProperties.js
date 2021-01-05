@@ -51,8 +51,6 @@ function deleteUserProperty(property) {
 }
 
 /**
- * Used to fetch the delete properties.
- *
  * @description fetching the active sheetID and setting it as a property. This is called during the OAuth Auth flow.
  */
 function setActiveSpreadsheetID() {
@@ -60,7 +58,10 @@ function setActiveSpreadsheetID() {
     setUserProperty("activeSpreadsheetID", activeSpreadsheetID);
 }
 
-//This function pulls the default spreadsheetID and returns it to be used in calls to this sheet.
+/**
+ * @description fetching the active sheetID and setting it as a property. This is called during the OAuth Auth flow.
+ * @returns {string} - returns the full value for openign the spreadsheet by ID
+ */
 function getDefaultSpreadsheetId() {
     let spreadsheetID = getUserProperty("activeSpreadsheetID");
     let spreadsheet = SpreadsheetApp.openById(spreadsheetID);
@@ -117,6 +118,12 @@ function setModuleUserObject(modules) {
     setUserProperty('enabledModules', JSON.stringify(moduleObject));
 }
 
+/**
+ *
+ * @returns {JSON} - returns a JSON object with each module enabled. 
+ * @description - simple return for the modules the user has enabled within PCO.
+ *      
+ */
 function getModuleUserObject() {
 
     console.log(JSON.parse(getUserProperty('enabledModules')));
@@ -133,6 +140,7 @@ function tabNamesReturn() {
                 "headers": [
                     "Person ID",
                     "Birthday",
+                    "Age",
                     "Is Child",
                     "Gender",
                     "Grade",
@@ -147,6 +155,11 @@ function tabNamesReturn() {
                         "id": "personBirthday",
                         "name": "Birthday",
                         "description": "The PCO Person's birthdate"
+                    },
+                    "age": {
+                        "id": "personAge",
+                        "name": "Age",
+                        "description": "The PCO Person's age calculated from their birthday"
                     },
                     "gender": {
                         "id": "personGender",

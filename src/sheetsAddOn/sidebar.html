@@ -78,6 +78,10 @@
             padding-top: 20px;
         }
     </style>
+
+    <script>
+
+    </script>
 </head>
 
 <body class="container">
@@ -85,43 +89,53 @@
         <img src="https://savvytoolbelt.com/wp-content/uploads/2020/09/Savvy-Tool-Belt_Horizontal_Color_on-Light.png"
             class="logo">
         <h1 class="heroText">PCO to Google Connector</h1>
+
+        <div class="" id="currentDefaults">
+            <p><strong>Last Synced: </strong></br>
+                <?= getUserProperty("lastSyncTime"); ?>
+            </p>
+            <p><strong>Modules Enabled: </strong></br>
+               
+            </p>
+        </div>
+        <button id="setupGuideButton" class="info" >Setup Guide</button>
     </header>
 
     <content>
 
 
-        <p>
-            <strong>Select the modules you want enabled:</strong></br>
-            People is required, and enabled by default.
-        </p>
 
-        <!-- Module Selector -->
-        <!-- This gets hidden when authorized.-->
-        <div class="row" id="elementDiv">
-            <div class="column">
-                <input class="pcoModuleSelector" type="checkbox" id="givingModule" name="giving" value="giving">
-                <label>Giving</label></br>
-                <input class="pcoModuleSelector" type="checkbox" id="checkinsModuleSelector" name="check_ins"
-                    value="check_ins">
-                <label>Check-ins</label></br>
-                <input class="pcoModuleSelector" type="checkbox" id="groupsModuleSelector" name="groups" value="groups">
-                <label>Groups</label></br>
+        <div class="configurationOptions">
+            <p>
+                <strong>Select the modules you want enabled:</strong></br>
+                People is required, and enabled by default.
+            </p>
+            <!-- Module Selector -->
+            <!-- This gets hidden when authorized.-->
+            <div class="row" id="elementDiv">
+                <div class="column">
+                    <input class="pcoModuleSelector" type="checkbox" id="givingModule" name="giving" value="giving">
+                    <label>Giving</label></br>
+                    <input class="pcoModuleSelector" type="checkbox" id="checkinsModuleSelector" name="check_ins"
+                        value="check_ins">
+                    <label>Check-ins</label></br>
+                    <input class="pcoModuleSelector" type="checkbox" id="groupsModuleSelector" name="groups"
+                        value="groups">
+                    <label>Groups</label></br>
+                </div>
+                <div class="column">
+                    <input class="pcoModuleSelector" type="checkbox" id="peopleModuleSelector" name="people"
+                        value="people" checked disabled>
+                    <label>People</label></br>
+                    <input class="pcoModuleSelector" type="checkbox" id="resourcesModuleSelector" name="calendar"
+                        value="calendar">
+                    <label>Calendar</label></br>
+                    <input class="pcoModuleSelector" type="checkbox" id="servicesModuleSelector" name="services"
+                        value="services">
+                    <label>Services</label></br>
+                </div>
             </div>
-            <div class="column">
-                <input class="pcoModuleSelector" type="checkbox" id="peopleModuleSelector" name="people" value="people"
-                    checked disabled>
-                <label>People</label></br>
-                <input class="pcoModuleSelector" type="checkbox" id="resourcesModuleSelector" name="calendar"
-                    value="calendar">
-                <label>Calendar</label></br>
-                <input class="pcoModuleSelector" type="checkbox" id="servicesModuleSelector" name="services"
-                    value="services">
-                <label>Services</label></br>
-            </div>
-
-
         </div>
-
         <!-- Authorization Button. -->
         <!-- This gets hidden when authorized.-->
         <div class="header authorizeDiv">
@@ -129,9 +143,10 @@
             <button id="btn-authorize" class="action">Authorize</button>
         </div>
 
-        <div class = "buttonDiv">
-            <button id="" class="action">Sync Now</button>
-            <button id="" class="action">Configure Google Data Studio</button>
+        <div class="buttonDiv">
+            <button id="syncNowButton" class="action">Sync Now</button>
+            <button id="syncListsNowButton" class="action">Sync Lists Now</button>
+            <button id="configGdsButton" class="action">Configure Google Data Studio</button>
         </div>
     </content>
 
@@ -143,11 +158,33 @@
 
     <script>
 
+        document.getElementById('syncNowButton').addEventListener("click", syncNow);
+
+        function syncNow(){
+            google.script.run.updateSpreadsheet();
+        }
+
+        document.getElementById('setupGuideButton').addEventListener("click", () => {
+            window.open("https://app.gitbook.com/@savvytoolbelt/s/pco-to-gds/configuration/initial-setup", '_blank');
+        });
+
+        document.getElementById('configGdsButton').addEventListener('click', () => {
+            window.open("https://datastudio.google.com/datasources/create?connectorId=AKfycbxkj7AmDqBhybmaUdp9FPdKrSU_9h_sE0Q5dQdETsw", '_blank');
+
+        })
+
+        document.getElementById('syncListsNowButton').addEventListener('click', () => {
+            google.script.run.updateListPeople() ;
+        })
+
+
+
 
         //selecting the modules that are checked to be used as the scope in the OAuth Call.
         function selectedModules() {
             const modules = document.getElementsByClassName('pcoModuleSelector');
             let modulesSelectedNameArray = [];
+
             for (let i = 0; i < modules.length; i++) {
                 if (modules[i].checked) { modulesSelectedNameArray.push(modules[i].value) }
             }

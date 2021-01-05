@@ -5,12 +5,9 @@
  * @param {string} activeSpreadsheetID - purpose.
  * @param {string} requestedModules - this is during the initial auth request. 
  * @param {string} enabledModules - Once the user is authorized the values from requestedModules get passed to here.
- * @param {string} isPcoGivingEnabled - 
- * @param {string} isPcoCheckinsEnabled - 
- * @param {string} isPcoGroupsEnabled - 
- * @param {string} isPcoPeopleEnabled - 
- * @param {string} isPcoCalendarEnabled - 
- * @param {string} isPcoServicesEnabled - 
+ * @param {string} lastSyncTime - the time when we last synced to PCO
+ * @param {string} isSignedIn - This returns true / false if the script is signed in.
+ * @param {string} lastSyncTimeISOString - configured as an ISO string and should be used in the 'update_at' function to PCO.
  ********************************************/
 
 
@@ -38,7 +35,7 @@ function getUserProperty(property) {
     var returnUserProperty = PropertiesService.getUserProperties().getProperty(
         property
     );
-    console.log(property);
+    console.log(returnUserProperty);
     return returnUserProperty;
 }
 
@@ -54,8 +51,6 @@ function deleteUserProperty(property) {
 }
 
 /**
- * Used to fetch the delete properties.
- *
  * @description fetching the active sheetID and setting it as a property. This is called during the OAuth Auth flow.
  */
 function setActiveSpreadsheetID() {
@@ -63,7 +58,10 @@ function setActiveSpreadsheetID() {
     setUserProperty("activeSpreadsheetID", activeSpreadsheetID);
 }
 
-//This function pulls the default spreadsheetID and returns it to be used in calls to this sheet.
+/**
+ * @description fetching the active sheetID and setting it as a property. This is called during the OAuth Auth flow.
+ * @returns {string} - returns the full value for openign the spreadsheet by ID
+ */
 function getDefaultSpreadsheetId() {
     let spreadsheetID = getUserProperty("activeSpreadsheetID");
     let spreadsheet = SpreadsheetApp.openById(spreadsheetID);
@@ -120,6 +118,12 @@ function setModuleUserObject(modules) {
     setUserProperty('enabledModules', JSON.stringify(moduleObject));
 }
 
+/**
+ *
+ * @returns {JSON} - returns a JSON object with each module enabled. 
+ * @description - simple return for the modules the user has enabled within PCO.
+ *      
+ */
 function getModuleUserObject() {
 
     console.log(JSON.parse(getUserProperty('enabledModules')));
@@ -136,6 +140,7 @@ function tabNamesReturn() {
                 "headers": [
                     "Person ID",
                     "Birthday",
+                    "Age",
                     "Is Child",
                     "Gender",
                     "Grade",
@@ -150,6 +155,11 @@ function tabNamesReturn() {
                         "id": "personBirthday",
                         "name": "Birthday",
                         "description": "The PCO Person's birthdate"
+                    },
+                    "age": {
+                        "id": "personAge",
+                        "name": "Age",
+                        "description": "The PCO Person's age calculated from their birthday"
                     },
                     "gender": {
                         "id": "personGender",

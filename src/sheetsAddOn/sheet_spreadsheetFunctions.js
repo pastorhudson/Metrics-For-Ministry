@@ -148,6 +148,7 @@ async function updateSpreadsheet() {
     pushToSheet(tabs.people.listPeopleTab.name, await getListsWithPeople());
 }
 
+
 function createDialog() {
     var htmlOutput = HtmlService
         .createHtmlOutputFromFile('sheetsAddOn/dialog')

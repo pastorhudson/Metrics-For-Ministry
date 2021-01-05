@@ -76,6 +76,8 @@ function authCallback(request) {
     setActiveSpreadsheetID();
     pcoModuleUserProperties(undefined);
     setUpDocument();
+    dailySyncAdd();
+    setUserProperty("isSignedIn","true");
 
     return HtmlService.createHtmlOutput('Success! You can close this tab.');
   } else {

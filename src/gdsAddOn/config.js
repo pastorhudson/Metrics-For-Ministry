@@ -38,12 +38,6 @@ function getConfig(request) {
     .setHelpText("There should only be one item in the dropdown, that's your spreadsheet ID.")
     .addOption(option1)
 
-  config
-    .newTextInput()
-    .setId("spreadsheetId")
-    .setName("Spreadsheet ID")
-    .setHelpText(`This spreadsheet ID is visible in the sidebar of where you set up the connector. Your spreadsheet ID is ${spreadsheetID}`)
-    .setPlaceholder("Spreadsheet ID goes here.");
 
     //can look at making this dynamic based on what modules they have enabled. 
   config

@@ -5,12 +5,9 @@
  * @param {string} activeSpreadsheetID - purpose.
  * @param {string} requestedModules - this is during the initial auth request. 
  * @param {string} enabledModules - Once the user is authorized the values from requestedModules get passed to here.
- * @param {string} isPcoGivingEnabled - 
- * @param {string} isPcoCheckinsEnabled - 
- * @param {string} isPcoGroupsEnabled - 
- * @param {string} isPcoPeopleEnabled - 
- * @param {string} isPcoCalendarEnabled - 
- * @param {string} isPcoServicesEnabled - 
+ * @param {string} lastSyncTime - the time when we last synced to PCO
+ * @param {string} isSignedIn - This returns true / false if the script is signed in.
+ * @param {string} lastSyncTimeISOString - configured as an ISO string and should be used in the 'update_at' function to PCO.
  ********************************************/
 
 
@@ -38,7 +35,7 @@ function getUserProperty(property) {
     var returnUserProperty = PropertiesService.getUserProperties().getProperty(
         property
     );
-    console.log(property);
+    console.log(returnUserProperty);
     return returnUserProperty;
 }
 

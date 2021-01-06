@@ -176,14 +176,25 @@ async function updateListTab() {
                 return spreadsheetList
             }
         });
+        
+        console.log(syncThisList.length)
 
-        let syncList = syncThisList[0]["Sync This List"] || false;
+        if(syncThisList.length > 0){
+            let syncList = syncThisList[0]["Sync This List"]
+            list["listSync"] = syncList;
 
-        list["listSync"] = syncList;
+        } else {
+            let syncList = false;
+            list["listSync"] = syncList;
+
+        }
+
 
         listArray.push(list);
     }
+    dataValidation(tabs.people.listTab.name)
     pushToSheet(tabs.people.listTab.name, listArray);
+
     return listArray;
 }
 

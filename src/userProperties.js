@@ -161,6 +161,12 @@ function tabNamesReturn() {
                         "name": "Age",
                         "description": "The PCO Person's age calculated from their birthday"
                     },
+                    "ageRange": {
+                        "id": "personAgeRange",
+                        "name": "Age Range",
+                        "description": "Grouping of the person's age range",
+                        "formula": 'CASE WHEN $personAge <= 3 THEN "0 - 3" WHEN $personAge >= 4 AND $personAge <= 11  THEN "4 - 11" WHEN $personAge >= 12 AND $personAge <= 18  THEN "12 - 18" WHEN $personAge >= 19 AND $personAge <= 25  THEN "19 - 25" WHEN $personAge >= 26 AND $personAge <= 35  THEN "26 - 35" WHEN $personAge >= 36 AND $personAge <= 50  THEN "36 - 50" WHEN $personAge >= 51 AND $personAge <= 64  THEN "51 - 64" WHEN $personAge >= 65 THEN "65+" ELSE "Other" END'
+                    },
                     "gender": {
                         "id": "personGender",
                         "name": "Gender",

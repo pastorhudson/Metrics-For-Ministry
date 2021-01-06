@@ -38,11 +38,18 @@ function getSchema(request) {
         .setDescription(peopleDataJson.dimensions.birthday.description)
         .setType(types.YEAR_MONTH_DAY)
 
-        fields.newDimension()
+      fields.newDimension()
         .setId(peopleDataJson.dimensions.age.id)
         .setName(peopleDataJson.dimensions.age.name)
         .setDescription(peopleDataJson.dimensions.age.description)
         .setType(types.NUMBER)
+
+      fields.newDimension()
+        .setId(peopleDataJson.dimensions.ageRange.id)
+        .setName(peopleDataJson.dimensions.ageRange.name)
+        .setDescription(peopleDataJson.dimensions.ageRange.description)
+        .setFormula(peopleDataJson.dimensions.ageRange.formula)
+        .setType(types.TEXT)
 
 
       fields.newDimension()

@@ -65,19 +65,6 @@ async function getGivingPaymentSources() {
 }
 
 
-/*
-hurdles:
-
-1. the API call needs to return
-
-1. Fetch a list of all the donations in one array, and the 'includes' for designations in another.
-
-76732526
-2. Create a base
-
-
-
-*/
 
 async function getGivingDonations() {
     /**

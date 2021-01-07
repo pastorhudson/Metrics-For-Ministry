@@ -16,14 +16,13 @@ function setUpDocument() {
         createSheet(tabs.people.personTab);
         createSheet(tabs.people.listTab);
         createSheet(tabs.people.listPeopleTab);
-        createSheet(tabs.people.campusTab);
-
-        //createSheet(tabs.people.listPeopleTab);
+        //createSheet(tabs.people.campusTab);
     }
     if (modules.check_ins) {
 
     }
     if (modules.giving) {
+        createSheet(tabs.giving.donationsTab);
 
     }
     if (modules.groups) {
@@ -73,19 +72,25 @@ function createSheet(tabInfo) {
     const existingSheets = tabList();
     const spreadsheet = getDefaultSpreadsheetId();
     let name = tabInfo.name
-    let ss = spreadsheet.getSheetByName(name);
     let headers = [tabInfo.headers]
     console.log(headers)
 
     //if a sheet does not exist it will create it.
     if (!existingSheets.includes(name)) {
         spreadsheet.insertSheet(name);
+        let ss = spreadsheet.getSheetByName(name);
         ss.getRange(1, 1, 1, headers[0].length).setValues(headers);
     } else if (existingSheets.includes(name)) {
         spreadsheet.getSheetByName(name).clear();
+        let ss = spreadsheet.getSheetByName(name);
         ss.getRange(1, 1, 1, headers[0].length).setValues(headers);
 
     }
+    let ss = spreadsheet.getSheetByName(name);
+    ss.getRange(1, 1, ss.getLastRow(), ss.getLastColumn())
+        .setHorizontalAlignment("center")
+        .protect()
+        .setWarningOnly(true)
 }
 
 
@@ -142,10 +147,13 @@ async function updateSpreadsheet() {
 
     const tabs = tabNamesReturn();
     pushToSheet(tabs.people.campusTab.name, await getCampuses());
-    pushToSheet(tabs.people.personTab.name,  await personDataCall());
-    await updateListTab();
-    dataValidation(tabs.people.listTab.name);
+    //pushToSheet(tabs.people.personTab.name,  await personDataCall());
+
     pushToSheet(tabs.people.listPeopleTab.name, await getListsWithPeople());
+    pushToSheet(tabs.giving.donationsTab.name, await getGivingDonations());
+    await updateListTab();
+
+    dataValidation(tabs.people.listTab.name);
 }
 
 
@@ -176,10 +184,10 @@ async function updateListTab() {
                 return spreadsheetList
             }
         });
-        
+
         console.log(syncThisList.length)
 
-        if(syncThisList.length > 0){
+        if (syncThisList.length > 0) {
             let syncList = syncThisList[0]["Sync This List"]
             list["listSync"] = syncList;
 
@@ -192,8 +200,9 @@ async function updateListTab() {
 
         listArray.push(list);
     }
-    dataValidation(tabs.people.listTab.name)
     pushToSheet(tabs.people.listTab.name, listArray);
+    dataValidation(tabs.people.listTab.name)
+
 
     return listArray;
 }

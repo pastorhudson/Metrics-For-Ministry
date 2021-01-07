@@ -287,7 +287,29 @@ function tabNamesReturn() {
                 }
             }
         },
-        "giving": {},
+        "giving": {
+            "donationsTab" : {
+                "name" : "giving_donationsTab",
+                "headers" : [
+                    "Donation ID",
+                    "Person ID",
+                    "Updated At",
+                    "Recieved At",
+                    "Refunded",
+                    "Payment Method",
+                    "Payment Method Type",
+                    "Status",
+                    "Card Brand",
+                    "Source",
+                    "Labels",
+                    "Fund Name",
+                    "Ledger Code",
+                    "Amount",
+                    "Fee",
+                    "Net Amount"
+                ]
+            }
+        },
         "check_ins": {},
         "groups": {},
         "calendar": {},

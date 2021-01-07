@@ -1,11 +1,14 @@
 
-/**
- * The campus data call
- * 
- * @return {campusArray} - filtered array of the campus data. For how this should look, check out the examples readme.
- * @description - This function returns the array of our campuses. This is a bit more reliable than running an 'includes'
- */
+
 async function getCampuses() {
+
+    /**
+     * The campus data call
+     * 
+     * @return {campusArray} - filtered array of the campus data. For how this should look, check out the examples readme.
+     * @description - This function returns the array of our campuses. This is a bit more reliable than running an 'includes'
+     */
+
     const campusApiCall = await pcoApiLoopedCall("https://api.planningcenteronline.com/people/v2/campuses");
     let campusArray = [];
 
@@ -20,13 +23,14 @@ async function getCampuses() {
     return campusArray;
 }
 
-/**
- * The cateogory data call
- * 
- * @return {categoryArray} - filtered array of the list category data For how this should look, check out the examples readme.
- * @description - This function returns the array of the list category data. This is a bit more reliable than running an 'includes'
- */
 async function getListCategories() {
+    /**
+     * The cateogory data call
+     * 
+     * @return {categoryArray} - filtered array of the list category data For how this should look, check out the examples readme.
+     * @description - This function returns the array of the list category data. This is a bit more reliable than running an 'includes'
+     */
+
     const apiCall = await pcoApiLoopedCall("https://api.planningcenteronline.com/people/v2/list_categories");
     let categoryArray = [];
 
@@ -82,7 +86,7 @@ async function getListsWithPeople() {
         let relationships = list.relationships;
         console.log(relationships)
         let people = relationships.people.data
-        for(const person of people){
+        for (const person of people) {
             let subList = new ListPeople(
                 list.id,
                 list.attributes.description.replaceAll("'", '"'),
@@ -102,15 +106,15 @@ async function getListsWithPeople() {
     let syncTheseLists = [];
     let syncThesePeople = [];
 
-    for(list of updateListData){
-        if(list._syncThisList == true){
+    for (list of updateListData) {
+        if (list._syncThisList == true) {
             syncTheseLists.push(list.listId);
         }
     }
 
-    for(i = 0 ; i < listArrayListData.length ; i++){
+    for (i = 0; i < listArrayListData.length; i++) {
         let value = syncTheseLists.indexOf(listArrayListData[i].listId);
-        if(value != -1){
+        if (value != -1) {
             syncThesePeople.push(listArrayListData[i])
         }
     }
@@ -120,22 +124,23 @@ async function getListsWithPeople() {
 }
 
 
-function calculate_age(dob) { 
+function calculate_age(dob) {
     var diff_ms = Date.now() - dob.getTime();
-    var age_dt = new Date(diff_ms); 
-  
+    var age_dt = new Date(diff_ms);
+
     return Math.abs(age_dt.getUTCFullYear() - 1970);
 }
 
 
 
-/**
- * The person data call
- * 
- * @return {personArray} - filtered array of the people on PCO. check out the readme for more information on how this is structured.
- * @description - 
- */
+
 async function personDataCall() {
+    /**
+     * The person data call
+     * 
+     * @return {personArray} - filtered array of the people on PCO. check out the readme for more information on how this is structured.
+     * @description - 
+     */
 
     const personData = await pcoApiLoopedCall("https://api.planningcenteronline.com/people/v2/people");
     const campusArray = await getCampuses();
@@ -170,8 +175,7 @@ async function personDataCall() {
     }
 
     console.log(personArray[9000]);
-    console.log(personArray.le)
-
+    console.log(personArray)
     return personArray;
 
 }

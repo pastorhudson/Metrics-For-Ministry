@@ -161,6 +161,12 @@ function tabNamesReturn() {
                         "name": "Age",
                         "description": "The PCO Person's age calculated from their birthday"
                     },
+                    "ageRange": {
+                        "id": "personAgeRange",
+                        "name": "Age Range",
+                        "description": "Grouping of the person's age range",
+                        "formula": 'CASE WHEN $personAge <= 3 THEN "0 - 3" WHEN $personAge >= 4 AND $personAge <= 11  THEN "4 - 11" WHEN $personAge >= 12 AND $personAge <= 18  THEN "12 - 18" WHEN $personAge >= 19 AND $personAge <= 25  THEN "19 - 25" WHEN $personAge >= 26 AND $personAge <= 35  THEN "26 - 35" WHEN $personAge >= 36 AND $personAge <= 50  THEN "36 - 50" WHEN $personAge >= 51 AND $personAge <= 64  THEN "51 - 64" WHEN $personAge >= 65 THEN "65+" ELSE "Other" END'
+                    },
                     "gender": {
                         "id": "personGender",
                         "name": "Gender",
@@ -277,11 +283,122 @@ function tabNamesReturn() {
                     }
                 },
                 "metrics": {
-
+                    "personCount": {
+                        "id": "personCount",
+                        "name": "Person Count",
+                        "description": "This gives a count of one for each person."
+                    }
                 }
             }
         },
-        "giving": {},
+        "giving": {
+            "donationsTab" : {
+                "name" : "giving_donationsTab",
+                "headers" : [
+                    "Donation ID",
+                    "Person ID",
+                    "Updated At",
+                    "Recieved At",
+                    "Refunded",
+                    "Payment Method",
+                    "Payment Method Type",
+                    "Status",
+                    "Card Brand",
+                    "Source",
+                    "Labels",
+                    "Fund Name",
+                    "Ledger Code",
+                    "Amount",
+                    "Fee",
+                    "Net Amount"
+                ],
+                "dimensions": {
+                    "donationId": {
+                        "id": "donationId",
+                        "name": "Donation Id",
+                        "description": "Unique ID that's generated per donation. There will me multiple duplicate values for a split donation."
+                    },
+                    "personId": {
+                        "id": "personId",
+                        "name": "Person Id",
+                        "description": "This is the unique value for each person assigned by PCO."
+                    },
+                    "updatedAt": {
+                        "id": "updatedAt",
+                        "name": "Updated At",
+                        "description": "This is the last time this donation was updated."
+                    },
+                    "recievedAt": {
+                        "id": "recievedAt",
+                        "name": "Recieved At",
+                        "description": "This is when the donation was marked as recieved. Use this as your primary date column."
+                    },
+                    "refunded": {
+                        "id": "refunded",
+                        "name": "Refunded?",
+                        "description": "True / False based on if the amount is refunded or not."
+                    },
+                    "paymentMethod": {
+                        "id": "paymentMethod",
+                        "name": "Payment Method",
+                        "description": "Card/Cash/Check/ACH. This will be how this was recieved into PCO"
+                    },
+                    "paymentMethodType": {
+                        "id": "paymentMethodType",
+                        "name": "Credit / Debit",
+                        "description": "This will show if the card was credit or debit."
+                    },
+                    "status": {
+                        "id": "status",
+                        "name": "Status",
+                        "description": "Payment Status within PCO."
+                    },
+                    "cardBrand": {
+                        "id": "cardBrand",
+                        "name": "Card Brand",
+                        "description": "This is the brand of the card your donor is using."
+                    },
+                    "source": {
+                        "id": "source",
+                        "name": "Payment Source",
+                        "description": "These are the payment sources within PCO."
+                    },
+                    "labels": {
+                        "id": "labels",
+                        "name": "Labels",
+                        "description": "If you've assigned a payment a label, you'll get a list of those labels here."
+                    },
+                    "fundName": {
+                        "id": "fundName",
+                        "name": "Fund Name",
+                        "description": "The Fund Name this donation belongs to."
+                    },
+                    "ledgerCode": {
+                        "id": "ledgerCode",
+                        "name": "Ledger Code",
+                        "description": "This is the ledger code you've configured in PCO to represent your Chart of Accounts code."
+                    },
+
+                },
+                "metrics": {
+                    "amount": {
+                        "id": "amount",
+                        "name": "Amount (pre fee)",
+                        "description": "This is the gift amount BEFORE the fee is removed."
+                    },
+                    "fee": {
+                        "id": "fee",
+                        "name": "Fee",
+                        "description": "This is the total amount for the fee"
+                    },
+                    "netAmount": {
+                        "id": "netAmount",
+                        "name": "Net Amount (post fee)",
+                        "description": "This is the amount after the fee is deducted."
+                    }
+                }
+            }
+        },
         "check_ins": {},
         "groups": {},
         "calendar": {},

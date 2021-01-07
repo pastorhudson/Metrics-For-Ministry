@@ -60,10 +60,6 @@ function promiseApiWithTimeout(url, offset, includeURL, retries = 5, timeout = 0
 }
 
 
-function testCall() {
-    pcoApiLoopedCall('https://api.planningcenteronline.com/people/v2/lists', true, "&include=campus,category");
-
-}
 
 /**
  * The looped API call.
@@ -87,7 +83,9 @@ async function pcoApiLoopedCall(url, include = false, includeURL = undefined) {
         let fetchedData = await promiseApiWithTimeout(url, offset, includeURL)
 
         let totalCount = fetchedData.meta.total_count;
+
         data.push(...fetchedData.data)
+        //console.log(fetchedData.included)
 
         for (let i = 100; i < totalCount; i += 100) {
             const response = await promiseApiWithTimeout(url, i, includeURL);
@@ -95,12 +93,48 @@ async function pcoApiLoopedCall(url, include = false, includeURL = undefined) {
             const final = response.data;
             const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
             console.log(report)
+            //console.log(response.included)
         }
         console.log(`the data is: ${data.length} long.`);
         return data;
 
+    }
+
+}
+
+
+async function pcoApiLoopedCall_giving(url, include = false, includeURL = undefined) {
+    var service = getOAuthService();
+    if (service.hasAccess()) {
+        let offset = 0;
+        let data = [];
+        let included = [];
+
+        let fetchedData = await promiseApiWithTimeout(url, offset, includeURL)
+
+        let totalCount = fetchedData.meta.total_count;
+
+        data.push(...fetchedData.data)
+        included.push(...fetchedData.included)
+
+        for (let i = 100; i < totalCount; i += 100) {
+            const response = await promiseApiWithTimeout(url, i, includeURL);
+            data.push(...response.data);
+            included.push(...response.included)
+            const final = response.data;
+            const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
+            console.log(report)
+            //console.log(response.included)
+        }
+        console.log(`the data is: ${data.length} long.`);
+        
+        return {
+            "data" : data,
+            "included" : included
+        };
 
     }
 
 }
+
 

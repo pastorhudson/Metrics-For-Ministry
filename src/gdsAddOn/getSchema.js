@@ -17,7 +17,6 @@ function validateConfig(config) {
 function getSchema(request) {
   console.log(request);
 
-  validateConfig(request.configParams);
 
   var cc = DataStudioApp.createCommunityConnector();
   var fields = cc.getFields();
@@ -26,6 +25,7 @@ function getSchema(request) {
   const moduleDataJson = tabNamesReturn();
 
   if (connectorType == 'people') {
+    validateConfig(request.configParams);
 
     const peopleInfo = moduleDataJson.people.peopleInfo;
     const peopleDataJson = moduleDataJson.people.personTab;
@@ -36,13 +36,20 @@ function getSchema(request) {
         .setId(peopleDataJson.dimensions.birthday.id)
         .setName(peopleDataJson.dimensions.birthday.name)
         .setDescription(peopleDataJson.dimensions.birthday.description)
-        .setType(types.YEAR_MONTH_DAY)
+        .setType(types.DATE)
 
-        fields.newDimension()
+      fields.newDimension()
         .setId(peopleDataJson.dimensions.age.id)
         .setName(peopleDataJson.dimensions.age.name)
         .setDescription(peopleDataJson.dimensions.age.description)
-        .setType(types.NUMBER)
+        .setType(types.DATE)
+
+      fields.newDimension()
+        .setId(peopleDataJson.dimensions.ageRange.id)
+        .setName(peopleDataJson.dimensions.ageRange.name)
+        .setDescription(peopleDataJson.dimensions.ageRange.description)
+        .setFormula(peopleDataJson.dimensions.ageRange.formula)
+        .setType(types.TEXT)
 
 
       fields.newDimension()
@@ -132,10 +139,103 @@ function getSchema(request) {
       .setType(types.TEXT)
 
     fields.newMetric()
-      .setId(peopleInfo.dimensions.personCount.id)
-      .setName(peopleInfo.dimensions.personCount.name)
+      .setId(peopleInfo.metrics.personCount.id)
+      .setName(peopleInfo.metrics.personCount.name)
       .setType(types.NUMBER)
-      .setDescription(peopleInfo.dimensions.personCount.description)
+      .setDescription(peopleInfo.metrics.personCount.description)
+
+  } else if (connectorType == 'giving') {
+    const givingDataJson = moduleDataJson.giving.donationsTab;
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.donationId.id)
+      .setName(givingDataJson.dimensions.donationId.name)
+      .setDescription(givingDataJson.dimensions.donationId.description)
+      .setType(types.TEXT)
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.personId.id)
+      .setName(givingDataJson.dimensions.personId.name)
+      .setDescription(givingDataJson.dimensions.personId.description)
+      .setType(types.TEXT)
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.updatedAt.id)
+      .setName(givingDataJson.dimensions.updatedAt.name)
+      .setDescription(givingDataJson.dimensions.updatedAt.description)
+      .setType(types.YEAR_MONTH_DAY_SECOND)
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.recievedAt.id)
+      .setName(givingDataJson.dimensions.recievedAt.name)
+      .setDescription(givingDataJson.dimensions.recievedAt.description)
+      .setType(types.YEAR_MONTH_DAY_SECOND)
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.paymentMethod.id)
+      .setName(givingDataJson.dimensions.paymentMethod.name)
+      .setDescription(givingDataJson.dimensions.paymentMethod.description)
+      .setType(types.TEXT)
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.paymentMethodType.id)
+      .setName(givingDataJson.dimensions.paymentMethodType.name)
+      .setDescription(givingDataJson.dimensions.paymentMethodType.description)
+      .setType(types.TEXT) 
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.status.id)
+      .setName(givingDataJson.dimensions.status.name)
+      .setDescription(givingDataJson.dimensions.status.description)
+      .setType(types.TEXT)
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.cardBrand.id)
+      .setName(givingDataJson.dimensions.cardBrand.name)
+      .setDescription(givingDataJson.dimensions.cardBrand.description)
+      .setType(types.TEXT)
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.source.id)
+      .setName(givingDataJson.dimensions.source.name)
+      .setDescription(givingDataJson.dimensions.source.description)
+      .setType(types.TEXT)
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.labels.id)
+      .setName(givingDataJson.dimensions.labels.name)
+      .setDescription(givingDataJson.dimensions.labels.description)
+      .setType(types.TEXT)
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.fundName.id)
+      .setName(givingDataJson.dimensions.fundName.name)
+      .setDescription(givingDataJson.dimensions.fundName.description)
+      .setType(types.TEXT)
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.ledgerCode.id)
+      .setName(givingDataJson.dimensions.ledgerCode.name)
+      .setDescription(givingDataJson.dimensions.ledgerCode.description)
+      .setType(types.TEXT)
+
+    fields.newMetric()
+      .setId(givingDataJson.metrics.amount.id)
+      .setName(givingDataJson.metrics.amount.name)
+      .setDescription(givingDataJson.metrics.amount.description)
+      .setType(types.CURRENCY_USD)
+
+    fields.newMetric()
+      .setId(givingDataJson.metrics.fee.id)
+      .setName(givingDataJson.metrics.fee.name)
+      .setDescription(givingDataJson.metrics.fee.description)
+      .setType(types.CURRENCY_USD)
+
+    fields.newMetric()
+      .setId(givingDataJson.metrics.netAmount.id)
+      .setName(givingDataJson.metrics.netAmount.name)
+      .setDescription(givingDataJson.metrics.netAmount.description)
+      .setType(types.CURRENCY_USD)
   }
 
 

@@ -7,12 +7,7 @@
  */
 function getData(request) {
 
-  // make this request an if statement where we see what kind of data it is and run it from there.
-  const connectorType = request.configParams.pcoConnectorType;
-
-  if (connectorType == 'people') {
-    return getPcoPeopleData(request);
-  }
+return getPcoPeopleData(request);
 
 }
 
@@ -47,6 +42,14 @@ function convertDate(dateString) {
 
 }
 
+function convertDateLong(dateString) {
+  let string = dateString.replaceAll('T',"").replaceAll("-","").replaceAll(":","").replaceAll("Z","")
+
+  return string;
+
+}
+// YYYYMMDDHHMMSS'
+
 
 function getPcoPeopleData(request) {
   var data = [];
@@ -55,7 +58,6 @@ function getPcoPeopleData(request) {
   const moduleDataJson = tabNamesReturn();
 
   var schemaData = getSchema(request).schema;
-  let requestType = request.configParams.peopleSelectorType;
 
   // Prepare the schema for the fields requested.
   var dataSchema = request.fields.map(function (field) {
@@ -66,60 +68,100 @@ function getPcoPeopleData(request) {
     }
   });
 
-  // Need to make a call that goes to the spreadsheet, takes the data, and gives it to me in a json format with keys that match the IDs within GDS
-  if (requestType == "peopleData") {
-    let personData = getSpreadsheetDataByName(moduleDataJson.people.personTab.name);
+  let module = request.configParams.pcoConnectorType
 
+  if(module == 'people'){
+    let requestType = request.configParams.peopleSelectorType;
+
+    if (requestType == "peopleData") {
+      let personData = getSpreadsheetDataByName(moduleDataJson.people.personTab.name);
+  
+      let tempArray = [];
+  
+  
+      for (const person of personData) {
+  
+  
+        let tempPerson = {
+          "personId": person["Person ID"],
+          "personBirthday": convertDate(person["Birthday"]),
+          "personAge": person["Age"],
+          "personIsChild": person["Is Child"],
+          "personGender": person["Gender"],
+          "personGrade": person["Grade"],
+          "personMembership": person["Membership"],
+          "personStatus": person["Status"],
+          "personCount": person["Person Count"],
+          "campusId": person["Campus Number"],
+          "campusName": person["Campus Name"],
+        }
+        tempArray.push(tempPerson);
+      }
+  
+      requestedData = tempArray;
+  
+    } else if (requestType == "listData") {
+      let listData = getSpreadsheetDataByName(moduleDataJson.people.listPeopleTab.name);
+  
+      let tempArray = [];
+  
+      for (const person of listData) {
+        let tempPerson = {
+          "personId": person["Person ID"],
+          "personCount": 1,
+          "campusId": person["Campus Number"],
+          "campusName": person["Campus Name"],
+          "listId": person["List ID"],
+          "listDescription": person["List Description"],
+          "listName": person["List Name"],
+          "categoryId": person["Category ID"],
+          "categoryName": person["Category Name"]
+        }
+        tempArray.push(tempPerson);
+        //console.log(tempPerson)
+      }
+  
+      requestedData = tempArray;
+  
+    }
+  
+  } else if (module == 'giving'){
+    let donationData = getSpreadsheetDataByName(moduleDataJson.giving.donationsTab.name);
+  
     let tempArray = [];
 
 
-    for (const person of personData) {
+    for (const donation of donationData) {
 
+console.log(new Date(donation["Updated At"]).valueOf())
+      let tempDonation = {
+        "donationId": donation["Donation ID"],
+        "personId": donation["Person ID"],
+        "updatedAt": convertDateLong(donation["Updated At"]) ,
+        "recievedAt": convertDateLong(donation["Recieved At"]),
+        "refunded": donation["Refunded"],
+        "paymentMethod": donation["Payment Method"],
+        "paymentMethodType": donation["Payment Method Type"],
+        "status": donation["Status"],
+        "cardBrand": donation["Card Brand"],
+        "source": donation["Source"],
+        "labels": donation["Labels"],
+        "fundName": donation["Fund Name"],
+        "ledgerCode": donation["Ledger Code"],
+        "amount": donation["Amount"],
+        "fee": donation["Fee"],
+        "netAmount": donation["Net Amount"]
 
-      let tempPerson = {
-        "personId": person["Person ID"],
-        "personBirthday": convertDate(person["Birthday"]),
-        "personAge": person["Age"],
-        "personIsChild": person["Is Child"],
-        "personGender": person["Gender"],
-        "personGrade": person["Grade"],
-        "personMembership": person["Membership"],
-        "personStatus": person["Status"],
-        "personCount": person["Person Count"],
-        "campusId": person["Campus Number"],
-        "campusName": person["Campus Name"],
       }
-      tempArray.push(tempPerson);
+      tempArray.push(tempDonation);
+
     }
 
     requestedData = tempArray;
-
-  } else if (requestType == "listData") {
-    let listData = getSpreadsheetDataByName(moduleDataJson.people.listPeopleTab.name);
-
-    let tempArray = [];
-
-    for (const person of listData) {
-      let tempPerson = {
-        "personId": person["Person ID"],
-        "personCount": 1,
-        "campusId": person["Campus Number"],
-        "campusName": person["Campus Name"],
-        "listId": person["List ID"],
-        "listDescription": person["List Description"],
-        "listName": person["List Name"],
-        "categoryId": person["Category ID"],
-        "categoryName": person["Category Name"]
-      }
-      tempArray.push(tempPerson);
-      //console.log(tempPerson)
-    }
-
-    requestedData = tempArray;
-
   }
 
-  console.log(requestedData[809]);
+  console.log(requestedData[900])
+
 
   let requestedKeys = [];
 
@@ -148,6 +190,8 @@ function getPcoPeopleData(request) {
     data.push(pushData);
 
   }
+
+  console.log(data);
 
   return {
     schema: dataSchema,

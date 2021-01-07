@@ -56,6 +56,107 @@ function campusNumber() {
 
 }
 
+function paymentMethod() {
+  const methods = ["cash", "check", "ach", "card"]
+  let number = randomNumber(0, 3)
+  return methods[number];
+}
+
+function paymentSource() {
+  const source = ["11848", "11856", "11857"]
+  let number = randomNumber(0, 2)
+  return source[number];
+}
+
+function paymentLabel() {
+  const label = ["112940", "112970", "112971", "112972"]
+  let number = randomNumber(0, 3)
+  return label[number];
+}
+
+function paymentFund() {
+  const fund = ["175596", "175646", "175645", "175644"]
+  let number = randomNumber(0, 3)
+  return fund[number];
+}
+
+function personArray() {
+  const spreadsheet = getDefaultSpreadsheetId();
+  let ss = spreadsheet.getSheetByName('people_personTab');
+  let data = ss.getRange(2, 1, ss.getLastRow(), 1).getValues();
+
+  return data;
+
+}
+
+function personRandom(people){
+
+  let number = randomNumber(0, people.length)
+  return people[number][0];
+}
+
+
+
+function addGiftsToPCO() {
+
+  let people = personArray();
+
+  for (let i = 0; i < 90 ; i++) {
+
+    let giftYear = randomNumber(2010, 2020);
+    let giftMonth = randomNumber(1, 12);
+    let giftDate = randomNumber(1, 31);
+    let giftPaymentMethod = paymentMethod();
+    let personID = personRandom(people);
+    let giftPaymentSource = paymentSource();
+    let label = paymentLabel();
+    let amount = randomNumber(5, 85000);
+    let fundID = paymentFund();
+
+    let jsonObject = `{
+                        "data": {
+                          "type": "Donation",
+                          "attributes": {
+                            "payment_method": "${giftPaymentMethod}",
+                            "received_at": "${giftYear}-${giftMonth}-${giftDate}"
+                          },
+                          "relationships": {
+                            "person": {
+                              "data": { "type": "Person", "id": "${personID}" }
+                            },
+                            "payment_source": {
+                              "data": { "type": "PaymentSource", "id": "${giftPaymentSource}" }
+                            },
+                            "labels": {
+                              "data": [
+                                { "type": "Label", "id": "${label}" }
+                              ]
+                            }
+                          }
+                        },
+                        "included": [
+                          {
+                            "type": "Designation",
+                            "attributes": { "amount_cents": ${amount} },
+                            "relationships": {
+                              "fund": {
+                                "data": { "type": "Fund", "id": "${fundID}" }
+                              }
+                            }
+                          }
+                        ]
+                      }`
+
+    let updateCall = pcoUpdateCall(jsonObject, "post");
+
+    console.log(i);
+    console.log(updateCall.Code);
+    console.log(updateCall.Data);
+
+  }
+
+}
+
 function addPeopleToPCO() {
   for (let i = 0; i < 7000; i++) {
 
@@ -105,7 +206,7 @@ function pcoUpdateCall(data, type) {
       'contentType': 'application/json',
       'payload': data
     }
-    let url = "https://api.planningcenteronline.com/people/v2/people";
+    let url = "https://api.planningcenteronline.com/giving/v2/batches/1/donations";
     let response = UrlFetchApp.fetch(url, options);
     console.log(response);
 

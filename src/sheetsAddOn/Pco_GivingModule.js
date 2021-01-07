@@ -100,60 +100,59 @@ async function getGivingDonations() {
         let attributes = donation.attributes;
         let relationships = donation.relationships;
 
-        let fee = attributes.fee_cents;
-        let amount = attributes.amount_cents
-        let currenty = attributes.amount_currency;
+        let fee = attributes.fee_cents / 100;
+        let amount = attributes.amount_cents / 100
+        let currency = attributes.amount_currency;
         let designations = relationships.designations.data;
 
-
-        let donationElement = {}
-
-        // this will not be unique if the donation is split.
-        donationElement.id = donation.id;
-
-        // this is our primary key to link the databases.
-        donationElement.personId = relationships.person.data.id;
-
-        // when the donation has been recieved & last updated. This will be for later so we don't sync the entire database again.
-        donationElement.updatedAt = attributes.updated_at;
-        donationElement.recievedAt = attributes.received_at;
-
-        // true/false if it's been refunded or not.
-        donationElement.refunded = attributes.refunded;
-
-        // basic payment information.
-        donationElement.paymentMethod = attributes.payment_method;
-
-        // showing credit/debit
-        donationElement.paymentMethodType = attributes.payment_method_sub;
-
-        // this what we'd expect to update.
-        donationElement.paymentStatus = attributes.payment_status;
-        donationElement.paymentBrand = attributes.payment_brand;
-
-
-
-        //donationElement.paymentSourceId = relationships.payment_source.data.id;
-
-        let paymentSource = paymentSources.find(source => source.id === relationships.payment_source.data.id);
-        donationElement.paymentSourceName = paymentSource.name;
-
-
-        if (relationships.labels.data != null) {
-            let labelArray = [];
-            for (const labelItem of relationships.labels.data) {
-                let labelId = labelItem.id;
-                let label = labels.find(o => o.id === labelId);
-                labelArray.push(label.name)
-            }
-
-            donationElement.donationLabels = labelArray.join(', ');
-
-        } else {
-            donationElement.donationLabels = undefined;
-        }
-
         for (const designation of designations) {
+
+            let donationElement = {}
+
+            // this will not be unique if the donation is split.
+            donationElement.id = donation.id;
+
+            // this is our primary key to link the databases.
+            donationElement.personId = relationships.person.data.id;
+
+            // when the donation has been recieved & last updated. This will be for later so we don't sync the entire database again.
+            donationElement.updatedAt = attributes.updated_at;
+            donationElement.recievedAt = attributes.received_at;
+
+            // true/false if it's been refunded or not.
+            donationElement.refunded = attributes.refunded;
+
+            // basic payment information.
+            donationElement.paymentMethod = attributes.payment_method;
+
+            // showing credit/debit
+            donationElement.paymentMethodType = attributes.payment_method_sub;
+
+            // this what we'd expect to update.
+            donationElement.paymentStatus = attributes.payment_status;
+            donationElement.paymentBrand = attributes.payment_brand;
+
+
+
+            //donationElement.paymentSourceId = relationships.payment_source.data.id;
+
+            let paymentSource = paymentSources.find(source => source.id === relationships.payment_source.data.id);
+            donationElement.paymentSourceName = paymentSource.name;
+
+
+            if (relationships.labels.data != null) {
+                let labelArray = [];
+                for (const labelItem of relationships.labels.data) {
+                    let labelId = labelItem.id;
+                    let label = labels.find(o => o.id === labelId);
+                    labelArray.push(label.name)
+                }
+
+                donationElement.donationLabels = labelArray.join(', ');
+
+            } else {
+                donationElement.donationLabels = undefined;
+            }
 
             let designationId = designation.id;
             let designationData = designationArray.find(data => data.id === designationId && data.type == "Designation");
@@ -161,15 +160,15 @@ async function getGivingDonations() {
             let fundId = designationData.relationships.fund.data.id;
             let subFund = funds.find(source => source.id === fundId);
 
-            let subFee = +((fee / amount) * designationData.attributes.amount_cents).toFixed(2);
-            let subAmount = designationData.attributes.amount_cents
+            let subFee = +(((fee / amount) * designationData.attributes.amount_cents) / 100).toFixed(2);
+            let subAmount = designationData.attributes.amount_cents / 100
 
 
             donationElement.fundName = subFund.name;
             donationElement.ledgerCode = subFund.ledgerCode;
-            donationElement.amount = subAmount / 100;
+            donationElement.amount = subAmount;
             donationElement.fee = subFee;
-            donationElement.netAmount = (subAmount - subFee) / 100;
+            donationElement.netAmount = (subAmount + subFee);
 
             donationArray.push(donationElement);
 

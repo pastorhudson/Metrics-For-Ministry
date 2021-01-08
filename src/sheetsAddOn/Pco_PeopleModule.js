@@ -168,7 +168,7 @@ async function personDataCall() {
 
         } else {
             elementPerson.campusId = undefined;
-            elementPerson.campusName = undefined;
+            elementPerson.campusName = "undefined";
         }
 
         personArray.push(elementPerson);

@@ -36,13 +36,13 @@ function getSchema(request) {
         .setId(peopleDataJson.dimensions.birthday.id)
         .setName(peopleDataJson.dimensions.birthday.name)
         .setDescription(peopleDataJson.dimensions.birthday.description)
-        .setType(types.DATE)
+        .setType(types.YEAR_MONTH_DAY)
 
       fields.newDimension()
         .setId(peopleDataJson.dimensions.age.id)
         .setName(peopleDataJson.dimensions.age.name)
         .setDescription(peopleDataJson.dimensions.age.description)
-        .setType(types.DATE)
+        .setType(types.NUMBER)
 
       fields.newDimension()
         .setId(peopleDataJson.dimensions.ageRange.id)
@@ -96,13 +96,13 @@ function getSchema(request) {
         .setId(listDataJson.dimensions.listDescription.id)
         .setName(listDataJson.dimensions.listDescription.name)
         .setDescription(listDataJson.dimensions.listDescription.description)
-        .setType(types.NUMBER);
+        .setType(types.TEXT);
 
       fields.newDimension()
         .setId(listDataJson.dimensions.listName.id)
         .setName(listDataJson.dimensions.listName.name)
         .setDescription(listDataJson.dimensions.listName.description)
-        .setType(types.NUMBER);
+        .setType(types.TEXT);
 
 
       fields.newDimension()
@@ -151,13 +151,13 @@ function getSchema(request) {
       .setId(givingDataJson.dimensions.donationId.id)
       .setName(givingDataJson.dimensions.donationId.name)
       .setDescription(givingDataJson.dimensions.donationId.description)
-      .setType(types.TEXT)
+      .setType(types.NUMBER)
 
     fields.newDimension()
       .setId(givingDataJson.dimensions.personId.id)
       .setName(givingDataJson.dimensions.personId.name)
       .setDescription(givingDataJson.dimensions.personId.description)
-      .setType(types.TEXT)
+      .setType(types.NUMBER)
 
     fields.newDimension()
       .setId(givingDataJson.dimensions.updatedAt.id)
@@ -181,7 +181,13 @@ function getSchema(request) {
       .setId(givingDataJson.dimensions.paymentMethodType.id)
       .setName(givingDataJson.dimensions.paymentMethodType.name)
       .setDescription(givingDataJson.dimensions.paymentMethodType.description)
-      .setType(types.TEXT) 
+      .setType(types.TEXT)
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.paymentChannel.id)
+      .setName(givingDataJson.dimensions.paymentChannel.name)
+      .setDescription(givingDataJson.dimensions.paymentChannel.description)
+      .setType(types.TEXT)
 
     fields.newDimension()
       .setId(givingDataJson.dimensions.status.id)

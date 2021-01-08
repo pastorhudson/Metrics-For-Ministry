@@ -115,9 +115,17 @@ async function getGivingDonations() {
             // showing credit/debit
             donationElement.paymentMethodType = attributes.payment_method_sub;
 
+            if(relationships.batch.data == null){
+                donationElement.paymentChannel = "stripe"
+            } else {
+                donationElement.paymentChannel = "batch"
+            }
+            
+
             // this what we'd expect to update.
             donationElement.paymentStatus = attributes.payment_status;
             donationElement.paymentBrand = attributes.payment_brand;
+            
 
 
 
@@ -164,7 +172,7 @@ async function getGivingDonations() {
     }
 
     console.log(donationArray[100]);
-    console.log(donationArray)
+    //console.log(donationArray)
     return donationArray;
 
 }

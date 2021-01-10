@@ -298,7 +298,7 @@ function tabNamesReturn() {
                     "Donation ID",
                     "Person ID",
                     "Updated At",
-                    "Recieved At",
+                    "Received At",
                     "Refunded",
                     "Payment Method",
                     "Payment Method Type",
@@ -324,15 +324,27 @@ function tabNamesReturn() {
                         "name": "Person Id",
                         "description": "This is the unique value for each person assigned by PCO."
                     },
-                    "updatedAt": {
-                        "id": "updatedAt",
-                        "name": "Updated At",
-                        "description": "This is the last time this donation was updated."
+                    // "updatedAt": {
+                    //     "id": "updatedAt",
+                    //     "name": "Updated At",
+                    //     "description": "This is the last time this donation was updated."
+                    // },
+                    "receivedAt": {
+                        "id": "receivedAt",
+                        "name": "Received At",
+                        "description": "This is when the donation was marked as received. Use this as your primary date column."
                     },
-                    "recievedAt": {
-                        "id": "recievedAt",
-                        "name": "Recieved At",
-                        "description": "This is when the donation was marked as recieved. Use this as your primary date column."
+                    "receivedAtMonth": {
+                        "id": "receivedAtMonth",
+                        "name": "Received At - Month",
+                        "description": "This is the month pulled from the received At data.",
+                        "formula" : "Month($receivedAt)"
+                    },
+                    "receivedAtYear": {
+                        "id": "receivedAtYear",
+                        "name": "Received At - Year",
+                        "description": "This is the year pulled from the received At data.",
+                        "formula" : "Year($receivedAt)"
                     },
                     "refunded": {
                         "id": "refunded",
@@ -342,7 +354,7 @@ function tabNamesReturn() {
                     "paymentMethod": {
                         "id": "paymentMethod",
                         "name": "Payment Method",
-                        "description": "Card/Cash/Check/ACH. This will be how this was recieved into PCO"
+                        "description": "Card/Cash/Check/ACH. This will be how this was received into PCO"
                     },
                     "paymentMethodType": {
                         "id": "paymentMethodType",

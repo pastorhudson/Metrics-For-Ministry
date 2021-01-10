@@ -174,8 +174,8 @@ function getPcoPeopleData(request) {
       let tempDonation = {
         "donationId": +donation["Donation ID"],
         "personId": +donation["Person ID"],
-        "updatedAt": convertDateLong(donation["Updated At"]),
-        "recievedAt": convertDateLong(donation["Recieved At"]),
+        // "updatedAt": convertDateLong(donation["Updated At"]),
+        "receivedAt": convertDateLong(donation["Received At"]),
         "refunded": donation["Refunded"],
         "paymentMethod": donation["Payment Method"],
         "paymentMethodType": donation["Payment Method Type"],

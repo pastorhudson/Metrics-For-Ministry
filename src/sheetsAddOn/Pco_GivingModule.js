@@ -102,9 +102,11 @@ async function getGivingDonations() {
             // this is our primary key to link the databases.
             donationElement.personId = relationships.person.data.id;
 
-            // when the donation has been recieved & last updated. This will be for later so we don't sync the entire database again.
-            donationElement.updatedAt = attributes.updated_at;
-            donationElement.recievedAt = attributes.received_at;
+            // when the donation has been received & last updated. This will be for later so we don't sync the entire database again.
+
+            // Removing update at to not configure people on which date metric to use.
+            //donationElement.updatedAt = attributes.updated_at;
+            donationElement.receivedAt = attributes.received_at;
 
             // true/false if it's been refunded or not.
             donationElement.refunded = attributes.refunded;

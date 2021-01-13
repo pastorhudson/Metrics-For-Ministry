@@ -40,6 +40,22 @@ async function getData(request) {
     }
   }
 
+
+  else if (module == 'checkins') {
+
+    try {
+      // API request that can be malformed.
+      data = getPcoPeopleData(request);
+    } catch (e) {
+      DataStudioApp.createCommunityConnector()
+        .newUserError()
+        .setDebugText('Error fetching data from API. Exception details: ' + e)
+        .setText('There was an error communicating with the service. Try again later, or file an issue if this error persists.')
+        .throwException();
+
+    }
+  }
+
   return data;
 
 
@@ -68,25 +84,6 @@ to do the above we would need to also call this function within the `getSchesdsm
 
 */
 
-function convertDate(dateString) {
-  let date = new Date(dateString);
-  //YYYYMMDD
-  //console.log(birthday)
-  let month = date.getMonth() + 1  // 10 (PS: +1 since Month is 0-based)
-  let day = date.getDate()       // 30
-  let year = date.getFullYear()
-
-  return `${year}${month}${day}`
-
-}
-
-function convertDateLong(dateString) {
-  let string = dateString.replaceAll('T', "").replaceAll("-", "").replaceAll(":", "").replaceAll("Z", "")
-
-  return string;
-
-}
-// YYYYMMDDHHMMSS'
 
 
 function getPcoPeopleData(request) {
@@ -174,12 +171,12 @@ function getPcoPeopleData(request) {
       let tempDonation = {
         "donationId": +donation["Donation ID"],
         "personId": +donation["Person ID"],
-        "updatedAt": convertDateLong(donation["Updated At"]),
-        "recievedAt": convertDateLong(donation["Recieved At"]),
+        // "updatedAt": convertDateLong(donation["Updated At"]),
+        "receivedAt": convertDateLong(donation["Received At"]),
         "refunded": donation["Refunded"],
         "paymentMethod": donation["Payment Method"],
         "paymentMethodType": donation["Payment Method Type"],
-        "paymentChannel" : donation["Payment Channel"],
+        "paymentChannel": donation["Payment Channel"],
         "status": donation["Status"],
         "cardBrand": donation["Card Brand"],
         "source": donation["Source"],
@@ -196,9 +193,41 @@ function getPcoPeopleData(request) {
     }
 
     requestedData = tempArray;
+  } else if (module == 'checkins') {
+    let requestType = request.configParams.checkinsSelectorType;
+
+    if (requestType == "headcountData") {
+      let headcountData = getSpreadsheetDataByName(moduleDataJson.check_ins.headcountsTab.name);
+
+      let tempArray = [];
+
+
+      for (const headcount of headcountData) {
+
+
+        let tempPerson = {
+          "eventId": +headcount["Event ID"],
+          "eventTimeID": +headcount["EventTime ID"],
+          "eventName": headcount["Event Name"],
+          "archivedAt": Utilities.formatDate(new Date(headcount["Archived At"]), "EST", "yyyyMMddhhmmss"),
+          "eventFrequency": headcount["Event Frequency"],
+          "eventTimeName": headcount["Event Time Name"],
+          "eventDate": Utilities.formatDate(new Date(headcount["Starts"]), "EST", "yyyyMMdd"),
+          "eventTime": Utilities.formatDate(new Date(headcount["Starts"]), "EST", "HH:mm a"),
+          "starts": Utilities.formatDate(new Date(headcount["Starts"]), "EST", "yyyyMMddhhmmss"),
+          "countType": headcount["Count Type"],
+          "count": headcount["Count"]
+        }
+        tempArray.push(tempPerson);
+      }
+
+      requestedData = tempArray;
+    }
   }
 
-  console.log(requestedData[900])
+
+
+  console.log(requestedData[2])
 
 
   let requestedKeys = [];

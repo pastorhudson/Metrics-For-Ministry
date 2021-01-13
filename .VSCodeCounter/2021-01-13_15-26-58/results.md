@@ -28,5 +28,3 @@ Total : 23 files,  2878 codes, 332 comments, 573 blanks, all 3783 lines
 | src/testData | 1 | 171 | 12 | 53 | 236 |
 
 [details](details.md)
-
-

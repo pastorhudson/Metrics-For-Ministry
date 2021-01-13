@@ -47,6 +47,7 @@ function getConfig(request) {
     .setHelpText('Select which PCO module this connector is for.')
     .setAllowOverride(false)
     .setIsDynamic(true)
+    // to do - can I make this dynamic here?
     .addOption(config.newOptionBuilder().setLabel('People').setValue('people'))
     .addOption(config.newOptionBuilder().setLabel('Giving').setValue('giving'))
     .addOption(config.newOptionBuilder().setLabel('Check-ins').setValue('checkins'))

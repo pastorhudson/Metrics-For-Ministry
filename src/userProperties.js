@@ -417,7 +417,27 @@ function tabNamesReturn() {
                 }
             }
         },
-        "check_ins": {},
+        "check_ins": {
+            "headcountsTab": {
+                "name" : "checkIns_headcounts",
+                "headers" : [
+                    //"Updated At", // updated at for the Event Time.
+                    "Event ID", // Foreign Key
+                    "EventTime ID", // Primary Key
+                    //"Headcount ID", // Foreign Key
+                    //Attendee Type ID", // Foreign Key
+                    "Event Name", // pulled from Events
+                    "Archived At", // pulled from Events
+                    "Event Frequency", // Pulled from Events
+                    "Event Time Name", // custom name in PCO for the event Time. Ex: First Service
+                    "Date",
+                    "Time",
+                    "Starts", // Pulled from Event Times
+                    "Count Type", // generated from Event Time and Headcounts
+                    "Count" // the value that exists for the count type.
+                ],
+            }
+        },
         "groups": {},
         "calendar": {},
         "services": {},

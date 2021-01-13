@@ -19,7 +19,7 @@ function setUpDocument() {
         //createSheet(tabs.people.campusTab);
     }
     if (modules.check_ins) {
-
+        createSheet(tabs.check_ins.headcountsTab);
     }
     if (modules.giving) {
         createSheet(tabs.giving.donationsTab);
@@ -95,11 +95,12 @@ function createSheet(tabInfo) {
 
 
 function pushToSheet(tab, data) {
-    const spreadsheet = getDefaultSpreadsheetId();
-    let ss = spreadsheet.getSheetByName(tab);
+    const ss = getDefaultSpreadsheetId().getSheetByName(tab);
+    // let ss = spreadsheet;
 
     // Remove all range protections in the spreadsheet that the user has permission to edit.
     var protections = ss.getProtections(SpreadsheetApp.ProtectionType.RANGE);
+
     for (var i = 0; i < protections.length; i++) {
         var protection = protections[i];
         if (protection.canEdit()) {
@@ -146,11 +147,11 @@ function dataValidation(tab) {
 async function updateSpreadsheet() {
 
     const tabs = tabNamesReturn();
-    pushToSheet(tabs.people.campusTab.name, await getCampuses());
-    pushToSheet(tabs.people.personTab.name,  await personDataCall());
-
-    pushToSheet(tabs.people.listPeopleTab.name, await getListsWithPeople());
-    pushToSheet(tabs.giving.donationsTab.name, await getGivingDonations());
+    // pushToSheet(tabs.people.campusTab.name, await getCampuses());
+    // pushToSheet(tabs.people.personTab.name,  await personDataCall());
+    // pushToSheet(tabs.people.listPeopleTab.name, await getListsWithPeople());
+    //pushToSheet(tabs.giving.donationsTab.name, await getGivingDonations());
+    pushToSheet(tabs.check_ins.headcountsTab.name, await getCheckInsData());
     await updateListTab();
 
     dataValidation(tabs.people.listTab.name);

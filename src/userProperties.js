@@ -436,6 +436,66 @@ function tabNamesReturn() {
                     "Count Type", // generated from Event Time and Headcounts
                     "Count" // the value that exists for the count type.
                 ],
+
+                "dimensions": {
+                    "eventId": {
+                        "id": "checkinsEventId",
+                        "name": "Event ID",
+                        "description": "Auto generated ID for each Event."
+                    },
+                    "eventTimeID": {
+                        "id": "eventTimeID",
+                        "name": "Event Time ID",
+                        "description": "Auto generated ID for each Event Time."
+                    },
+                    "eventName": {
+                        "id": "eventName",
+                        "name": "Event Name",
+                        "description": "The Event Name, example: Weekend Experience."
+                    },
+                    "archivedAt": {
+                        "id": "archivedAt",
+                        "name": "Archived At",
+                        "description": "This is the time in which this was archived. You can use this as a filter."
+                    },
+                    "eventFrequency": {
+                        "id": "eventFrequency",
+                        "name": "Event Frequency",
+                        "description": "The configured frequency for an event."
+                    },
+                    "eventTimeName": {
+                        "id": "eventTimeName",
+                        "name": "Event Time Name",
+                        "description": "This will be blank if you have not named your times, or will show the name of your time from Checkins."
+                    },
+                    "eventDate": {
+                        "id": "eventDate",
+                        "name": "Event Date",
+                        "description": "This is the date of your event in the format `YYYY-MM-DD`"
+                    },
+                    "eventTime": {
+                        "id": "eventTime",
+                        "name": "Event Time",
+                        "description": "This is the time of your event in the format `HH:mm AM/PM`"
+                    },
+                    "starts": {
+                        "id": "starts",
+                        "name": "Starts",
+                        "description": "This is your date metric to use. This is in long format and looks like 'YYYY-MM-DDTHH:mm:ssZ'."
+                    },
+                    "countType": {
+                        "id": "countType",
+                        "name": "Count Type",
+                        "description": "This is the data directly from the headcounts tab. If you have custom headcounts they will also show here."
+                    },
+                },
+                "metrics": {
+                    "count": {
+                        "id": "count",
+                        "name": "Count",
+                        "description": "Total number of people who are accounted for the headcounts."
+                    }
+                }
             }
         },
         "groups": {},

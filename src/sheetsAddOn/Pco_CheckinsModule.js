@@ -5,7 +5,7 @@ async function getHeadcounts() {
      * @return {dataArray} - filtered array of the headcount data
      */
 
-    const apiCall = await pcoApiLoopedCall_giving("https://api.planningcenteronline.com/check-ins/v2/headcounts", true, "&include=attendance_type" );
+    const apiCall = await pcoApiLoopedCall_giving("https://api.planningcenteronline.com/check-ins/v2/headcounts", true, "&include=attendance_type");
     let dataArray = [];
     let data = apiCall.data;
     let included = apiCall.included;
@@ -67,7 +67,7 @@ async function getCheckInsData() {
      * @return {dataArray} - filtered array of the event data
      */
 
-    const apiCall = await pcoApiLoopedCall_giving("https://api.planningcenteronline.com/check-ins/v2/event_times", true, "&include=event,headcounts" );
+    const apiCall = await pcoApiLoopedCall_giving("https://api.planningcenteronline.com/check-ins/v2/event_times", true, "&include=event,headcounts");
     const headcountsData = await getHeadcounts();
     const eventsData = await getEvents();
 
@@ -84,14 +84,14 @@ async function getCheckInsData() {
         let event = eventsData.find(event => event.id === eventID);
 
         let counts = {
-            "guest_count" : attributes.guest_count,
-            "regular_count" : attributes.regular_count,
-            "volunteer_count" : attributes.volunteer_count
+            "guest_count": attributes.guest_count,
+            "regular_count": attributes.regular_count,
+            "volunteer_count": attributes.volunteer_count
         }
 
-        if(headcounts != null){
-            for (const element of headcounts ){
-                
+        if (headcounts != null) {
+            for (const element of headcounts) {
+
                 let headcountId = element.id // foreign key
                 //elementEventTime.headcountID = headcountId;
                 let head = headcountsData.find(elm => elm.id === headcountId);
@@ -99,36 +99,36 @@ async function getCheckInsData() {
             }
         }
 
-      //console.log(Object.entries(counts))
-      console.log(counts);
+        //console.log(Object.entries(counts))
+        console.log(counts);
 
-      for(const count in counts){
-        console.log(`${count} - ${counts[count]}`)
+        for (const count in counts) {
+            console.log(`${count} - ${counts[count]}`)
 
-        let amount = counts[count]
+            let amount = counts[count]
 
-        if (amount > 0){
-   
+            if (amount > 0) {
 
-            let elementEventTime = {}
-            elementEventTime.eventTimeID = eventTime.id; // primary key
-            elementEventTime.eventID = eventID;
-            elementEventTime.eventName = event.name;
-            elementEventTime.eventArchivedAt = event.archived_at;
-            elementEventTime.eventFrequency = event.frequency;
-            //elementEventTime.totalCount = attributes.total_count;
-            elementEventTime.timeName = attributes.name;
-            elementEventTime.date = Utilities.formatDate(new Date(attributes.starts_at), "EST", "yyyy-MM-dd");
-            elementEventTime.time = Utilities.formatDate(new Date(attributes.starts_at), "EST", "HH:mm a");
-            elementEventTime.startsAt = Utilities.formatDate(new Date(attributes.starts_at), "EST", "yyyy-MM-dd'T'HH:mm:ss'Z'");
-    
-            elementEventTime.countType = count;
-            elementEventTime.count = counts[count]
-            dataArray.push(elementEventTime);
+
+                let elementEventTime = {}
+                elementEventTime.eventTimeID = eventTime.id; // primary key
+                elementEventTime.eventID = eventID;
+                elementEventTime.eventName = event.name;
+                elementEventTime.eventArchivedAt = event.archived_at;
+                elementEventTime.eventFrequency = event.frequency;
+                //elementEventTime.totalCount = attributes.total_count;
+                elementEventTime.timeName = attributes.name;
+                elementEventTime.date = Utilities.formatDate(new Date(attributes.starts_at), "EST", "yyyy-MM-dd");
+                elementEventTime.time = Utilities.formatDate(new Date(attributes.starts_at), "EST", "HH:mm a");
+                elementEventTime.startsAt = Utilities.formatDate(new Date(attributes.starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+                elementEventTime.countType = count;
+                elementEventTime.count = counts[count]
+                dataArray.push(elementEventTime);
+
+            }
 
         }
-
-      }
         //console.log(counts);
     }
 
@@ -136,4 +136,3 @@ async function getCheckInsData() {
 
     return dataArray;
 }
-

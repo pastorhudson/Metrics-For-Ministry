@@ -39,7 +39,7 @@ function getConfig(request) {
     .addOption(option1)
 
 
-    //can look at making this dynamic based on what modules they have enabled. 
+  //can look at making this dynamic based on what modules they have enabled. 
   config
     .newSelectSingle()
     .setId('pcoConnectorType')
@@ -79,6 +79,16 @@ function getConfig(request) {
         .setAllowOverride(false)
         .addOption(config.newOptionBuilder().setLabel('People Data').setValue('peopleData'))
         .addOption(config.newOptionBuilder().setLabel('List Data').setValue('listData'))
+
+    } else if (configParams.pcoConnectorType == "checkins") {
+      config
+        .newSelectSingle()
+        .setId('checkinsSelectorType')
+        .setName('Select Data Type')
+        .setHelpText('Select if this will be headcounts or people checkin data')
+        .setAllowOverride(false)
+        .addOption(config.newOptionBuilder().setLabel('Headcounts').setValue('headcountData'))
+        .addOption(config.newOptionBuilder().setLabel('People Checkins').setValue('peopleCheckinsData'))
 
     }
 

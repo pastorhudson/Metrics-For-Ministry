@@ -10,7 +10,7 @@ function onInstall(e) {
 // add custom menu
 function onOpen(e) {
   var ui = SpreadsheetApp.getUi();
-  ui.createMenu('PCO to GDS')
+  ui.createMenu('Metrics for Ministry')
     .addItem('Sidebar', 'showSidebar')
     .addItem('Log Out', 'reset')
     .addItem('Update Sheet', 'createDialog')

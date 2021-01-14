@@ -105,11 +105,11 @@ function getSchema(request) {
         .setType(types.TEXT);
 
 
-      fields.newDimension()
-        .setId(listDataJson.dimensions.categoryID.id)
-        .setName(listDataJson.dimensions.categoryID.name)
-        .setDescription(listDataJson.dimensions.categoryID.description)
-        .setType(types.NUMBER);
+      // fields.newDimension()
+      //   .setId(listDataJson.dimensions.categoryID.id)
+      //   .setName(listDataJson.dimensions.categoryID.name)
+      //   .setDescription(listDataJson.dimensions.categoryID.description)
+      //   .setType(types.NUMBER);
 
       fields.newDimension()
         .setId(listDataJson.dimensions.categoryName.id)
@@ -126,11 +126,11 @@ function getSchema(request) {
       .setDescription(peopleInfo.dimensions.personID.description)
       .setType(types.NUMBER)
 
-    fields.newDimension()
-      .setId(peopleInfo.dimensions.campusID.id)
-      .setName(peopleInfo.dimensions.campusID.name)
-      .setDescription(peopleInfo.dimensions.campusID.description)
-      .setType(types.NUMBER)
+    // fields.newDimension()
+    //   .setId(peopleInfo.dimensions.campusID.id)
+    //   .setName(peopleInfo.dimensions.campusID.name)
+    //   .setDescription(peopleInfo.dimensions.campusID.description)
+    //   .setType(types.NUMBER)
 
     fields.newDimension()
       .setId(peopleInfo.dimensions.campusName.id)
@@ -142,6 +142,7 @@ function getSchema(request) {
       .setId(peopleInfo.metrics.personCount.id)
       .setName(peopleInfo.metrics.personCount.name)
       .setType(types.NUMBER)
+      .setFormula(peopleInfo.metrics.personCount.formula)
       .setDescription(peopleInfo.metrics.personCount.description)
 
   } else if (connectorType == 'giving') {

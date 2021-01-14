@@ -126,7 +126,7 @@ function getPcoPeopleData(request) {
           "personGrade": person["Grade"],
           "personMembership": person["Membership"],
           "personStatus": person["Status"],
-          "personCount": +person["Person Count"],
+          //"personCount": +person["Person Count"],
           "campusId": +person["Campus Number"],
           "campusName": person["Campus Name"],
         }

@@ -116,7 +116,6 @@ async function getCheckInsData() {
                 elementEventTime.eventName = event.name;
                 elementEventTime.eventArchivedAt = event.archived_at;
                 elementEventTime.eventFrequency = event.frequency;
-                //elementEventTime.totalCount = attributes.total_count;
                 elementEventTime.timeName = attributes.name;
                 elementEventTime.date = Utilities.formatDate(new Date(attributes.starts_at), "EST", "yyyy-MM-dd");
                 elementEventTime.time = Utilities.formatDate(new Date(attributes.starts_at), "EST", "HH:mm a");
@@ -129,7 +128,6 @@ async function getCheckInsData() {
             }
 
         }
-        //console.log(counts);
     }
 
     console.log(dataArray)

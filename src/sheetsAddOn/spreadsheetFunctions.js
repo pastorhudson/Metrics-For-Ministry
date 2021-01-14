@@ -147,10 +147,10 @@ function dataValidation(tab) {
 async function updateSpreadsheet() {
 
     const tabs = tabNamesReturn();
-    // pushToSheet(tabs.people.campusTab.name, await getCampuses());
-    // pushToSheet(tabs.people.personTab.name,  await personDataCall());
-    // pushToSheet(tabs.people.listPeopleTab.name, await getListsWithPeople());
-    //pushToSheet(tabs.giving.donationsTab.name, await getGivingDonations());
+     //pushToSheet(tabs.people.campusTab.name, await getCampuses());
+     pushToSheet(tabs.people.personTab.name,  await personDataCall());
+     pushToSheet(tabs.people.listPeopleTab.name, await getListsWithPeople());
+    pushToSheet(tabs.giving.donationsTab.name, await getGivingDonations());
     pushToSheet(tabs.check_ins.headcountsTab.name, await getCheckInsData());
     await updateListTab();
 

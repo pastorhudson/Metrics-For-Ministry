@@ -1,0 +1,69 @@
+Date : 2021-01-15 09:28:37
+Directory : /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev
+Total : 33 files,  3854 codes, 360 comments, 756 blanks, all 4970 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JavaScript         |         19 |      2,830 |        352 |        566 |      3,748 |
+| HTML               |          4 |        901 |          8 |        173 |      1,082 |
+| XML                |          6 |         63 |          0 |          4 |         67 |
+| JSON               |          2 |         29 |          0 |          3 |         32 |
+| Markdown           |          1 |         23 |          0 |         10 |         33 |
+| JSON with Comments |          1 |          8 |          0 |          0 |          8 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                                      | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                         |         33 |      3,854 |        360 |        756 |      4,970 |
+| assets                                                                                                                                    |          6 |         63 |          0 |          4 |         67 |
+| helperData                                                                                                                                |          3 |      1,166 |          0 |         36 |      1,202 |
+| src                                                                                                                                       |         21 |      2,593 |        360 |        705 |      3,658 |
+| src/classes                                                                                                                               |          1 |         54 |         10 |         11 |         75 |
+| src/gdsAddOn                                                                                                                              |          4 |        538 |         78 |        194 |        810 |
+| src/sheetsAddOn                                                                                                                           |          9 |      1,260 |        130 |        357 |      1,747 |
+| src/testData                                                                                                                              |          1 |        171 |         12 |         53 |        236 |
++-------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                                                                  | language           | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/.clasp.json                             | JSON               |          1 |          0 |          1 |          2 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/README.md                               | Markdown           |         23 |          0 |         10 |         33 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/assets/001-back.svg                     | XML                |          8 |          0 |          2 |         10 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/assets/001-info.svg                     | XML                |          1 |          0 |          0 |          1 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/assets/001-lamp.svg                     | XML                |          1 |          0 |          0 |          1 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/assets/002-settings.svg                 | XML                |          1 |          0 |          0 |          1 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/assets/003-refresh.svg                  | XML                |         51 |          0 |          2 |         53 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/assets/004-nodes.svg                    | XML                |          1 |          0 |          0 |          1 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/helperData/listClassOutline.js          | JavaScript         |         18 |          0 |          3 |         21 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/helperData/names.js                     | JavaScript         |      1,002 |          0 |          6 |      1,008 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/helperData/stats html page.html         | HTML               |        146 |          0 |         27 |        173 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/appsscript.json                     | JSON               |         28 |          0 |          2 |         30 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/classes/list.js                     | JavaScript         |         54 |         10 |         11 |         75 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/error.js                            | JavaScript         |          6 |          5 |          0 |         11 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/gdsAddOn/authorization.js           | JavaScript         |         40 |         28 |         21 |         89 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/gdsAddOn/config.js                  | JavaScript         |         71 |          5 |         25 |        101 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/gdsAddOn/getData.js                 | JavaScript         |        169 |         34 |         76 |        279 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/gdsAddOn/getSchema.js               | JavaScript         |        258 |         11 |         72 |        341 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/globalFunctions.js                  | JavaScript         |         15 |          2 |          8 |         25 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/pcoApiCalls.js                      | JavaScript         |         83 |         37 |         33 |        153 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/Pco_CheckinsModule.js   | JavaScript         |         85 |         14 |         38 |        137 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/Pco_GivingModule.js     | JavaScript         |        101 |         26 |         53 |        180 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/Pco_OrganizationData.js | JavaScript         |          7 |          0 |          7 |         14 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/Pco_PeopleModule.js     | JavaScript         |        118 |         21 |         44 |        183 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/dialog.html             | HTML               |         14 |          0 |          2 |         16 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/menu.js                 | JavaScript         |         44 |          8 |         11 |         63 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/sidebar-new.html        | HTML               |        574 |          4 |        100 |        678 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/sidebar.html            | HTML               |        167 |          4 |         44 |        215 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/spreadsheetFunctions.js | JavaScript         |        150 |         53 |         58 |        261 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/syncSettings.js                     | JavaScript         |         35 |          4 |         15 |         54 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/testData/createTestPeople.js        | JavaScript         |        171 |         12 |         53 |        236 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/userProperties.js                   | JavaScript         |        403 |         82 |         32 |        517 |
+| /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/workspace.code-workspace                | JSON with Comments |          8 |          0 |          0 |          8 |
+| Total                                                                                                                                     |                    |      3,854 |        360 |        756 |      4,970 |
++-------------------------------------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

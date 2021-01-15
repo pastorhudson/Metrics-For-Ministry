@@ -65,11 +65,12 @@ async function getLists() {
         //subList.listSync = null;
         subList.campus = campuses;
         subList.category = categories;
+        delete subList.campusId;
+        delete subList.categoryId;
 
         listArrayListData.push(subList);
     }
 
-    //console.log(listArrayListData)
 
     return listArrayListData;
 
@@ -96,6 +97,9 @@ async function getListsWithPeople() {
             subList.relationships = relationships;
             subList.campus = campuses;
             subList.category = categories;
+            delete subList.campusId;
+            delete subList.categoryId;
+            
             subList.personID = person.id;
             listArrayListData.push(subList);
         }

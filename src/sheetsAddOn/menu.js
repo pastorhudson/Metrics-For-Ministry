@@ -36,6 +36,7 @@ function showSidebarNew() {
   SpreadsheetApp.getUi().showSidebar(page);
 }
 
+
 function returnData(data) {
   console.log(data)
 }

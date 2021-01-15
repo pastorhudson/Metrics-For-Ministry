@@ -114,7 +114,8 @@
         #learnMoreButton,
         #infoIcon,
         #backButtonSVG,
-        #gdsConnectorSVG {
+        #gdsConnectorSVG,
+        #refreshIconSettings {
             max-width: 30px;
             max-height: 30px;
             padding: 5px;
@@ -230,7 +231,7 @@
         .infoContentDivs p {
             font-size: 1.1em;
             margin: 0;
-            color: #BFBFBF
+            color: #9F9F9F
         }
 
         .settingsSyncButtons {
@@ -445,7 +446,7 @@
             <div class="settingsSyncButtons">
                 <div class="contentOption" id="syncListsButton">
                     <div class="contentSubOptionImg column1">
-                        <svg id="refreshIcon" height="512pt" viewBox="0 0 512 512" width="512pt"
+                        <svg id="refreshIconSettings" height="512pt" viewBox="0 0 512 512" width="512pt"
                             xmlns="http://www.w3.org/2000/svg">
                             <g>
                                 <g>
@@ -538,7 +539,9 @@
                 </div>
                 <div class="infoContentDivs">
                     <h3>Total % Storage</h3>
-                    <p> Placeholder %</p>
+                    <p>
+                        <?= totalStorageUsed(); ?> %
+                    </p>
                 </div>
             </div>
 
@@ -573,6 +576,17 @@
 
     <script>
 
+        document.getElementById('syncListsButton').addEventListener('click', () => {
+
+            document.getElementById('refreshIconSettings').classList.add('refreshIcon-spin');
+
+            google.script.run
+                .withSuccessHandler(() => {
+                    document.getElementById('refreshIconSettings').classList.remove('refreshIcon-spin')
+                })
+                .updateListTab();
+        })
+
         document.getElementById('settingsButton').addEventListener("click", () => {
             document.getElementById('menuDiv').classList.add('hidden')
             document.getElementById('settingsDiv').classList.remove('hidden')
@@ -594,37 +608,67 @@
         })
 
 
+        // document.getElementById('syncNowButton').addEventListener("click", syncNow);
 
+        document.getElementById('syncNowButton').addEventListener('click', () => {
+            document.getElementById('refreshIcon').classList.add('refreshIcon-spin');
+            syncNow();
 
-
-        document.getElementById('syncNowButton').addEventListener("click", syncNow);
+            google.script.run
+                .withSuccessHandler(() => {
+                    document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
+                })
+                .updateSpreadsheet();
+        })
 
         function syncNow() {
-            //google.script.run.updateSpreadsheet();
-            document.getElementById('refreshIcon').classList.add('refreshIcon-spin');
             document.getElementById('syncNowContent').classList.add('hidden')
             document.getElementById('syncNowProgressBar').classList.remove('hidden')
 
-            var i = 0;
-            if (i == 0) {
-                i = 1;
-                var elem = document.getElementById("myBar");
-                var width = 0;
-                var id = setInterval(frame, 50);
-                function frame() {
-                    if (width >= 100) {
-                        clearInterval(id);
-                        i = 0;
-                        document.getElementById('refreshIcon').classList.remove('refreshIcon-spin');
-                        document.getElementById('syncNowContent').classList.remove('hidden')
-                        document.getElementById('syncNowProgressBar').classList.add('hidden')
-                    } else {
-                        width++;
-                        elem.style.width = width + "%";
-                    }
-                }
-            }
+            let percentComplete = 0;
+
+            var intervalId = setInterval(function () {
+
+                google.script.run
+                    .withSuccessHandler((e) => {
+                        percentComplete = e;
+                        if (percentComplete < 100) {
+                            console.log(percentComplete);
+                            document.getElementById("myBar").style.width = percentComplete + "%";
+
+                            //gradualWidthIncrease(percentComplete)
+
+                        } else {
+                            clearInterval(intervalId);
+                            document.getElementById('syncNowContent').classList.remove('hidden')
+                            document.getElementById('syncNowProgressBar').classList.add('hidden')
+                            percentComplete = 0;
+                        }
+                    })
+                    .getUserProperty('syncPercentComplete')
+
+            }, 5000);
+
         }
+
+        // function gradualWidthIncrease(percentComplete) {
+
+        //     let elementWidth = document.getElementById("myBar").style.width;
+
+        //     if (elementWidth != percentComplete) {
+        //         for (i = elementWidth; elementWidth < percentComplete ; i += .5) {
+
+        //             const interval = setInterval(()=> {
+        //                 elementWidth = i + "%";
+        //             },100)
+
+        //             clearInterval(interval);
+        //         }
+
+        //     } else {
+
+        //     }
+        // }
 
 
         document.getElementById('helpButton').addEventListener("click", () => {
@@ -636,9 +680,9 @@
         });
 
 
-        document.getElementById('syncListsButton').addEventListener('click', () => {
-            google.script.run.updateListPeople();
-        })
+        // document.getElementById('syncListsButton').addEventListener('click', () => {
+        //     google.script.run.updateListPeople();
+        // })
 
 
 

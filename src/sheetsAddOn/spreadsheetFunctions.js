@@ -148,14 +148,28 @@ async function updateSpreadsheet() {
 
     const tabs = tabNamesReturn();
     //pushToSheet(tabs.people.campusTab.name, await getCampuses());
+    syncPercentComplete(0)
+    syncPercentComplete(10)
+
     pushToSheet(tabs.people.personTab.name, await personDataCall());
+    syncPercentComplete(30);
     //add an update to the progress bar here for each function
     pushToSheet(tabs.people.listPeopleTab.name, await getListsWithPeople());
+    syncPercentComplete(50);
+
     pushToSheet(tabs.giving.donationsTab.name, await getGivingDonations());
+    syncPercentComplete(70);
+
     pushToSheet(tabs.check_ins.headcountsTab.name, await getCheckInsData());
+    syncPercentComplete(80);
+
+    
     await updateListTab();
+    syncPercentComplete(90);
 
     dataValidation(tabs.people.listTab.name);
+    syncPercentComplete(100)
+
 }
 
 

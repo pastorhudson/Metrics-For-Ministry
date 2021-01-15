@@ -11,6 +11,7 @@
  * @param {string} date_format - 
  * @param {string} org_name
  * @param {string} time_zone
+ * @param {string} totalPercentUsed
 
  ********************************************/
 
@@ -74,6 +75,20 @@ function getDefaultSpreadsheetId() {
 
 function getModules(){
     console.log(getUserProperty('enabledModules'))
+}
+
+function syncPercentComplete(percent){
+    if(percent == undefined){
+        let amount = getUserProperty('syncPercentComplete')
+        console.log(+amount)
+        return +amount
+    } else {
+        setUserProperty('syncPercentComplete', percent);
+
+    }
+
+    console.log(getUserProperty('syncPercentComplete'));
+
 }
 
 

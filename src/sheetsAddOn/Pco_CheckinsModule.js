@@ -116,10 +116,9 @@ async function getCheckInsData() {
                 elementEventTime.eventName = event.name;
                 elementEventTime.eventArchivedAt = event.archived_at;
                 elementEventTime.eventFrequency = event.frequency;
-                //elementEventTime.totalCount = attributes.total_count;
                 elementEventTime.timeName = attributes.name;
-                elementEventTime.date = Utilities.formatDate(new Date(attributes.starts_at), "EST", "yyyy-MM-dd");
-                elementEventTime.time = Utilities.formatDate(new Date(attributes.starts_at), "EST", "HH:mm a");
+                // elementEventTime.date = Utilities.formatDate(new Date(attributes.starts_at), "EST", "yyyy-MM-dd");
+                // elementEventTime.time = Utilities.formatDate(new Date(attributes.starts_at), "EST", "HH:mm a");
                 elementEventTime.startsAt = Utilities.formatDate(new Date(attributes.starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'");
 
                 elementEventTime.countType = count;
@@ -129,7 +128,6 @@ async function getCheckInsData() {
             }
 
         }
-        //console.log(counts);
     }
 
     console.log(dataArray)

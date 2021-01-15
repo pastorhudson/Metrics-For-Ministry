@@ -10,8 +10,9 @@ function onInstall(e) {
 // add custom menu
 function onOpen(e) {
   var ui = SpreadsheetApp.getUi();
-  ui.createMenu('PCO to GDS')
+  ui.createMenu('Metrics for Ministry')
     .addItem('Sidebar', 'showSidebar')
+    .addItem('Sidebar - New', 'showSidebarNew')
     .addItem('Log Out', 'reset')
     .addItem('Update Sheet', 'createDialog')
     .addItem('Update Lists', 'updateListPeople')
@@ -22,6 +23,14 @@ function onOpen(e) {
 // Display's the sidebar
 function showSidebar() {
   const html = HtmlService.createTemplateFromFile('sheetsAddOn/sidebar');
+  const page = html.evaluate();
+  page.setTitle("Savvy Tool Belt");
+  SpreadsheetApp.getUi().showSidebar(page);
+}
+
+// Display's the sidebar
+function showSidebarNew() {
+  const html = HtmlService.createTemplateFromFile('sheetsAddOn/sidebar-new');
   const page = html.evaluate();
   page.setTitle("Savvy Tool Belt");
   SpreadsheetApp.getUi().showSidebar(page);

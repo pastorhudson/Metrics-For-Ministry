@@ -105,11 +105,11 @@ function getSchema(request) {
         .setType(types.TEXT);
 
 
-      fields.newDimension()
-        .setId(listDataJson.dimensions.categoryID.id)
-        .setName(listDataJson.dimensions.categoryID.name)
-        .setDescription(listDataJson.dimensions.categoryID.description)
-        .setType(types.NUMBER);
+      // fields.newDimension()
+      //   .setId(listDataJson.dimensions.categoryID.id)
+      //   .setName(listDataJson.dimensions.categoryID.name)
+      //   .setDescription(listDataJson.dimensions.categoryID.description)
+      //   .setType(types.NUMBER);
 
       fields.newDimension()
         .setId(listDataJson.dimensions.categoryName.id)
@@ -126,11 +126,11 @@ function getSchema(request) {
       .setDescription(peopleInfo.dimensions.personID.description)
       .setType(types.NUMBER)
 
-    fields.newDimension()
-      .setId(peopleInfo.dimensions.campusID.id)
-      .setName(peopleInfo.dimensions.campusID.name)
-      .setDescription(peopleInfo.dimensions.campusID.description)
-      .setType(types.NUMBER)
+    // fields.newDimension()
+    //   .setId(peopleInfo.dimensions.campusID.id)
+    //   .setName(peopleInfo.dimensions.campusID.name)
+    //   .setDescription(peopleInfo.dimensions.campusID.description)
+    //   .setType(types.NUMBER)
 
     fields.newDimension()
       .setId(peopleInfo.dimensions.campusName.id)
@@ -142,6 +142,7 @@ function getSchema(request) {
       .setId(peopleInfo.metrics.personCount.id)
       .setName(peopleInfo.metrics.personCount.name)
       .setType(types.NUMBER)
+      .setFormula(peopleInfo.metrics.personCount.formula)
       .setDescription(peopleInfo.metrics.personCount.description)
 
   } else if (connectorType == 'giving') {
@@ -171,6 +172,12 @@ function getSchema(request) {
       .setDescription(givingDataJson.dimensions.receivedAtMonth.description)
       .setFormula(givingDataJson.dimensions.receivedAtMonth.formula)
       .setType(types.MONTH)
+
+    fields.newDimension()
+      .setId(givingDataJson.dimensions.receivedAtYear.id)
+      .setName(givingDataJson.dimensions.receivedAtYear.name)
+      .setDescription(givingDataJson.dimensions.receivedAtYear.description)
+      .setType(types.TEXT)
 
     fields.newDimension()
       .setId(givingDataJson.dimensions.paymentMethod.id)
@@ -255,61 +262,67 @@ function getSchema(request) {
         .setDescription(headcountsInfo.dimensions.eventId.description)
         .setType(types.NUMBER)
 
-        fields.newDimension()
+      fields.newDimension()
         .setId(headcountsInfo.dimensions.eventTimeID.id)
         .setName(headcountsInfo.dimensions.eventTimeID.name)
         .setDescription(headcountsInfo.dimensions.eventTimeID.description)
         .setType(types.NUMBER)
 
-        fields.newDimension()
+      fields.newDimension()
         .setId(headcountsInfo.dimensions.eventName.id)
         .setName(headcountsInfo.dimensions.eventName.name)
         .setDescription(headcountsInfo.dimensions.eventName.description)
         .setType(types.TEXT)
 
-        fields.newDimension()
+      fields.newDimension()
         .setId(headcountsInfo.dimensions.archivedAt.id)
         .setName(headcountsInfo.dimensions.archivedAt.name)
         .setDescription(headcountsInfo.dimensions.archivedAt.description)
         .setType(types.YEAR_MONTH_DAY_SECOND)
 
-        fields.newDimension()
+      fields.newDimension()
         .setId(headcountsInfo.dimensions.eventFrequency.id)
         .setName(headcountsInfo.dimensions.eventFrequency.name)
         .setDescription(headcountsInfo.dimensions.eventFrequency.description)
         .setType(types.TEXT)
 
-        fields.newDimension()
+      fields.newDimension()
         .setId(headcountsInfo.dimensions.eventTimeName.id)
         .setName(headcountsInfo.dimensions.eventTimeName.name)
         .setDescription(headcountsInfo.dimensions.eventTimeName.description)
         .setType(types.TEXT)
 
-        fields.newDimension()
+      fields.newDimension()
         .setId(headcountsInfo.dimensions.eventDate.id)
         .setName(headcountsInfo.dimensions.eventDate.name)
         .setDescription(headcountsInfo.dimensions.eventDate.description)
         .setType(types.YEAR_MONTH_DAY)
 
-        fields.newDimension()
+      fields.newDimension()
         .setId(headcountsInfo.dimensions.eventTime.id)
         .setName(headcountsInfo.dimensions.eventTime.name)
         .setDescription(headcountsInfo.dimensions.eventTime.description)
         .setType(types.TEXT)
 
-        fields.newDimension()
+      fields.newDimension()
         .setId(headcountsInfo.dimensions.starts.id)
         .setName(headcountsInfo.dimensions.starts.name)
         .setDescription(headcountsInfo.dimensions.starts.description)
         .setType(types.YEAR_MONTH_DAY_SECOND)
 
-        fields.newDimension()
+      fields.newDimension()
+        .setId(headcountsInfo.dimensions.eventYearMonth.id)
+        .setName(headcountsInfo.dimensions.eventYearMonth.name)
+        .setDescription(headcountsInfo.dimensions.eventYearMonth.description)
+        .setType(types.YEAR_MONTH)
+
+      fields.newDimension()
         .setId(headcountsInfo.dimensions.countType.id)
         .setName(headcountsInfo.dimensions.countType.name)
         .setDescription(headcountsInfo.dimensions.countType.description)
         .setType(types.TEXT)
 
-        fields.newDimension()
+      fields.newDimension()
         .setId(headcountsInfo.metrics.count.id)
         .setName(headcountsInfo.metrics.count.name)
         .setDescription(headcountsInfo.metrics.count.description)

@@ -102,6 +102,18 @@ async function pcoApiLoopedCall(url, include = false, includeURL = undefined) {
 
 }
 
+async function pcoApiOrgCall(url) {
+    var service = getOAuthService();
+    if (service.hasAccess()) {
+
+
+        let fetchedData = await promiseApiWithTimeout(url)
+        return fetchedData.data;
+
+    }
+
+}
+
 
 async function pcoApiLoopedCall_giving(url, include = false, includeURL = undefined) {
     var service = getOAuthService();

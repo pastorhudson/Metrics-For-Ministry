@@ -22,4 +22,3 @@ function convertDateLong(dateString) {
   return string;
 
 }
-  // YYYYMMDDHHMMSS'

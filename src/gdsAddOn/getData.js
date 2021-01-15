@@ -90,6 +90,8 @@ function getPcoPeopleData(request) {
   var data = [];
   let requestedData;
 
+  const timezone = getUserProperty('time_zone')
+
   const moduleDataJson = tabNamesReturn();
 
   var schemaData = getSchema(request).schema;
@@ -119,14 +121,14 @@ function getPcoPeopleData(request) {
 
         let tempPerson = {
           "personId": +person["Person ID"],
-          "personBirthday": convertDate(person["Birthday"]),
+          "personBirthday": Utilities.formatDate(new Date(person["Birthday"]), timezone, "yyyy-MM-dd"),
           "personAge": +person["Age"],
           "personIsChild": person["Is Child"],
           "personGender": person["Gender"],
           "personGrade": person["Grade"],
           "personMembership": person["Membership"],
           "personStatus": person["Status"],
-          "personCount": +person["Person Count"],
+          //"personCount": +person["Person Count"],
           "campusId": +person["Campus Number"],
           "campusName": person["Campus Name"],
         }
@@ -172,7 +174,9 @@ function getPcoPeopleData(request) {
         "donationId": +donation["Donation ID"],
         "personId": +donation["Person ID"],
         // "updatedAt": convertDateLong(donation["Updated At"]),
-        "receivedAt": convertDateLong(donation["Received At"]),
+        //"receivedAt": convertDateLong(donation["Received At"]),
+        "receivedAt": Utilities.formatDate(new Date(donation["Received At"]), timezone, "yyyyMMddhhmmss"),
+        "receivedAtYear": Utilities.formatDate(new Date(donation["Received At"]), timezone, "yyyy"),
         "refunded": donation["Refunded"],
         "paymentMethod": donation["Payment Method"],
         "paymentMethodType": donation["Payment Method Type"],
@@ -209,12 +213,13 @@ function getPcoPeopleData(request) {
           "eventId": +headcount["Event ID"],
           "eventTimeID": +headcount["EventTime ID"],
           "eventName": headcount["Event Name"],
-          "archivedAt": Utilities.formatDate(new Date(headcount["Archived At"]), "EST", "yyyyMMddhhmmss"),
+          "archivedAt": Utilities.formatDate(new Date(headcount["Archived At"]), timezone, "yyyyMMddhhmmss"),
           "eventFrequency": headcount["Event Frequency"],
           "eventTimeName": headcount["Event Time Name"],
-          "eventDate": Utilities.formatDate(new Date(headcount["Starts"]), "EST", "yyyyMMdd"),
-          "eventTime": Utilities.formatDate(new Date(headcount["Starts"]), "EST", "HH:mm a"),
-          "starts": Utilities.formatDate(new Date(headcount["Starts"]), "EST", "yyyyMMddhhmmss"),
+          "eventDate": Utilities.formatDate(new Date(headcount["Starts"]), timezone, "yyyyMMdd"),
+          "eventTime": Utilities.formatDate(new Date(headcount["Starts"]), timezone, "HH:mm a"),
+          "starts": Utilities.formatDate(new Date(headcount["Starts"]), timezone, "yyyyMMddhhmmss"),
+          "eventYearMonth": Utilities.formatDate(new Date(headcount["Starts"]), timezone, "yyyyMM"),
           "countType": headcount["Count Type"],
           "count": headcount["Count"]
         }

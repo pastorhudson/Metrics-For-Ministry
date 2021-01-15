@@ -293,7 +293,9 @@
                     </div>
 
                     <div id="syncNowProgressBar" class="hidden">
-                        <div id="myBar"></div>
+                        <div id="myBar">
+                            <p>hello</p>
+                        </div>
                     </div>
 
                 </div>
@@ -614,11 +616,6 @@
             document.getElementById('refreshIcon').classList.add('refreshIcon-spin');
             syncNow();
 
-            google.script.run
-                .withSuccessHandler(() => {
-                    document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
-                })
-                .updateSpreadsheet();
         })
 
         function syncNow() {
@@ -640,14 +637,32 @@
 
                         } else {
                             clearInterval(intervalId);
-                            document.getElementById('syncNowContent').classList.remove('hidden')
-                            document.getElementById('syncNowProgressBar').classList.add('hidden')
-                            percentComplete = 0;
                         }
                     })
+                    .withFailureHandler()
                     .getUserProperty('syncPercentComplete')
 
             }, 5000);
+
+
+            google.script.run
+                .withSuccessHandler(() => {
+                    document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
+                    document.getElementById('syncNowContent').classList.remove('hidden')
+                    document.getElementById('syncNowProgressBar').classList.add('hidden')
+                })
+                .withFailureHandler(() => {
+                    clearInterval(intervalId);
+
+                    document.getElementById('syncNowContent').classList.remove('hidden')
+                    document.getElementById('syncNowProgressBar').classList.add('hidden')
+                    document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
+
+                })
+                .updateSpreadsheet();
+
+            percentComplete = 0;
+
 
         }
 

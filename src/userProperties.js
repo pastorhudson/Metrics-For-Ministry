@@ -12,6 +12,7 @@
  * @param {string} org_name
  * @param {string} time_zone
  * @param {string} totalPercentUsed
+ * @param {string} syncPercentComplete
 
  ********************************************/
 
@@ -73,12 +74,9 @@ function getDefaultSpreadsheetId() {
     return spreadsheet;
 }
 
-function getModules(){
-    console.log(getUserProperty('enabledModules'))
-}
 
-function syncPercentComplete(percent){
-    if(percent == undefined){
+function syncPercentComplete(percent) {
+    if (percent == undefined) {
         let amount = getUserProperty('syncPercentComplete')
         console.log(+amount)
         return +amount
@@ -92,15 +90,17 @@ function syncPercentComplete(percent){
 }
 
 
-/**
- * Used to fetch the delete properties.
- *
- * @param {string} requestedModules - This requires the values from the sidebar checkboxes and passes to the proper string.
- * @returns {string} - returns a string containing the requested or enabled modules.
- * @description - This sets the modules based on if the user is authorized or not. It's a middleman to storing the module data. 
- *      
- */
+
 function pcoModuleUserProperties(requestedModules) {
+    /**
+     * Used to fetch the delete properties.
+     *
+     * @param {string} requestedModules - This requires the values from the sidebar checkboxes and passes to the proper string.
+     * @returns {string} - returns a string containing the requested or enabled modules.
+     * @description - This sets the modules based on if the user is authorized or not. It's a middleman to storing the module data. 
+     *      
+     */
+
     var service = getOAuthService();
 
     if (requestedModules == undefined) {
@@ -142,13 +142,14 @@ function setModuleUserObject(modules) {
     setUserProperty('enabledModules', JSON.stringify(moduleObject));
 }
 
-/**
- *
- * @returns {JSON} - returns a JSON object with each module enabled. 
- * @description - simple return for the modules the user has enabled within PCO.
- *      
- */
+
 function getModuleUserObject() {
+    /**
+     *
+     * @returns {JSON} - returns a JSON object with each module enabled. 
+     * @description - simple return for the modules the user has enabled within PCO.
+     *      
+     */
 
     console.log(JSON.parse(getUserProperty('enabledModules')));
     return JSON.parse(getUserProperty('enabledModules'));
@@ -313,9 +314,9 @@ function tabNamesReturn() {
             }
         },
         "giving": {
-            "donationsTab" : {
-                "name" : "giving_donationsTab",
-                "headers" : [
+            "donationsTab": {
+                "name": "giving_donationsTab",
+                "headers": [
                     "Donation ID",
                     "Person ID",
                     //"Updated At",
@@ -359,7 +360,7 @@ function tabNamesReturn() {
                         "id": "receivedAtMonth",
                         "name": "Received At - Month",
                         "description": "This is the month pulled from the received At data.",
-                        "formula" : "Month($receivedAt)"
+                        "formula": "Month($receivedAt)"
                     },
                     "receivedAtYear": {
                         "id": "receivedAtYear",
@@ -440,8 +441,8 @@ function tabNamesReturn() {
         },
         "check_ins": {
             "headcountsTab": {
-                "name" : "checkIns_headcounts",
-                "headers" : [
+                "name": "checkIns_headcounts",
+                "headers": [
                     //"Updated At", // updated at for the Event Time.
                     "Event ID", // Foreign Key
                     "EventTime ID", // Primary Key

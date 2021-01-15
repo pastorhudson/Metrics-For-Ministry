@@ -15,7 +15,7 @@ function triggerSync() {
 
     if (isSignedIn == "true" && service.hasAccess()) {
 
-        updateSpreadsheet()
+        updateSpreadsheet();
         //updating the last sync time
         setLastSyncTime();
 

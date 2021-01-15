@@ -117,8 +117,8 @@ async function getCheckInsData() {
                 elementEventTime.eventArchivedAt = event.archived_at;
                 elementEventTime.eventFrequency = event.frequency;
                 elementEventTime.timeName = attributes.name;
-                elementEventTime.date = Utilities.formatDate(new Date(attributes.starts_at), "EST", "yyyy-MM-dd");
-                elementEventTime.time = Utilities.formatDate(new Date(attributes.starts_at), "EST", "HH:mm a");
+                // elementEventTime.date = Utilities.formatDate(new Date(attributes.starts_at), "EST", "yyyy-MM-dd");
+                // elementEventTime.time = Utilities.formatDate(new Date(attributes.starts_at), "EST", "HH:mm a");
                 elementEventTime.startsAt = Utilities.formatDate(new Date(attributes.starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'");
 
                 elementEventTime.countType = count;

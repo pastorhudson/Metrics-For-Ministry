@@ -8,6 +8,10 @@
  * @param {string} lastSyncTime - the time when we last synced to PCO
  * @param {string} isSignedIn - This returns true / false if the script is signed in.
  * @param {string} lastSyncTimeISOString - configured as an ISO string and should be used in the 'update_at' function to PCO.
+ * @param {string} date_format - 
+ * @param {string} org_name
+ * @param {string} time_zone
+
  ********************************************/
 
 
@@ -67,6 +71,11 @@ function getDefaultSpreadsheetId() {
     let spreadsheet = SpreadsheetApp.openById(spreadsheetID);
     return spreadsheet;
 }
+
+function getModules(){
+    console.log(getUserProperty('enabledModules'))
+}
+
 
 /**
  * Used to fetch the delete properties.
@@ -341,7 +350,7 @@ function tabNamesReturn() {
                         "id": "receivedAtYear",
                         "name": "Received At - Year",
                         "description": "This is the year pulled from the received At data.",
-                        "formula" : "Year($receivedAt)"
+                        //"formula" : "YEAR($receivedAt)"
                     },
                     "refunded": {
                         "id": "refunded",
@@ -427,8 +436,8 @@ function tabNamesReturn() {
                     "Archived At", // pulled from Events
                     "Event Frequency", // Pulled from Events
                     "Event Time Name", // custom name in PCO for the event Time. Ex: First Service
-                    "Date",
-                    "Time",
+                    // "Date", // removed since this data is just calculated coming into GDS
+                    // "Time", // removed since this data is just calculated coming into GDS
                     "Starts", // Pulled from Event Times
                     "Count Type", // generated from Event Time and Headcounts
                     "Count" // the value that exists for the count type.
@@ -479,6 +488,11 @@ function tabNamesReturn() {
                         "id": "starts",
                         "name": "Starts",
                         "description": "This is your date metric to use. This is in long format and looks like 'YYYY-MM-DDTHH:mm:ssZ'."
+                    },
+                    "eventYearMonth": {
+                        "id": "eventYearMonth",
+                        "name": "Starts - Year / Month",
+                        "description": "This is your date metric to use. This is in long format and looks like 'YYYYMM'."
                     },
                     "countType": {
                         "id": "countType",

@@ -135,6 +135,7 @@ function pushToSheet(tabInfo, data) {
     removeEmptyRows(tabInfo.name);
     removeEmptyColumns(tabInfo.name);
     updateHeaders(tabInfo);
+    resizeColumns(tabInfo.name);
 
 }
 
@@ -145,6 +146,12 @@ function removeEmptyRows(tab) {
     if (maxRows > lastRow) {
         ss.deleteRows(lastRow + 1, maxRows - lastRow);
     }
+}
+
+function resizeColumns(tab) {
+    const ss = getDefaultSpreadsheetId().getSheetByName(tab);
+    var lastColumn = ss.getLastColumn();
+    ss.autoResizeColumns(1, lastColumn);
 }
 
 function removeEmptyColumns(tab) {

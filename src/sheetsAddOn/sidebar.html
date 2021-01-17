@@ -637,7 +637,7 @@
 
     <footer>
         <span>This plugin was built by Savvy Tool Belt and is in no way affiliated with Planning Center.</span>
-        <p class="copyright">©<a href="https://savvytoolbelt.com">SavvyToolBelt</a> 2019-2020.</p>
+        <p class="copyright">©<a href="https://savvytoolbelt.com">SavvyToolBelt</a> 2019-2021.</p>
     </footer>
 
 
@@ -686,8 +686,6 @@
             document.getElementById('infoDiv').classList.add('hidden')
         })
 
-
-        // document.getElementById('syncNowButton').addEventListener("click", syncNow);
 
         document.getElementById('syncNowButton').addEventListener('click', () => {
             //syncNow();
@@ -756,54 +754,6 @@
 
         })
 
-        // function syncNow() {
-        //     document.getElementById('syncNowContent').classList.add('hidden')
-        //     document.getElementById('syncNowProgressBar').classList.remove('hidden')
-
-        //     let percentComplete = 0;
-
-        //     var intervalId = setInterval(function () {
-
-        //         google.script.run
-        //             .withSuccessHandler((e) => {
-        //                 percentComplete = e;
-        //                 if (percentComplete < 100) {
-        //                     console.log(percentComplete);
-        //                     document.getElementById("myBar").style.width = percentComplete + "%";
-
-        //                     //gradualWidthIncrease(percentComplete)
-
-        //                 } else {
-        //                     clearInterval(intervalId);
-        //                     document.getElementById("myBar").style.width = 0 + "%";
-        //                 }
-        //             })
-        //             .withFailureHandler()
-        //             .getUserProperty('syncPercentComplete')
-
-        //     }, 7500);
-
-
-        //     google.script.run
-        //         .withSuccessHandler(() => {
-        //             document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
-        //             document.getElementById('syncNowContent').classList.remove('hidden')
-        //             document.getElementById('syncNowProgressBar').classList.add('hidden')
-        //         })
-        //         .withFailureHandler(() => {
-        //             clearInterval(intervalId);
-
-        //             document.getElementById('syncNowContent').classList.remove('hidden')
-        //             document.getElementById('syncNowProgressBar').classList.add('hidden')
-        //             document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
-
-        //         })
-        //         .updateSpreadsheet();
-
-        //     percentComplete = 0;
-
-
-        // }
 
 
         document.getElementById('helpButton').addEventListener("click", () => {
@@ -813,12 +763,6 @@
         document.getElementById('gdsConnectorButton').addEventListener("click", () => {
             window.open("https://datastudio.google.com/u/0/", '_blank');
         });
-
-
-        // document.getElementById('syncListsButton').addEventListener('click', () => {
-        //     google.script.run.updateListPeople();
-        // })
-
 
 
 

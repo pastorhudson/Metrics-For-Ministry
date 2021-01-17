@@ -6,11 +6,16 @@
     <style>
         .container {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
+            /* flex-wrap: wrap; */
+            justify-content: center;
+            flex-direction: column;
             height: 95vh;
-            padding: 20px;
+            padding: 10px;
             word-wrap: break-word;
+        }
+
+        .hidden {
+            display: none;
         }
 
         header,
@@ -28,6 +33,13 @@
 
         content {
             flex-grow: 4;
+            display: flex;
+            flex-direction: column;
+            align-self: center;
+            align-content: center;
+            justify-content: flex-start;
+            padding-top: 20px;
+
         }
 
         .textCenter {
@@ -39,16 +51,16 @@
         footer {
             display: flex;
             justify-content: center;
-            align-self: flex-end;
+            flex-direction: column;
             flex-wrap: wrap;
             font-size: 12px;
             text-align: center;
-            flex-grow: 1;
+            width: 100%;
         }
 
         .logo {
             width: 100%;
-            max-width: 150px;
+            max-width: 200px;
 
             align-self: center;
             margin: auto;
@@ -61,13 +73,19 @@
 
         .heroText {
             font-weight: 600;
-            font-size: 1.3em;
+            font-size: 1.5em;
             letter-spacing: 1.1px;
             line-height: 1.2;
+            color: #8BBABC;
         }
 
         .row {
             display: flex;
+            text-align: center;
+            width: 80%;
+            align-self: center;
+            margin: auto;
+            padding-top: 15px;
         }
 
         .column {
@@ -77,10 +95,182 @@
         .authorizeDiv {
             padding-top: 20px;
         }
+
+        .contentOption {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 20px;
+        }
+
+        .contentOption:hover {
+            background-color: #F3F5F7;
+        }
+
+        #refreshIcon,
+        #settingsIcon,
+        #learnMoreButton,
+        #infoIcon,
+        #backButtonSVG,
+        #gdsConnectorSVG,
+        #refreshIconSettings,
+        #logoutIcon {
+            max-width: 30px;
+            max-height: 30px;
+            padding: 5px;
+            fill: #212B3B;
+        }
+
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(359deg);
+            }
+        }
+
+        .refreshIcon-spin {
+            animation: spin 2s linear infinite;
+
+        }
+
+
+        .column1 {
+            width: 15%;
+            align-content: center;
+            margin-right: 10px;
+        }
+
+        .column2 {
+            width: 85%;
+            align-content: center;
+            justify-self: center;
+            align-self: center;
+        }
+
+        .contentSubOptionInfo h3 {
+            font-size: 1.5em;
+            color: #212B3B;
+            margin: 0;
+        }
+
+        .contentSubOptionInfo p {
+            font-size: 1.1em;
+            margin: 0;
+            color: #9F9F9F
+        }
+
+        #syncNowProgressBar {
+            width: 100%;
+            background-color: #E7EAEE;
+            border-radius: 10px;
+        }
+
+        #myBar {
+            width: 1%;
+            height: 30px;
+            background-color: #FFC20A;
+            border-radius: 10px;
+            text-align: center;
+            justify-content: center;
+            align-content: center;
+        }
+
+        .page {
+            width: 100%;
+            text-align: center;
+
+        }
+
+
+        .page h2 {
+            font-size: 1.5em;
+            color: #212B3B;
+            margin: 0;
+        }
+
+        .page p {
+            font-size: 1.1em;
+            margin: 0;
+            color: #9F9F9F;
+            padding-top: 5px;
+        }
+
+        .configurationOptions {
+            text-align: center;
+            padding-top: 30px;
+        }
+
+        .configurationOptions p {
+            color: #212B3B;
+        }
+
+        .backToHomeButton {
+            margin-top: 50px;
+            text-align: left;
+        }
+
+        .infoContentDivsContainer {
+            padding-top: 30px;
+        }
+
+        .infoContentDivs {
+            padding-top: 15px;
+        }
+
+        .infoContentDivs h3 {
+            font-size: 1.5em;
+            color: #212B3B;
+            margin: 0;
+        }
+
+        .infoContentDivs p {
+            font-size: 1.1em;
+            margin: 0;
+            color: #9F9F9F
+        }
+
+        .settingsSyncButtons {
+            padding-top: 25px;
+        }
+
+        .settingsSyncButtons h3,
+        .settingsSyncButtons p {
+            text-align: left;
+        }
+
+        #labelDate {
+            display: block;
+            font: 1rem 'Fira Sans', sans-serif;
+        }
+
+        /* #start,
+        #labelDate {
+            margin: .4rem 0;
+        } */
+
+        #start {
+            margin-top: 5px;
+        }
+
+        #dateSelectorDiv {
+            padding-top: 20px;
+        }
     </style>
 
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2E9D6LC489"></script>
     <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
 
+        gtag('config', 'G-2E9D6LC489');
     </script>
 </head>
 
@@ -89,64 +279,353 @@
         <img src="https://savvytoolbelt.com/wp-content/uploads/2020/09/Savvy-Tool-Belt_Horizontal_Color_on-Light.png"
             class="logo">
         <h1 class="heroText">Metrics For Ministry</h1>
-
-        <div class="" id="currentDefaults">
-            <p><strong>Last Synced: </strong></br>
-                <?= getUserProperty("lastSyncTime"); ?>
-            </p>
-            <p><strong>Modules Enabled: </strong></br>
-               
-            </p>
         </div>
-        <button id="setupGuideButton" class="info" >Setup Guide</button>
     </header>
 
     <content>
+        <div id="menuDiv" class="">
+            <div class="contentOption" id="syncNowButton">
+                <div class="contentSubOptionImg column1">
+                    <svg id="refreshIcon" height="512pt" viewBox="0 0 512 512" width="512pt"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <g>
+                                <path d="M409.6,0c-9.426,0-17.067,7.641-17.067,17.067v62.344C304.667-5.656,164.478-3.386,79.411,84.479
+			c-40.09,41.409-62.455,96.818-62.344,154.454c0,9.426,7.641,17.067,17.067,17.067S51.2,248.359,51.2,238.933
+			c0.021-103.682,84.088-187.717,187.771-187.696c52.657,0.01,102.888,22.135,138.442,60.976l-75.605,25.207
+			c-8.954,2.979-13.799,12.652-10.82,21.606s12.652,13.799,21.606,10.82l102.4-34.133c6.99-2.328,11.697-8.88,11.674-16.247v-102.4
+			C426.667,7.641,419.026,0,409.6,0z" />
+                            </g>
+                        </g>
+                        <g>
+                            <g>
+                                <path d="M443.733,221.867c-9.426,0-17.067,7.641-17.067,17.067c-0.021,103.682-84.088,187.717-187.771,187.696
+			c-52.657-0.01-102.888-22.135-138.442-60.976l75.605-25.207c8.954-2.979,13.799-12.652,10.82-21.606
+			c-2.979-8.954-12.652-13.799-21.606-10.82l-102.4,34.133c-6.99,2.328-11.697,8.88-11.674,16.247v102.4
+			c0,9.426,7.641,17.067,17.067,17.067s17.067-7.641,17.067-17.067v-62.345c87.866,85.067,228.056,82.798,313.122-5.068
+			c40.09-41.409,62.455-96.818,62.344-154.454C460.8,229.508,453.159,221.867,443.733,221.867z" />
+                            </g>
+                        </g>
 
+                    </svg>
 
-
-        <div class="configurationOptions">
-            <p>
-                <strong>Select the modules you want enabled:</strong></br>
-                People is required, and enabled by default.
-            </p>
-            <!-- Module Selector -->
-            <!-- This gets hidden when authorized.-->
-            <div class="row" id="elementDiv">
-                <div class="column">
-                    <input class="pcoModuleSelector" type="checkbox" id="givingModule" name="giving" value="giving">
-                    <label>Giving</label></br>
-                    <input class="pcoModuleSelector" type="checkbox" id="checkinsModuleSelector" name="check_ins"
-                        value="check_ins">
-                    <label>Check-ins</label></br>
-                    <input class="pcoModuleSelector" type="checkbox" id="groupsModuleSelector" name="groups"
-                        value="groups">
-                    <label>Groups</label></br>
                 </div>
-                <div class="column">
-                    <input class="pcoModuleSelector" type="checkbox" id="peopleModuleSelector" name="people"
-                        value="people" checked disabled>
-                    <label>People</label></br>
-                    <input class="pcoModuleSelector" type="checkbox" id="resourcesModuleSelector" name="calendar"
-                        value="calendar">
-                    <label>Calendar</label></br>
-                    <input class="pcoModuleSelector" type="checkbox" id="servicesModuleSelector" name="services"
-                        value="services">
-                    <label>Services</label></br>
+                <div class="contentSubOptionInfo column2">
+                    <div id="syncNowContent">
+                        <h3>Update Sheets</h3>
+                        <p>Update the PCO Data</p>
+                    </div>
+
+                    <div id="syncNowProgressBar" class="hidden">
+                        <div id="myBar">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="contentOption" id="infoButton">
+                <div class="contentSubOptionImg column1">
+                    <svg id="infoIcon" height="512pt" viewBox="0 0 512 512" width="512pt"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="m277.332031 128c0 11.78125-9.550781 21.332031-21.332031 21.332031s-21.332031-9.550781-21.332031-21.332031 9.550781-21.332031 21.332031-21.332031 21.332031 9.550781 21.332031 21.332031zm0 0" />
+                        <path
+                            d="m256 405.332031c-8.832031 0-16-7.167969-16-16v-165.332031h-21.332031c-8.832031 0-16-7.167969-16-16s7.167969-16 16-16h37.332031c8.832031 0 16 7.167969 16 16v181.332031c0 8.832031-7.167969 16-16 16zm0 0" />
+                        <path
+                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                        <path
+                            d="m304 405.332031h-96c-8.832031 0-16-7.167969-16-16s7.167969-16 16-16h96c8.832031 0 16 7.167969 16 16s-7.167969 16-16 16zm0 0" />
+                    </svg>
+
+                </div>
+                <div class="contentSubOptionInfo column2">
+                    <h3>Info</h3>
+                    <p>Last sync time, modules, and more.</p>
+                </div>
+            </div>
+            <div class="contentOption" id="settingsButton">
+                <div class="contentSubOptionImg column1">
+                    <svg id="settingsIcon" enable-background="new 0 0 512 512" height="512" viewBox="0 0 512 512"
+                        width="512" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="m272.066 512h-32.133c-25.989 0-47.134-21.144-47.134-47.133v-10.871c-11.049-3.53-21.784-7.986-32.097-13.323l-7.704 7.704c-18.659 18.682-48.548 18.134-66.665-.007l-22.711-22.71c-18.149-18.129-18.671-48.008.006-66.665l7.698-7.698c-5.337-10.313-9.792-21.046-13.323-32.097h-10.87c-25.988 0-47.133-21.144-47.133-47.133v-32.134c0-25.989 21.145-47.133 47.134-47.133h10.87c3.531-11.05 7.986-21.784 13.323-32.097l-7.704-7.703c-18.666-18.646-18.151-48.528.006-66.665l22.713-22.712c18.159-18.184 48.041-18.638 66.664.006l7.697 7.697c10.313-5.336 21.048-9.792 32.097-13.323v-10.87c0-25.989 21.144-47.133 47.134-47.133h32.133c25.989 0 47.133 21.144 47.133 47.133v10.871c11.049 3.53 21.784 7.986 32.097 13.323l7.704-7.704c18.659-18.682 48.548-18.134 66.665.007l22.711 22.71c18.149 18.129 18.671 48.008-.006 66.665l-7.698 7.698c5.337 10.313 9.792 21.046 13.323 32.097h10.87c25.989 0 47.134 21.144 47.134 47.133v32.134c0 25.989-21.145 47.133-47.134 47.133h-10.87c-3.531 11.05-7.986 21.784-13.323 32.097l7.704 7.704c18.666 18.646 18.151 48.528-.006 66.665l-22.713 22.712c-18.159 18.184-48.041 18.638-66.664-.006l-7.697-7.697c-10.313 5.336-21.048 9.792-32.097 13.323v10.871c0 25.987-21.144 47.131-47.134 47.131zm-106.349-102.83c14.327 8.473 29.747 14.874 45.831 19.025 6.624 1.709 11.252 7.683 11.252 14.524v22.148c0 9.447 7.687 17.133 17.134 17.133h32.133c9.447 0 17.134-7.686 17.134-17.133v-22.148c0-6.841 4.628-12.815 11.252-14.524 16.084-4.151 31.504-10.552 45.831-19.025 5.895-3.486 13.4-2.538 18.243 2.305l15.688 15.689c6.764 6.772 17.626 6.615 24.224.007l22.727-22.726c6.582-6.574 6.802-17.438.006-24.225l-15.695-15.695c-4.842-4.842-5.79-12.348-2.305-18.242 8.473-14.326 14.873-29.746 19.024-45.831 1.71-6.624 7.684-11.251 14.524-11.251h22.147c9.447 0 17.134-7.686 17.134-17.133v-32.134c0-9.447-7.687-17.133-17.134-17.133h-22.147c-6.841 0-12.814-4.628-14.524-11.251-4.151-16.085-10.552-31.505-19.024-45.831-3.485-5.894-2.537-13.4 2.305-18.242l15.689-15.689c6.782-6.774 6.605-17.634.006-24.225l-22.725-22.725c-6.587-6.596-17.451-6.789-24.225-.006l-15.694 15.695c-4.842 4.843-12.35 5.791-18.243 2.305-14.327-8.473-29.747-14.874-45.831-19.025-6.624-1.709-11.252-7.683-11.252-14.524v-22.15c0-9.447-7.687-17.133-17.134-17.133h-32.133c-9.447 0-17.134 7.686-17.134 17.133v22.148c0 6.841-4.628 12.815-11.252 14.524-16.084 4.151-31.504 10.552-45.831 19.025-5.896 3.485-13.401 2.537-18.243-2.305l-15.688-15.689c-6.764-6.772-17.627-6.615-24.224-.007l-22.727 22.726c-6.582 6.574-6.802 17.437-.006 24.225l15.695 15.695c4.842 4.842 5.79 12.348 2.305 18.242-8.473 14.326-14.873 29.746-19.024 45.831-1.71 6.624-7.684 11.251-14.524 11.251h-22.148c-9.447.001-17.134 7.687-17.134 17.134v32.134c0 9.447 7.687 17.133 17.134 17.133h22.147c6.841 0 12.814 4.628 14.524 11.251 4.151 16.085 10.552 31.505 19.024 45.831 3.485 5.894 2.537 13.4-2.305 18.242l-15.689 15.689c-6.782 6.774-6.605 17.634-.006 24.225l22.725 22.725c6.587 6.596 17.451 6.789 24.225.006l15.694-15.695c3.568-3.567 10.991-6.594 18.244-2.304z" />
+                        <path
+                            d="m256 367.4c-61.427 0-111.4-49.974-111.4-111.4s49.973-111.4 111.4-111.4 111.4 49.974 111.4 111.4-49.973 111.4-111.4 111.4zm0-192.8c-44.885 0-81.4 36.516-81.4 81.4s36.516 81.4 81.4 81.4 81.4-36.516 81.4-81.4-36.515-81.4-81.4-81.4z" />
+                    </svg>
+                </div>
+                <div class="contentSubOptionInfo column2">
+                    <h3>Settings</h3>
+                    <p>Configure your login and PCO Modules</p>
+                </div>
+            </div>
+            <div class="contentOption" id="helpButton">
+                <div class="contentSubOptionImg column1">
+                    <svg id="learnMoreButton" enable-background="new 0 0 24 24" height="512" viewBox="0 0 24 24"
+                        width="512" xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <path
+                                d="m13.5 24h-3c-.7 0-1.5-.6-1.5-1.8v-2.1c0-1-.5-1.9-1.3-2.6-1.8-1.4-2.7-3.4-2.7-5.6.1-3.8 3.2-6.8 6.9-6.9 1.9 0 3.7.7 5 2s2.1 3.1 2.1 5c0 2.1-.9 4.1-2.6 5.4-.9.7-1.4 1.8-1.4 2.8v2.3c0 .8-.7 1.5-1.5 1.5zm-1.5-18c-3.2 0-5.9 2.7-6 5.9 0 1.9.8 3.7 2.3 4.8 1.1.9 1.7 2.1 1.7 3.4v2.1c0 .2 0 .8.5.8h3c.3 0 .5-.2.5-.5v-2.3c0-1.3.7-2.7 1.8-3.6 1.4-1.1 2.2-2.8 2.2-4.6 0-1.6-.6-3.1-1.8-4.3-1.1-1.1-2.6-1.7-4.2-1.7z" />
+                        </g>
+                        <g>
+                            <path d="m14.5 21h-5c-.3 0-.5-.2-.5-.5s.2-.5.5-.5h5c.3 0 .5.2.5.5s-.2.5-.5.5z" />
+                        </g>
+                        <g>
+                            <path d="m12 3c-.3 0-.5-.2-.5-.5v-2c0-.3.2-.5.5-.5s.5.2.5.5v2c0 .3-.2.5-.5.5z" />
+                        </g>
+                        <g>
+                            <path
+                                d="m18.7 5.8c-.1 0-.3 0-.4-.1-.2-.2-.2-.5 0-.7l1.4-1.4c.2-.2.5-.2.7 0s.2.5 0 .7l-1.4 1.4s-.2.1-.3.1z" />
+                        </g>
+                        <g>
+                            <path d="m23.5 12.5h-2c-.3 0-.5-.2-.5-.5s.2-.5.5-.5h2c.3 0 .5.2.5.5s-.2.5-.5.5z" />
+                        </g>
+                        <g>
+                            <path
+                                d="m20.1 20.6c-.1 0-.3 0-.4-.1l-1.4-1.4c-.2-.2-.2-.5 0-.7s.5-.2.7 0l1.4 1.4c.2.2.2.5 0 .7 0 .1-.1.1-.3.1z" />
+                        </g>
+                        <g>
+                            <path
+                                d="m3.9 20.6c-.1 0-.3 0-.4-.1-.2-.2-.2-.5 0-.7l1.4-1.4c.2-.2.5-.2.7 0s.2.5 0 .7l-1.4 1.4c-.1.1-.2.1-.3.1z" />
+                        </g>
+                        <g>
+                            <path d="m2.5 12.5h-2c-.3 0-.5-.2-.5-.5s.2-.5.5-.5h2c.3 0 .5.2.5.5s-.2.5-.5.5z" />
+                        </g>
+                        <g>
+                            <path
+                                d="m5.3 5.8c-.1 0-.3 0-.4-.1l-1.4-1.5c-.2-.2-.2-.5 0-.7s.5-.2.7 0l1.4 1.4c.2.2.2.5 0 .7-.1.1-.2.2-.3.2z" />
+                        </g>
+                        <g>
+                            <path
+                                d="m16 12.5c-.3 0-.5-.2-.5-.5 0-1.9-1.6-3.5-3.5-3.5-.3 0-.5-.2-.5-.5s.2-.5.5-.5c2.5 0 4.5 2 4.5 4.5 0 .3-.2.5-.5.5z" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="contentSubOptionInfo column2">
+                    <h3>Help</h3>
+                    <p>Access to our documentation.</p>
+                </div>
+            </div>
+            <div class="contentOption" id="gdsConnectorButton">
+                <div class="contentSubOptionImg column1">
+                    <svg id="gdsConnectorSVG" enable-background="new 0 0 64 64" height="512" viewBox="0 0 64 64"
+                        width="512" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="m34.293 6.293-4.293 4.293-1.293-1.293-1.414 1.414 2 2c.195.195.451.293.707.293s.512-.098.707-.293l5-5z" />
+                        <path
+                            d="m52 24c.256 0 .512-.098.707-.293l5-5-1.414-1.414-4.293 4.293-1.293-1.293-1.414 1.414 2 2c.195.195.451.293.707.293z" />
+                        <path
+                            d="m54 46c-2.282 0-4.339.966-5.798 2.504l-15.599-11.432c.882-1.489 1.397-3.22 1.397-5.072 0-.859-.12-1.688-.325-2.484l13.224-4.846c1.333 2.568 4.013 4.33 7.101 4.33 4.411 0 8-3.589 8-8s-3.589-8-8-8-8 3.589-8 8c0 .617.077 1.215.21 1.792l-13.225 4.847c-.985-2.022-2.628-3.659-4.653-4.638l1.899-5.205c.57.13 1.16.204 1.769.204 4.411 0 8-3.589 8-8s-3.589-8-8-8-8 3.589-8 8c0 3.097 1.772 5.782 4.352 7.111l-1.9 5.206c-.786-.2-1.605-.317-2.452-.317-1.616 0-3.139.394-4.492 1.078l-4.403-6.925c1.767-1.469 2.895-3.681 2.895-6.153 0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8c1.223 0 2.378-.284 3.416-.777l4.405 6.93c-2.322 1.833-3.821 4.665-3.821 7.847 0 3.023 1.354 5.732 3.481 7.567l-3.753 5.361c-1.114-.59-2.382-.928-3.728-.928-4.411 0-8 3.589-8 8s3.589 8 8 8 8-3.589 8-8c0-2.347-1.022-4.454-2.637-5.919l3.754-5.363c1.446.813 3.11 1.282 4.883 1.282 2.944 0 5.586-1.286 7.418-3.318l15.596 11.43c-.644 1.153-1.014 2.477-1.014 3.888 0 4.411 3.589 8 8 8s8-3.589 8-8-3.589-8-8-8zm0-31c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6zm-28-5c0-3.309 2.691-6 6-6s6 2.691 6 6-2.691 6-6 6-6-2.691-6-6zm-22 0c0-3.309 2.691-6 6-6s6 2.691 6 6-2.691 6-6 6-6-2.691-6-6zm12 42c0 3.309-2.691 6-6 6s-6-2.691-6-6 2.691-6 6-6 6 2.691 6 6zm8-12c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm30 20c-3.309 0-6-2.691-6-6s2.691-6 6-6 6 2.691 6 6-2.691 6-6 6z" />
+                        <path
+                            d="m8 52.586-1.293-1.293-1.414 1.414 2 2c.195.195.451.293.707.293s.512-.098.707-.293l5-5-1.414-1.414z" />
+                    </svg>
+                </div>
+                <div class="contentSubOptionInfo column2">
+                    <h3>GDS Connector</h3>
+                    <p>Click here to link create a new Google Data Studio Connector</p>
                 </div>
             </div>
         </div>
-        <!-- Authorization Button. -->
-        <!-- This gets hidden when authorized.-->
-        <div class="header authorizeDiv">
-            <p class="header">Authorize with PCO</p>
-            <button id="btn-authorize" class="action">Authorize</button>
+        <div id="settingsDiv" class="page hidden">
+            <h2>Settings</h2>
+            <p>Configure your login and PCO Modules</p>
+            <div class="configurationOptions">
+
+                <p>
+                    <strong>Select the modules you want enabled:</strong></br>
+                    People is required, and enabled by default.
+                </p>
+                <!-- Module Selector -->
+                <!-- This gets hidden when authorized.-->
+                <div class="row" id="elementDiv">
+                    <div class="column">
+                        <input class="pcoModuleSelector" type="checkbox" id="givingModule" name="giving" value="giving">
+                        <label>Giving</label></br>
+                        <input class="pcoModuleSelector" type="checkbox" id="checkinsModuleSelector" name="check_ins"
+                            value="check_ins">
+                        <label>Check-ins</label></br>
+                        <input class="pcoModuleSelector" type="checkbox" id="groupsModuleSelector" name="groups"
+                            value="groups">
+                        <label>Groups</label></br>
+                    </div>
+                    <div class="column">
+                        <input class="pcoModuleSelector" type="checkbox" id="peopleModuleSelector" name="people"
+                            value="people" checked disabled>
+                        <label>People</label></br>
+                        <input class="pcoModuleSelector" type="checkbox" id="resourcesModuleSelector" name="calendar"
+                            value="calendar">
+                        <label>Calendar</label></br>
+                        <input class="pcoModuleSelector" type="checkbox" id="servicesModuleSelector" name="services"
+                            value="services">
+                        <label>Services</label></br>
+                    </div>
+                </div>
+            </div>
+            <div id="dateSelectorDiv">
+                
+            </div>
+            <!-- Authorization Button. -->
+            <!-- This gets hidden when authorized.-->
+            <div class="authorizeDiv header">
+                <button id="btn-authorize" class="action">Authorize with PCO</button>
+
+            </div>
+
+            <div class="settingsSyncButtons">
+                <div class="contentOption" id="syncListsButton">
+                    <div class="contentSubOptionImg column1">
+                        <svg id="refreshIconSettings" height="512pt" viewBox="0 0 512 512" width="512pt"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <g>
+                                <g>
+                                    <path d="M409.6,0c-9.426,0-17.067,7.641-17.067,17.067v62.344C304.667-5.656,164.478-3.386,79.411,84.479
+                c-40.09,41.409-62.455,96.818-62.344,154.454c0,9.426,7.641,17.067,17.067,17.067S51.2,248.359,51.2,238.933
+                c0.021-103.682,84.088-187.717,187.771-187.696c52.657,0.01,102.888,22.135,138.442,60.976l-75.605,25.207
+                c-8.954,2.979-13.799,12.652-10.82,21.606s12.652,13.799,21.606,10.82l102.4-34.133c6.99-2.328,11.697-8.88,11.674-16.247v-102.4
+                C426.667,7.641,419.026,0,409.6,0z" />
+                                </g>
+                            </g>
+                            <g>
+                                <g>
+                                    <path d="M443.733,221.867c-9.426,0-17.067,7.641-17.067,17.067c-0.021,103.682-84.088,187.717-187.771,187.696
+                c-52.657-0.01-102.888-22.135-138.442-60.976l75.605-25.207c8.954-2.979,13.799-12.652,10.82-21.606
+                c-2.979-8.954-12.652-13.799-21.606-10.82l-102.4,34.133c-6.99,2.328-11.697,8.88-11.674,16.247v102.4
+                c0,9.426,7.641,17.067,17.067,17.067s17.067-7.641,17.067-17.067v-62.345c87.866,85.067,228.056,82.798,313.122-5.068
+                c40.09-41.409,62.455-96.818,62.344-154.454C460.8,229.508,453.159,221.867,443.733,221.867z" />
+                                </g>
+                            </g>
+
+                        </svg>
+
+                    </div>
+                    <div class="contentSubOptionInfo column2">
+                        <div id="syncNowContent">
+                            <h3>Sync Lists</h3>
+                            <p>Update your PCO List Data</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="contentOption" id="logOutButton">
+                    <div class="contentSubOptionImg column1">
+                        <svg version="1.1" id="logoutIcon" xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+                            style="enable-background:new 0 0 512 512;" xml:space="preserve">
+                            <g>
+                                <g>
+                                    <path d="M255.15,468.625H63.787c-11.737,0-21.262-9.526-21.262-21.262V64.638c0-11.737,9.526-21.262,21.262-21.262H255.15
+			c11.758,0,21.262-9.504,21.262-21.262S266.908,0.85,255.15,0.85H63.787C28.619,0.85,0,29.47,0,64.638v382.724
+			c0,35.168,28.619,63.787,63.787,63.787H255.15c11.758,0,21.262-9.504,21.262-21.262
+			C276.412,478.129,266.908,468.625,255.15,468.625z" />
+                                </g>
+                            </g>
+                            <g>
+                                <g>
+                                    <path d="M505.664,240.861L376.388,113.286c-8.335-8.25-21.815-8.143-30.065,0.213s-8.165,21.815,0.213,30.065l92.385,91.173
+			H191.362c-11.758,0-21.262,9.504-21.262,21.262c0,11.758,9.504,21.263,21.262,21.263h247.559l-92.385,91.173
+			c-8.377,8.25-8.441,21.709-0.213,30.065c4.167,4.21,9.653,6.336,15.139,6.336c5.401,0,10.801-2.041,14.926-6.124l129.276-127.575
+			c4.04-3.997,6.336-9.441,6.336-15.139C512,250.302,509.725,244.88,505.664,240.861z" />
+                                </g>
+                            </g>
+
+                        </svg>
+
+                    </div>
+                    <div class="contentSubOptionInfo column2">
+                        <div id="syncNowContent">
+                            <h3>Logout/Reset</h3>
+                            <p>This wipes all data and logs out of PCO.</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="contentOption backToHomeButton" id="backToHomeButton-settings">
+                    <div class="contentSubOptionImg column1">
+                        <svg version="1.1" id="backButtonSVG" xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 386.242 386.242"
+                            style="enable-background:new 0 0 386.242 386.242;" xml:space="preserve">
+                            <g>
+                                <path id="Arrow_Back" d="M374.212,182.3H39.432l100.152-99.767c4.704-4.704,4.704-12.319,0-17.011
+            c-4.704-4.704-12.319-4.704-17.011,0L3.474,184.61c-4.632,4.632-4.632,12.379,0,17.011l119.1,119.1
+            c4.704,4.704,12.319,4.704,17.011,0c4.704-4.704,4.704-12.319,0-17.011L39.432,206.36h334.779c6.641,0,12.03-5.39,12.03-12.03
+            S380.852,182.3,374.212,182.3z" />
+
+                        </svg>
+                    </div>
+                    <div class="contentSubOptionInfo column2">
+                        <div id="syncNowContent">
+                            <h3>Back</h3>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="buttonDiv">
-            <button id="syncNowButton" class="action">Sync Now</button>
-            <button id="syncListsNowButton" class="action">Sync Lists Now</button>
-            <button id="configGdsButton" class="action">Configure Google Data Studio</button>
+        <div id="infoDiv" class="page hidden">
+            <h2>Info</h2>
+            <p>Last sync time, modules, and more.</p>
+
+            <div class="infoContentDivsContainer">
+                <div class="infoContentDivs">
+                    <h3>PCO Organization</h3>
+                    <p>
+                        <?= getUserProperty("org_name"); ?>
+                    </p>
+                </div>
+                <div class="infoContentDivs">
+                    <h3>Last Sync Time</h3>
+                    <p>
+                        <?= getUserProperty("lastSyncTime"); ?>
+                    </p>
+                </div>
+                <div class="infoContentDivs">
+                    <h3>Modules Enabled</h3>
+                    <p>
+                        <?= getUserProperty("requestedModules"); ?>
+                    </p>
+                </div>
+                <div class="infoContentDivs">
+                    <h3>Time Zone</h3>
+                    <p>
+                        <?= getUserProperty("time_zone"); ?>
+                    </p>
+                </div>
+                <div class="infoContentDivs">
+                    <h3>Date Format</h3>
+                    <p>
+                        <?= getUserProperty("date_format"); ?>
+                    </p>
+                </div>
+                <div class="infoContentDivs">
+                    <h3>Total % Storage</h3>
+                    <p>
+                        <?= totalStorageUsed(); ?> %
+                    </p>
+                </div>
+            </div>
+
+            <div class="contentOption backToHomeButton" id="backToHomeButton-info">
+                <div class="contentSubOptionImg column1">
+                    <svg version="1.1" id="backButtonSVG" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 386.242 386.242"
+                        style="enable-background:new 0 0 386.242 386.242;" xml:space="preserve">
+                        <g>
+                            <path id="Arrow_Back" d="M374.212,182.3H39.432l100.152-99.767c4.704-4.704,4.704-12.319,0-17.011
+            c-4.704-4.704-12.319-4.704-17.011,0L3.474,184.61c-4.632,4.632-4.632,12.379,0,17.011l119.1,119.1
+            c4.704,4.704,12.319,4.704,17.011,0c4.704-4.704,4.704-12.319,0-17.011L39.432,206.36h334.779c6.641,0,12.03-5.39,12.03-12.03
+            S380.852,182.3,374.212,182.3z" />
+
+                    </svg>
+                </div>
+                <div class="contentSubOptionInfo column2">
+                    <div id="syncNowContent">
+                        <h3>Back</h3>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </content>
 
@@ -158,24 +637,119 @@
 
     <script>
 
-        document.getElementById('syncNowButton').addEventListener("click", syncNow);
+        window.addEventListener('load', () => {
+            let today = new Date()
+            let twoDaysAgo = today.setDate(today.getDate() - 2);
+            let newDate = new Date(twoDaysAgo).toISOString().split('T')[0];
+            
+            const html = `<label for="start" id="labelDate">Sync Data After (optional):</label>
+                <input type="date" id="start" name="" min="1969-01-01" max="${newDate}"">`
 
-        function syncNow(){
-            google.script.run.updateSpreadsheet();
+                document.getElementById('dateSelectorDiv').innerHTML = html;
+
+        });
+
+        document.getElementById('syncListsButton').addEventListener('click', () => {
+
+            document.getElementById('refreshIconSettings').classList.add('refreshIcon-spin');
+
+            google.script.run
+                .withSuccessHandler(() => {
+                    document.getElementById('refreshIconSettings').classList.remove('refreshIcon-spin')
+                })
+                .updateListTab();
+        })
+
+        document.getElementById('settingsButton').addEventListener("click", () => {
+            document.getElementById('menuDiv').classList.add('hidden')
+            document.getElementById('settingsDiv').classList.remove('hidden')
+        })
+
+        document.getElementById('backToHomeButton-settings').addEventListener("click", () => {
+            document.getElementById('menuDiv').classList.remove('hidden')
+            document.getElementById('settingsDiv').classList.add('hidden')
+        })
+
+        document.getElementById('infoButton').addEventListener("click", () => {
+            document.getElementById('menuDiv').classList.add('hidden')
+            document.getElementById('infoDiv').classList.remove('hidden')
+        })
+
+        document.getElementById('backToHomeButton-info').addEventListener("click", () => {
+            document.getElementById('menuDiv').classList.remove('hidden')
+            document.getElementById('infoDiv').classList.add('hidden')
+        })
+
+
+        // document.getElementById('syncNowButton').addEventListener("click", syncNow);
+
+        document.getElementById('syncNowButton').addEventListener('click', () => {
+            document.getElementById('refreshIcon').classList.add('refreshIcon-spin');
+            syncNow();
+
+        })
+
+        function syncNow() {
+            document.getElementById('syncNowContent').classList.add('hidden')
+            document.getElementById('syncNowProgressBar').classList.remove('hidden')
+
+            let percentComplete = 0;
+
+            var intervalId = setInterval(function () {
+
+                google.script.run
+                    .withSuccessHandler((e) => {
+                        percentComplete = e;
+                        if (percentComplete < 100) {
+                            console.log(percentComplete);
+                            document.getElementById("myBar").style.width = percentComplete + "%";
+
+                            //gradualWidthIncrease(percentComplete)
+
+                        } else {
+                            clearInterval(intervalId);
+                        }
+                    })
+                    .withFailureHandler()
+                    .getUserProperty('syncPercentComplete')
+
+            }, 7500);
+
+
+            google.script.run
+                .withSuccessHandler(() => {
+                    document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
+                    document.getElementById('syncNowContent').classList.remove('hidden')
+                    document.getElementById('syncNowProgressBar').classList.add('hidden')
+                })
+                .withFailureHandler(() => {
+                    clearInterval(intervalId);
+
+                    document.getElementById('syncNowContent').classList.remove('hidden')
+                    document.getElementById('syncNowProgressBar').classList.add('hidden')
+                    document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
+
+                })
+                .updateSpreadsheet();
+
+            percentComplete = 0;
+
+
         }
 
-        document.getElementById('setupGuideButton').addEventListener("click", () => {
+
+        document.getElementById('helpButton').addEventListener("click", () => {
             window.open("https://app.gitbook.com/@savvytoolbelt/s/pco-to-gds/configuration/initial-setup", '_blank');
         });
 
-        document.getElementById('configGdsButton').addEventListener('click', () => {
-            window.open("https://datastudio.google.com/datasources/create?connectorId=AKfycbxkj7AmDqBhybmaUdp9FPdKrSU_9h_sE0Q5dQdETsw", '_blank');
+        document.getElementById('gdsConnectorButton').addEventListener("click", () => {
+            window.open("https://datastudio.google.com/u/0/", '_blank');
+        });
 
-        })
 
-        document.getElementById('syncListsNowButton').addEventListener('click', () => {
-            google.script.run.updateListPeople() ;
-        })
+        // document.getElementById('syncListsButton').addEventListener('click', () => {
+        //     google.script.run.updateListPeople();
+        // })
 
 
 
@@ -191,10 +765,9 @@
             return modulesSelectedNameArray.join(" ");
         }
 
-        document.getElementById("btn-authorize").addEventListener("click", authorize);
-        function authorize() {
-
+        document.getElementById("btn-authorize").addEventListener("click", () => {
             let modules = selectedModules();
+            let dateSelector = new Date(document.getElementById('start')).toISOString();
             google.script.run
                 .withSuccessHandler(function (url) {
                     window.open(url, '_blank');
@@ -206,7 +779,20 @@
 
                 //passing selected modules to out OAuth Function
                 .authorizeSidebarButton(modules);
-        }
+
+            if(dateSelector.value != undefined){
+                google.script.run.setUserProperty('syncStartDate', dateSelector)
+            }
+
+
+        });
+
+
+        
+
+        document.getElementById('logOutButton').addEventListener("click", () => {
+            google.script.run.reset();
+        })
 
     </script>
 

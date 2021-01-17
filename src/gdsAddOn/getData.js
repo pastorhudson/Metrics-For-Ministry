@@ -272,7 +272,6 @@ function getPcoPeopleData(request) {
     rows: data
   }
 
-  console.log(returnData.schema)
 
   return returnData;
 }

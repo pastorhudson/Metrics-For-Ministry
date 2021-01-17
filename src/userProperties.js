@@ -16,6 +16,21 @@
 
  ********************************************/
 
+ function newUserUserProperties(){
+    setActiveSpreadsheetID();
+    setUserProperty("requestedModules", "n/a");
+    setUserProperty("enabledModules", "n/a");
+    setUserProperty("lastSyncTime", "n/a");
+    setUserProperty("isSignedIn", "false");
+    setUserProperty("lastSyncTimeISOString", "n/a");
+    setUserProperty("date_format", "n/a");
+    setUserProperty("org_name", "n/a");
+    setUserProperty("time_zone", "n/a");
+    // setUserProperty("totalPercentUsed", "n/a");
+    setUserProperty("syncPercentComplete", "n/a");
+
+
+ }
 
 /**
  * Used to set the user properties.
@@ -38,11 +53,14 @@ function setUserProperty(property, propertyValue) {
  */
 
 function getUserProperty(property) {
+
     var returnUserProperty = PropertiesService.getUserProperties().getProperty(
         property
     );
-    console.log(returnUserProperty);
+    //console.log(returnUserProperty);
     return returnUserProperty;
+
+
 }
 
 /**
@@ -78,14 +96,12 @@ function getDefaultSpreadsheetId() {
 function syncPercentComplete(percent) {
     if (percent == undefined) {
         let amount = getUserProperty('syncPercentComplete')
-        console.log(+amount)
         return +amount
     } else {
         setUserProperty('syncPercentComplete', percent);
 
     }
 
-    console.log(getUserProperty('syncPercentComplete'));
 
 }
 
@@ -128,7 +144,6 @@ function pcoModuleUserProperties(requestedModules) {
 function setModuleUserObject(modules) {
 
     let moduleString = String(modules)
-    console.log(moduleString)
 
     let moduleObject = {
         "giving": moduleString.includes("giving"),
@@ -151,7 +166,6 @@ function getModuleUserObject() {
      *      
      */
 
-    console.log(JSON.parse(getUserProperty('enabledModules')));
     return JSON.parse(getUserProperty('enabledModules'));
 
 }
@@ -339,7 +353,7 @@ function tabNamesReturn() {
                     "donationId": {
                         "id": "donationId",
                         "name": "Donation Id",
-                        "description": "Unique ID that's generated per donation. There will me multiple duplicate values for a split donation."
+                        "description": "A unique ID that's generated per donation. There will be multiple duplicate values for a split donation."
                     },
                     "personId": {
                         "id": "personId",
@@ -463,12 +477,12 @@ function tabNamesReturn() {
                     "eventId": {
                         "id": "checkinsEventId",
                         "name": "Event ID",
-                        "description": "Auto generated ID for each Event."
+                        "description": "Auto-generated ID for each Event."
                     },
                     "eventTimeID": {
                         "id": "eventTimeID",
                         "name": "Event Time ID",
-                        "description": "Auto generated ID for each Event Time."
+                        "description": "Auto-generated ID for each Event Time."
                     },
                     "eventName": {
                         "id": "eventName",
@@ -488,7 +502,7 @@ function tabNamesReturn() {
                     "eventTimeName": {
                         "id": "eventTimeName",
                         "name": "Event Time Name",
-                        "description": "This will be blank if you have not named your times, or will show the name of your time from Checkins."
+                        "description": "This will be blank if you have not named your times or will show the name of your time from Check-ins."
                     },
                     "eventDate": {
                         "id": "eventDate",

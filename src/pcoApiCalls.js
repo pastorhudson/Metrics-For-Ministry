@@ -31,7 +31,6 @@ function fetchCall(url) {
  * @description - Here we create a promise that is returned with data from the PCO API.
  */
 function promiseApiWithTimeout(url, offset, includeURL, retries = 5, timeout = 0) {
-    console.log(`Starting Promise. Offset: ${offset}. Timeout: ${timeout}`)
     Utilities.sleep(timeout)
 
     return promise = new Promise((resolve, reject) => {
@@ -40,9 +39,8 @@ function promiseApiWithTimeout(url, offset, includeURL, retries = 5, timeout = 0
         let listCallContent = JSON.parse(fetchCallResponse.getContentText());
         let headers = fetchCallResponse.getAllHeaders();
 
-        console.log(`Rate Request Count: ${headers["x-pco-api-request-rate-count"]}. Request Rate Limit: ${headers["x-pco-api-request-rate-limit"]}. Request Rate Period: ${headers["x-pco-api-request-rate-period"]}`)
+        //console.log(`Starting Promise. Offset: ${offset}. Timeout: ${timeout} -------- Response Code: ${responseCode}. Rate Request Count: ${headers["x-pco-api-request-rate-count"]}. Request Rate Limit: ${headers["x-pco-api-request-rate-limit"]}. Request Rate Period: ${headers["x-pco-api-request-rate-period"]}`)
 
-        console.log(responseCode);
         if (responseCode == 200) {
             resolve(listCallContent);
         } else if (retries > 0 && responseCode == 429) {
@@ -85,19 +83,20 @@ async function pcoApiLoopedCall(url, include = false, includeURL = undefined) {
         let totalCount = fetchedData.meta.total_count;
 
         data.push(...fetchedData.data)
-        //console.log(fetchedData.included)
 
         for (let i = 100; i < totalCount; i += 100) {
             const response = await promiseApiWithTimeout(url, i, includeURL);
             data.push(...response.data);
             const final = response.data;
-            const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
-            console.log(report)
+            // const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
+            // console.log(report)
             //console.log(response.included)
         }
-        console.log(`the data is: ${data.length} long.`);
+        //console.log(`the data is: ${data.length} long.`);
         return data;
 
+    } else {
+        return new Error('Whoops, looks like you are not signed in!')
     }
 
 }
@@ -134,11 +133,11 @@ async function pcoApiLoopedCall_giving(url, include = false, includeURL = undefi
             data.push(...response.data);
             included.push(...response.included)
             const final = response.data;
-            const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
-            console.log(report)
+            // const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
+            // console.log(report)
             //console.log(response.included)
         }
-        console.log(`the data is: ${data.length} long.`);
+        //console.log(`the data is: ${data.length} long.`);
         
         return {
             "data" : data,

@@ -5,6 +5,7 @@ function onInstall(e) {
    * add-on to execute.
    */
   onOpen(e);
+  newUserUserProperties();
 }
 
 // add custom menu
@@ -12,10 +13,8 @@ function onOpen(e) {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('Metrics for Ministry')
     .addItem('Sidebar', 'showSidebar')
-    .addItem('Sidebar - New', 'showSidebarNew')
+    .addItem('Sidebar - Old', 'showSidebarNew')
     .addItem('Log Out', 'reset')
-    .addItem('Update Sheet', 'createDialog')
-    .addItem('Update Lists', 'updateListPeople')
     .addToUi();
 }
 
@@ -29,8 +28,8 @@ function showSidebar() {
 }
 
 // Display's the sidebar
-function showSidebarNew() {
-  const html = HtmlService.createTemplateFromFile('sheetsAddOn/sidebar-new');
+function showSidebarOld() {
+  const html = HtmlService.createTemplateFromFile('sheetsAddOn/sidebar-old');
   const page = html.evaluate();
   page.setTitle("Savvy Tool Belt");
   SpreadsheetApp.getUi().showSidebar(page);
@@ -51,14 +50,20 @@ function authorizeSidebarButton(requestedModules) {
 
 function reset() {
 
-  getOAuthService().reset();
+  resetAuth();
   dailySyncRemove();
-  setUserProperty("isSignedIn", "false");
+  newUserUserProperties();
+
+  showSidebar();
+
+ 
+
+
 
 }
 
 async function updateListPeople() {
   const tabs = tabNamesReturn();
   await updateListTab();
-  pushToSheet(tabs.people.listPeopleTab.name, await getListsWithPeople());
+  pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople());
 }

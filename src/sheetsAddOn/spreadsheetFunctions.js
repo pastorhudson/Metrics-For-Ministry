@@ -73,7 +73,7 @@ function createSheet(tabInfo) {
     const spreadsheet = getDefaultSpreadsheetId();
     let name = tabInfo.name
     let headers = [tabInfo.headers]
-    console.log(headers)
+    //console.log(headers)
 
     //if a sheet does not exist it will create it.
     if (!existingSheets.includes(name)) {
@@ -93,14 +93,18 @@ function createSheet(tabInfo) {
         .setWarningOnly(true)
 }
 
+function updateHeaders(tabInfo){
+    const spreadsheet = getDefaultSpreadsheetId();
+    let name = tabInfo.name
+    let headers = [tabInfo.headers]
+    let ss = spreadsheet.getSheetByName(name);
+        ss.getRange(1, 1, 1, headers[0].length).setValues(headers);
+}
 
-function pushToSheet(tab, data) {
-    const ss = getDefaultSpreadsheetId().getSheetByName(tab);
 
+function pushToSheet(tabInfo, data) {
+    const ss = getDefaultSpreadsheetId().getSheetByName(tabInfo.name);
 
-    // let ss = spreadsheet;
-
-    // Remove all range protections in the spreadsheet that the user has permission to edit.
     var protections = ss.getProtections(SpreadsheetApp.ProtectionType.RANGE);
 
     for (var i = 0; i < protections.length; i++) {
@@ -128,8 +132,9 @@ function pushToSheet(tab, data) {
             .setWarningOnly(true)
     }
 
-    removeEmptyRows(tab);
-    removeEmptyColumns(tab)
+    removeEmptyRows(tabInfo.name);
+    removeEmptyColumns(tabInfo.name);
+    updateHeaders(tabInfo);
 
 }
 
@@ -165,7 +170,7 @@ function removeEmptyColumns(tab) {
 function dataValidation(tab) {
     const spreadsheet = getDefaultSpreadsheetId();
     let ss = spreadsheet.getSheetByName(tab);
-    var cell = ss.getRange(2, ss.getLastColumn(), ss.getLastRow() - 2, 1)
+    var cell = ss.getRange(2, ss.getLastColumn(), ss.getLastRow(), 1)
     var rule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
     cell.setDataValidation(rule);
 }
@@ -177,16 +182,16 @@ async function updateSpreadsheet() {
     syncPercentComplete(0)
     syncPercentComplete(10)
 
-    //pushToSheet(tabs.people.personTab.name, await personDataCall());
+    pushToSheet(tabs.people.personTab, await personDataCall());
     syncPercentComplete(30);
     //add an update to the progress bar here for each function
-    //pushToSheet(tabs.people.listPeopleTab.name, await getListsWithPeople());
+    pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople());
     syncPercentComplete(50);
 
-    //pushToSheet(tabs.giving.donationsTab.name, await getGivingDonations());
+    pushToSheet(tabs.giving.donationsTab, await getGivingDonations());
     syncPercentComplete(70);
 
-    //pushToSheet(tabs.check_ins.headcountsTab.name, await getCheckInsData());
+    pushToSheet(tabs.check_ins.headcountsTab, await getCheckInsData());
     syncPercentComplete(80);
 
 
@@ -242,7 +247,7 @@ async function updateListTab() {
 
         listArray.push(list);
     }
-    pushToSheet(tabs.people.listTab.name, listArray);
+    pushToSheet(tabs.people.listTab, listArray);
     dataValidation(tabs.people.listTab.name)
 
 

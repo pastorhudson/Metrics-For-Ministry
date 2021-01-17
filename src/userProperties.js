@@ -13,6 +13,8 @@
  * @param {string} time_zone
  * @param {string} totalPercentUsed
  * @param {string} syncPercentComplete
+ * @param {string} dateSelectorDiv
+ * @param {string} syncStatus - notSignedIn/ready/syncing
 
  ********************************************/
 
@@ -28,6 +30,8 @@
     setUserProperty("time_zone", "n/a");
     // setUserProperty("totalPercentUsed", "n/a");
     setUserProperty("syncPercentComplete", "n/a");
+    setUserProperty("dateSelectorDiv", "n/a");
+    setUserProperty('syncStatus', "notSignedIn")
 
 
  }

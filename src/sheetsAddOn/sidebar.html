@@ -462,7 +462,7 @@
                 </div>
             </div>
             <div id="dateSelectorDiv">
-                
+
             </div>
             <!-- Authorization Button. -->
             <!-- This gets hidden when authorized.-->
@@ -581,6 +581,12 @@
                     </p>
                 </div>
                 <div class="infoContentDivs">
+                    <h3>Sync Start Date</h3>
+                    <p>
+                        <?= getUserProperty("dateSelectorDiv"); ?>
+                    </p>
+                </div>
+                <div class="infoContentDivs">
                     <h3>Modules Enabled</h3>
                     <p>
                         <?= getUserProperty("requestedModules"); ?>
@@ -641,11 +647,11 @@
             let today = new Date()
             let twoDaysAgo = today.setDate(today.getDate() - 2);
             let newDate = new Date(twoDaysAgo).toISOString().split('T')[0];
-            
+
             const html = `<label for="start" id="labelDate">Sync Data After (optional):</label>
                 <input type="date" id="start" name="" min="1969-01-01" max="${newDate}"">`
 
-                document.getElementById('dateSelectorDiv').innerHTML = html;
+            document.getElementById('dateSelectorDiv').innerHTML = html;
 
         });
 
@@ -684,58 +690,120 @@
         // document.getElementById('syncNowButton').addEventListener("click", syncNow);
 
         document.getElementById('syncNowButton').addEventListener('click', () => {
-            document.getElementById('refreshIcon').classList.add('refreshIcon-spin');
-            syncNow();
-
-        })
-
-        function syncNow() {
-            document.getElementById('syncNowContent').classList.add('hidden')
-            document.getElementById('syncNowProgressBar').classList.remove('hidden')
-
-            let percentComplete = 0;
-
-            var intervalId = setInterval(function () {
-
-                google.script.run
-                    .withSuccessHandler((e) => {
-                        percentComplete = e;
-                        if (percentComplete < 100) {
-                            console.log(percentComplete);
-                            document.getElementById("myBar").style.width = percentComplete + "%";
-
-                            //gradualWidthIncrease(percentComplete)
-
-                        } else {
-                            clearInterval(intervalId);
-                        }
-                    })
-                    .withFailureHandler()
-                    .getUserProperty('syncPercentComplete')
-
-            }, 7500);
+            //syncNow();
 
 
             google.script.run
-                .withSuccessHandler(() => {
-                    document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
-                    document.getElementById('syncNowContent').classList.remove('hidden')
-                    document.getElementById('syncNowProgressBar').classList.add('hidden')
+                .withSuccessHandler((status) => {
+                    console.log(`Metrics for Ministry Sync Status: ${status}`)
+
+                    if (status == "ready") {
+                        document.getElementById('syncNowContent').classList.add('hidden')
+                        document.getElementById('syncNowProgressBar').classList.remove('hidden')
+                        document.getElementById('refreshIcon').classList.add('refreshIcon-spin');
+
+                        let percentComplete = 0;
+
+                        var intervalId = setInterval(function () {
+
+                            google.script.run
+                                .withSuccessHandler((e) => {
+                                    percentComplete = e;
+                                    if (percentComplete < 100) {
+                                        console.log(percentComplete);
+                                        document.getElementById("myBar").style.width = percentComplete + "%";
+
+                                        //gradualWidthIncrease(percentComplete)
+
+                                    } else {
+                                        clearInterval(intervalId);
+                                        document.getElementById("myBar").style.width = 0 + "%";
+                                    }
+                                })
+                                .withFailureHandler()
+                                .getUserProperty('syncPercentComplete')
+
+                        }, 7500);
+
+
+                        google.script.run
+                            .withSuccessHandler(() => {
+                                document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
+                                document.getElementById('syncNowContent').classList.remove('hidden')
+                                document.getElementById('syncNowProgressBar').classList.add('hidden')
+                            })
+                            .withFailureHandler(() => {
+                                clearInterval(intervalId);
+
+                                document.getElementById('syncNowContent').classList.remove('hidden')
+                                document.getElementById('syncNowProgressBar').classList.add('hidden')
+                                document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
+
+                            })
+                            .updateSpreadsheet();
+
+                        percentComplete = 0;
+                        document.getElementById("myBar").style.width = percentComplete + "%";
+
+                    } else if (status == "notSignedIn"){
+                        // TODO -- add a model popup here saying they're not signed in.
+                    }
                 })
-                .withFailureHandler(() => {
-                    clearInterval(intervalId);
-
-                    document.getElementById('syncNowContent').classList.remove('hidden')
-                    document.getElementById('syncNowProgressBar').classList.add('hidden')
-                    document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
-
-                })
-                .updateSpreadsheet();
-
-            percentComplete = 0;
+                .withFailureHandler() // TODO - add a failure handler here.
+                .getUserProperty('syncStatus')
 
 
-        }
+
+        })
+
+        // function syncNow() {
+        //     document.getElementById('syncNowContent').classList.add('hidden')
+        //     document.getElementById('syncNowProgressBar').classList.remove('hidden')
+
+        //     let percentComplete = 0;
+
+        //     var intervalId = setInterval(function () {
+
+        //         google.script.run
+        //             .withSuccessHandler((e) => {
+        //                 percentComplete = e;
+        //                 if (percentComplete < 100) {
+        //                     console.log(percentComplete);
+        //                     document.getElementById("myBar").style.width = percentComplete + "%";
+
+        //                     //gradualWidthIncrease(percentComplete)
+
+        //                 } else {
+        //                     clearInterval(intervalId);
+        //                     document.getElementById("myBar").style.width = 0 + "%";
+        //                 }
+        //             })
+        //             .withFailureHandler()
+        //             .getUserProperty('syncPercentComplete')
+
+        //     }, 7500);
+
+
+        //     google.script.run
+        //         .withSuccessHandler(() => {
+        //             document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
+        //             document.getElementById('syncNowContent').classList.remove('hidden')
+        //             document.getElementById('syncNowProgressBar').classList.add('hidden')
+        //         })
+        //         .withFailureHandler(() => {
+        //             clearInterval(intervalId);
+
+        //             document.getElementById('syncNowContent').classList.remove('hidden')
+        //             document.getElementById('syncNowProgressBar').classList.add('hidden')
+        //             document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
+
+        //         })
+        //         .updateSpreadsheet();
+
+        //     percentComplete = 0;
+
+
+        // }
 
 
         document.getElementById('helpButton').addEventListener("click", () => {
@@ -767,7 +835,10 @@
 
         document.getElementById("btn-authorize").addEventListener("click", () => {
             let modules = selectedModules();
-            let dateSelector = new Date(document.getElementById('start')).toISOString();
+
+            let dateSelector = document.getElementById('start').value
+
+
             google.script.run
                 .withSuccessHandler(function (url) {
                     window.open(url, '_blank');
@@ -780,7 +851,8 @@
                 //passing selected modules to out OAuth Function
                 .authorizeSidebarButton(modules);
 
-            if(dateSelector.value != undefined){
+            if (dateSelector != "") {
+                dateSelector = new Date(document.getElementById('start').value).toISOString();
                 google.script.run.setUserProperty('syncStartDate', dateSelector)
             }
 
@@ -788,7 +860,7 @@
         });
 
 
-        
+
 
         document.getElementById('logOutButton').addEventListener("click", () => {
             google.script.run.reset();

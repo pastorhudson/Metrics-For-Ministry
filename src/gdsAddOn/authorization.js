@@ -78,6 +78,7 @@ function authCallback(request) {
     setUpDocument();
     dailySyncAdd();
     setUserProperty("isSignedIn","true");
+    setUserProperty('syncStatus', "ready")
     getOrgData();
 
     return HtmlService.createHtmlOutput('Success! You can close this tab.');

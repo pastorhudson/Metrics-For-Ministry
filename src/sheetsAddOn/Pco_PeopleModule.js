@@ -65,11 +65,12 @@ async function getLists() {
         //subList.listSync = null;
         subList.campus = campuses;
         subList.category = categories;
+        delete subList.campusId;
+        delete subList.categoryId;
 
         listArrayListData.push(subList);
     }
 
-    //console.log(listArrayListData)
 
     return listArrayListData;
 
@@ -84,7 +85,7 @@ async function getListsWithPeople() {
 
     for (const list of listApiCall) {
         let relationships = list.relationships;
-        console.log(relationships)
+        //console.log(relationships)
         let people = relationships.people.data
         for (const person of people) {
             let subList = new ListPeople(
@@ -96,6 +97,9 @@ async function getListsWithPeople() {
             subList.relationships = relationships;
             subList.campus = campuses;
             subList.category = categories;
+            delete subList.campusId;
+            delete subList.categoryId;
+            
             subList.personID = person.id;
             listArrayListData.push(subList);
         }
@@ -158,16 +162,16 @@ async function personDataCall() {
         elementPerson.personGrade = attributes.grade;
         elementPerson.personMembership = attributes.membership;
         elementPerson.personStatus = attributes.status;
-        elementPerson.personCount = 1;
+        //elementPerson.personCount = 1;
 
         if (element.relationships.primary_campus.data != null) {
             let campusNumber = element.relationships.primary_campus.data.id;
             let campus = campusArray.find(o => o.id === campusNumber);
-            elementPerson.campusId = campusNumber;
+            //elementPerson.campusId = campusNumber;
             elementPerson.campusName = campus.name;
 
         } else {
-            elementPerson.campusId = undefined;
+            //elementPerson.campusId = undefined;
             elementPerson.campusName = "undefined";
         }
 
@@ -175,7 +179,7 @@ async function personDataCall() {
     }
 
     console.log(personArray[9000]);
-    console.log(personArray)
+    //console.log(personArray)
     return personArray;
 
 }

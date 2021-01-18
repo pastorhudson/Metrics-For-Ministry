@@ -1,0 +1,35 @@
+"filename", "language", "JavaScript", "JSON", "HTML", "XML", "Markdown", "JSON with Comments", "comment", "blank", "total"
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/.clasp.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 1, 2
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/README.md", "Markdown", 0, 0, 0, 0, 23, 0, 0, 10, 33
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/assets/001-back.svg", "XML", 0, 0, 0, 8, 0, 0, 0, 2, 10
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/assets/001-info.svg", "XML", 0, 0, 0, 1, 0, 0, 0, 0, 1
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/assets/001-lamp.svg", "XML", 0, 0, 0, 1, 0, 0, 0, 0, 1
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/assets/002-settings.svg", "XML", 0, 0, 0, 1, 0, 0, 0, 0, 1
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/assets/003-refresh.svg", "XML", 0, 0, 0, 51, 0, 0, 0, 2, 53
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/assets/004-nodes.svg", "XML", 0, 0, 0, 1, 0, 0, 0, 0, 1
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/helperData/listClassOutline.js", "JavaScript", 18, 0, 0, 0, 0, 0, 0, 3, 21
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/helperData/names.js", "JavaScript", 1002, 0, 0, 0, 0, 0, 0, 6, 1008
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/helperData/stats html page.html", "HTML", 0, 0, 146, 0, 0, 0, 0, 27, 173
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/appsscript.json", "JSON", 0, 28, 0, 0, 0, 0, 0, 2, 30
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/classes/list.js", "JavaScript", 54, 0, 0, 0, 0, 0, 10, 11, 75
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/error.js", "JavaScript", 6, 0, 0, 0, 0, 0, 5, 0, 11
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/gdsAddOn/authorization.js", "JavaScript", 40, 0, 0, 0, 0, 0, 28, 21, 89
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/gdsAddOn/config.js", "JavaScript", 71, 0, 0, 0, 0, 0, 5, 25, 101
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/gdsAddOn/getData.js", "JavaScript", 169, 0, 0, 0, 0, 0, 34, 76, 279
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/gdsAddOn/getSchema.js", "JavaScript", 258, 0, 0, 0, 0, 0, 11, 72, 341
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/globalFunctions.js", "JavaScript", 15, 0, 0, 0, 0, 0, 2, 8, 25
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/pcoApiCalls.js", "JavaScript", 83, 0, 0, 0, 0, 0, 37, 33, 153
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/Pco_CheckinsModule.js", "JavaScript", 85, 0, 0, 0, 0, 0, 14, 38, 137
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/Pco_GivingModule.js", "JavaScript", 101, 0, 0, 0, 0, 0, 26, 53, 180
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/Pco_OrganizationData.js", "JavaScript", 7, 0, 0, 0, 0, 0, 0, 7, 14
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/Pco_PeopleModule.js", "JavaScript", 118, 0, 0, 0, 0, 0, 21, 44, 183
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/dialog.html", "HTML", 0, 0, 14, 0, 0, 0, 0, 2, 16
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/menu.js", "JavaScript", 44, 0, 0, 0, 0, 0, 8, 11, 63
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/sidebar-new.html", "HTML", 0, 0, 574, 0, 0, 0, 4, 100, 678
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/sidebar.html", "HTML", 0, 0, 167, 0, 0, 0, 4, 44, 215
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/sheetsAddOn/spreadsheetFunctions.js", "JavaScript", 150, 0, 0, 0, 0, 0, 53, 58, 261
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/syncSettings.js", "JavaScript", 35, 0, 0, 0, 0, 0, 4, 15, 54
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/testData/createTestPeople.js", "JavaScript", 171, 0, 0, 0, 0, 0, 12, 53, 236
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/src/userProperties.js", "JavaScript", 403, 0, 0, 0, 0, 0, 82, 32, 517
+"/Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev/workspace.code-workspace", "JSON with Comments", 0, 0, 0, 0, 0, 8, 0, 0, 8
+"Total", "-", 2830, 29, 901, 63, 23, 8, 360, 756, 4970

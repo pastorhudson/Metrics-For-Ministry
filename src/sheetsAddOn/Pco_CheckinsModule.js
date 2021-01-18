@@ -73,8 +73,6 @@ async function getCheckInsData() {
 
     let dataArray = [];
     let data = apiCall.data;
-    console.log(data);
-    //let included = apiCall.included;
 
     for (const eventTime of data) {
         let attributes = eventTime.attributes;
@@ -99,17 +97,9 @@ async function getCheckInsData() {
             }
         }
 
-        //console.log(Object.entries(counts))
-        console.log(counts);
-
         for (const count in counts) {
-            console.log(`${count} - ${counts[count]}`)
-
             let amount = counts[count]
-
             if (amount > 0) {
-
-
                 let elementEventTime = {}
                 elementEventTime.eventTimeID = eventTime.id; // primary key
                 elementEventTime.eventID = eventID;
@@ -129,8 +119,6 @@ async function getCheckInsData() {
 
         }
     }
-
-    console.log(dataArray)
 
     return dataArray;
 }

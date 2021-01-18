@@ -73,7 +73,7 @@ function createSheet(tabInfo) {
     const spreadsheet = getDefaultSpreadsheetId();
     let name = tabInfo.name
     let headers = [tabInfo.headers]
-    console.log(headers)
+    //console.log(headers)
 
     //if a sheet does not exist it will create it.
     if (!existingSheets.includes(name)) {
@@ -93,12 +93,18 @@ function createSheet(tabInfo) {
         .setWarningOnly(true)
 }
 
+function updateHeaders(tabInfo) {
+    const spreadsheet = getDefaultSpreadsheetId();
+    let name = tabInfo.name
+    let headers = [tabInfo.headers]
+    let ss = spreadsheet.getSheetByName(name);
+    ss.getRange(1, 1, 1, headers[0].length).setValues(headers);
+}
 
-function pushToSheet(tab, data) {
-    const ss = getDefaultSpreadsheetId().getSheetByName(tab);
-    // let ss = spreadsheet;
 
-    // Remove all range protections in the spreadsheet that the user has permission to edit.
+function pushToSheet(tabInfo, data) {
+    const ss = getDefaultSpreadsheetId().getSheetByName(tabInfo.name);
+
     var protections = ss.getProtections(SpreadsheetApp.ProtectionType.RANGE);
 
     for (var i = 0; i < protections.length; i++) {
@@ -125,8 +131,40 @@ function pushToSheet(tab, data) {
             .protect()
             .setWarningOnly(true)
     }
+
+    removeEmptyRows(tabInfo.name);
+    removeEmptyColumns(tabInfo.name);
+    updateHeaders(tabInfo);
+    resizeColumns(tabInfo.name);
+
 }
 
+function removeEmptyRows(tab) {
+    const ss = getDefaultSpreadsheetId().getSheetByName(tab);
+    var maxRows = ss.getMaxRows();
+    var lastRow = ss.getLastRow();
+    if (maxRows > lastRow) {
+        ss.deleteRows(lastRow + 1, maxRows - lastRow);
+    }
+}
+
+function resizeColumns(tab) {
+    const ss = getDefaultSpreadsheetId().getSheetByName(tab);
+    var lastColumn = ss.getLastColumn();
+    ss.autoResizeColumns(1, lastColumn);
+}
+
+function removeEmptyColumns(tab) {
+    const ss = getDefaultSpreadsheetId().getSheetByName(tab);
+    var maxCols = ss.getMaxColumns();
+    var lastCol = ss.getLastColumn();
+
+    if (maxCols > lastCol) {
+        ss.deleteColumns(lastCol + 1, maxCols - lastCol);
+
+    }
+
+}
 
 
 
@@ -139,33 +177,73 @@ function pushToSheet(tab, data) {
 function dataValidation(tab) {
     const spreadsheet = getDefaultSpreadsheetId();
     let ss = spreadsheet.getSheetByName(tab);
-    var cell = ss.getRange(2, ss.getLastColumn(), ss.getLastRow() - 1, 1)
+    var cell = ss.getRange(2, ss.getLastColumn(), ss.getLastRow(), 1)
     var rule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
     cell.setDataValidation(rule);
 }
 
 async function updateSpreadsheet() {
+    let syncStatus = getUserProperty('syncStatus')
 
-    const tabs = tabNamesReturn();
-    //pushToSheet(tabs.people.campusTab.name, await getCampuses());
-    pushToSheet(tabs.people.personTab.name, await personDataCall());
-    //add an update to the progress bar here for each function
-    pushToSheet(tabs.people.listPeopleTab.name, await getListsWithPeople());
-    pushToSheet(tabs.giving.donationsTab.name, await getGivingDonations());
-    pushToSheet(tabs.check_ins.headcountsTab.name, await getCheckInsData());
-    await updateListTab();
+    if (syncStatus == "ready") {
+        setUserProperty('syncStatus', "syncing")
+        const tabs = tabNamesReturn();
 
-    dataValidation(tabs.people.listTab.name);
+        let modules = getModuleUserObject();
+
+        if (modules.people) {
+
+            //pushToSheet(tabs.people.campusTab.name, await getCampuses());
+            syncPercentComplete(0)
+            syncPercentComplete(10)
+
+            pushToSheet(tabs.people.personTab, await personDataCall());
+            syncPercentComplete(30);
+            //add an update to the progress bar here for each function
+            pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople());
+            syncPercentComplete(60);
+            await updateListTab();
+            syncPercentComplete(70);
+
+            dataValidation(tabs.people.listTab.name);
+        }
+        if (modules.check_ins) {
+            pushToSheet(tabs.check_ins.headcountsTab, await getCheckInsData());
+            syncPercentComplete(80);
+
+        }
+        if (modules.giving) {
+            pushToSheet(tabs.giving.donationsTab, await getGivingDonations());
+            syncPercentComplete(90);
+
+        }
+        if (modules.groups) {
+
+        }
+        if (modules.calendar) {
+
+        }
+        if (modules.services) {
+
+        }
+
+        syncPercentComplete(100);
+        setUserProperty('syncStatus', "ready")
+
+    } else {
+        console.log("actively syncing.")
+    }
+
 }
 
 
-function createDialog() {
-    var htmlOutput = HtmlService
-        .createHtmlOutputFromFile('sheetsAddOn/dialog')
-        .setWidth(250)
-        .setHeight(80);
-    SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Loading');
-}
+// function createDialog() {
+//     var htmlOutput = HtmlService
+//         .createHtmlOutputFromFile('sheetsAddOn/dialog')
+//         .setWidth(250)
+//         .setHeight(80);
+//     SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Loading');
+// }
 
 /**
  * Updating the list tab based on the user input
@@ -202,7 +280,7 @@ async function updateListTab() {
 
         listArray.push(list);
     }
-    pushToSheet(tabs.people.listTab.name, listArray);
+    pushToSheet(tabs.people.listTab, listArray);
     dataValidation(tabs.people.listTab.name)
 
 

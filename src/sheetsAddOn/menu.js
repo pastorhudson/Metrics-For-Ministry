@@ -53,12 +53,9 @@ function reset() {
   resetAuth();
   dailySyncRemove();
   newUserUserProperties();
+  deleteSheetsCreated()
 
   showSidebar();
-
- 
-
-
 
 }
 

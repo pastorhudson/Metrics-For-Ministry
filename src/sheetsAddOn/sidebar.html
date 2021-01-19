@@ -777,7 +777,8 @@
             return modulesSelectedNameArray.join(" ");
         }
 
-        document.getElementById("btn-authorize").addEventListener("click", () => {
+        document.getElementById("btn-authorize").addEventListener("click", authorize)
+        function authorize() {
             let modules = selectedModules();
 
             let dateSelector = document.getElementById('start').value
@@ -786,7 +787,7 @@
             google.script.run
                 .withSuccessHandler(function (url) {
                     window.open(url, '_blank');
-                    //window.top.close();
+                    window.top.close();
                 })
                 .withFailureHandler(function (err) {
                     console.error(err.message);
@@ -801,7 +802,7 @@
             }
 
 
-        });
+        };
 
 
 

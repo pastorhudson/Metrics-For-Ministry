@@ -10,10 +10,11 @@ function onInstall(e) {
 
 // add custom menu
 function onOpen(e) {
+  // newUserUserProperties();
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('Metrics for Ministry')
     .addItem('Sidebar', 'showSidebar')
-    .addItem('Sidebar - Old', 'showSidebarNew')
+    // .addItem('Sidebar - Old', 'showSidebarNew')
     .addItem('Log Out', 'reset')
     .addToUi();
 }
@@ -42,10 +43,16 @@ function returnData(data) {
 
 
 function authorizeSidebarButton(requestedModules) {
-  pcoModuleUserProperties(String(requestedModules))
-  const Authservice = getOAuthService(String(requestedModules));
-  const authorizationUrl = Authservice.getAuthorizationUrl();
-  return authorizationUrl;
+  try {
+    pcoModuleUserProperties(String(requestedModules))
+    const Authservice = getOAuthService(String(requestedModules));
+    const authorizationUrl = Authservice.getAuthorizationUrl();
+    return authorizationUrl;
+  }
+  catch(err){
+    return err;
+  } 
+
 }
 
 function reset() {

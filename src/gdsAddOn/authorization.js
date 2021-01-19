@@ -44,7 +44,7 @@ function isAuthValid() {
 function getOAuthService(requestedModules) {
 
   
-  return OAuth2.createService('pcoToGdsConnector')
+  return OAuth2.createService('metricsForMinistry')
     .setAuthorizationBaseUrl("https://api.planningcenteronline.com/oauth/authorize")
     .setTokenUrl("https://api.planningcenteronline.com/oauth/token")
     .setClientId("16f33e2f7ef0bf0f44df437f2b00d7060a47f7c8c08e614132ad9e4a7ae176e7")
@@ -68,7 +68,8 @@ function getOAuthService(requestedModules) {
  */
 
 function authCallback(request) {
-  var authorized = getOAuthService().handleCallback(request);
+  const testService = getOAuthService();
+  var authorized = testService.handleCallback(request);
   console.log(authorized)
   if (authorized) {
 

@@ -534,7 +534,7 @@
                     <div class="contentSubOptionInfo column2">
                         <div id="syncNowContent">
                             <h3>Logout/Reset</h3>
-                            <p>This wipes all data and logs out of PCO.</p>
+                            <p>This clears all data in Google Sheets and logs out of PCO.</p>
                         </div>
                     </div>
 
@@ -743,7 +743,7 @@
                         percentComplete = 0;
                         document.getElementById("myBar").style.width = percentComplete + "%";
 
-                    } else if (status == "notSignedIn"){
+                    } else if (status == "notSignedIn") {
                         // TODO -- add a model popup here saying they're not signed in.
                     }
                 })
@@ -757,7 +757,7 @@
 
 
         document.getElementById('helpButton').addEventListener("click", () => {
-            window.open("https://app.gitbook.com/@savvytoolbelt/s/pco-to-gds/configuration/initial-setup", '_blank');
+            window.open("https://docs.metricsforministry.com", '_blank');
         });
 
         document.getElementById('gdsConnectorButton').addEventListener("click", () => {

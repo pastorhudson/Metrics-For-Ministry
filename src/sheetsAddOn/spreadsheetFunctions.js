@@ -39,6 +39,37 @@ function setUpDocument() {
 
 }
 
+
+function deleteSheetsCreated() {
+    //let modules = getModuleUserObject();
+    let tabs = tabNamesReturn();
+    const spreadsheet = getDefaultSpreadsheetId();
+
+    deleteSheet("Metrics for Ministry has been reset");
+
+    spreadsheet.insertSheet("Metrics for Ministry has been reset");
+
+
+    deleteSheet(tabs.people.personTab.name);
+    deleteSheet(tabs.people.listTab.name);
+    deleteSheet(tabs.people.listPeopleTab.name);
+
+    deleteSheet(tabs.check_ins.headcountsTab.name);
+
+    deleteSheet(tabs.giving.donationsTab.name);
+
+}
+
+function deleteSheet(tabName) {
+    const spreadsheet = getDefaultSpreadsheetId();
+
+    let sheets = tabList();
+    if (sheets.includes(tabName)) {
+        var sheet = spreadsheet.getSheetByName(tabName);
+        spreadsheet.deleteSheet(sheet);
+    }
+}
+
 /**
  * Fetching the tabs on the Google Sheet
  *
@@ -50,12 +81,14 @@ function tabList() {
     const spreadsheet = getDefaultSpreadsheetId();
     const sheets = spreadsheet.getSheets();
 
-    console.log(sheets);
+    //console.log(sheets);
     let sheetNames = [];
 
     for (let i = 0; i < sheets.length; i++) {
         sheetNames.push(sheets[i].getSheetName());
     }
+
+    console.log(sheetNames)
     return sheetNames;
 
 }

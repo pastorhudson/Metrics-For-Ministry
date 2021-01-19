@@ -76,12 +76,13 @@ function authCallback(request) {
     setActiveSpreadsheetID();
     pcoModuleUserProperties(undefined);
     setUpDocument();
+    deleteSheet("Metrics for Ministry has been reset");
     dailySyncAdd();
     setUserProperty("isSignedIn","true");
     setUserProperty('syncStatus', "ready")
     getOrgData();
 
-    return HtmlService.createHtmlOutput('Success! You can close this tab.');
+    return HtmlService.createHtmlOutput('Success. You can close this tab');
   } else {
     return HtmlService.createHtmlOutput('Denied. You can close this tab');
   };

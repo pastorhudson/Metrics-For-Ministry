@@ -47,8 +47,8 @@ function getOAuthService(requestedModules) {
   return OAuth2.createService('pcoToGdsConnector')
     .setAuthorizationBaseUrl("https://api.planningcenteronline.com/oauth/authorize")
     .setTokenUrl("https://api.planningcenteronline.com/oauth/token")
-    .setClientId("bdfe8251b60e0dda3c726ba1a2ba73d0e2757b4d46f0a7c947327e8edf6372cc")
-    .setClientSecret("f8bd1c1594c349e2a72da503f5f1bd30716c6f65a0e9097972d32132aedb01a1")
+    .setClientId("16f33e2f7ef0bf0f44df437f2b00d7060a47f7c8c08e614132ad9e4a7ae176e7")
+    .setClientSecret("b29cb5440cf79ab2242566cda51335d37e54dac1b9c88edc3cc5a8d8f8522555")
     .setPropertyStore(PropertiesService.getUserProperties())
     .setCallbackFunction('authCallback')
     .setScope(requestedModules);

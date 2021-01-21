@@ -5,8 +5,8 @@ function onInstall(e) {
    * add-on to execute.
    */
   onOpen(e);
-  newUserUserProperties();
 }
+
 
 // add custom menu
 function onOpen(e) {
@@ -14,7 +14,6 @@ function onOpen(e) {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('Metrics for Ministry')
     .addItem('Sidebar', 'showSidebar')
-    // .addItem('Sidebar - Old', 'showSidebarNew')
     .addItem('Log Out', 'reset')
     .addToUi();
 }
@@ -22,10 +21,20 @@ function onOpen(e) {
 
 // Display's the sidebar
 function showSidebar() {
+
+  let status = getUserProperty('setupStatus');
+
+  if (status == null) {
+    setUserProperty('setupStatus', 'true')
+    newUserUserProperties();
+  }
+
   const html = HtmlService.createTemplateFromFile('sheetsAddOn/sidebar');
   const page = html.evaluate();
   page.setTitle("Savvy Tool Belt");
   SpreadsheetApp.getUi().showSidebar(page);
+
+
 }
 
 // Display's the sidebar
@@ -49,9 +58,9 @@ function authorizeSidebarButton(requestedModules) {
     const authorizationUrl = Authservice.getAuthorizationUrl();
     return authorizationUrl;
   }
-  catch(err){
+  catch (err) {
     return err;
-  } 
+  }
 
 }
 

@@ -55,11 +55,23 @@ async function getLists() {
     let listArrayListData = [];
 
     for (const list of listApiCall) {
+
+
         let relationships = list.relationships;
+        //console.log(relationships)
+        let description = list.attributes.description.replaceAll("'", '"')
+
+        let listName = list.attributes.name;
+
+        if(listName == null){
+            listName = description;
+        }
+
+
         let subList = new List(
             list.id,
-            list.attributes.description.replaceAll("'", '"'),
-            list.attributes.name,
+            description,
+            listName,
             list.attributes.total_people);
         subList.relationships = relationships;
         //subList.listSync = null;
@@ -87,11 +99,20 @@ async function getListsWithPeople() {
         let relationships = list.relationships;
         //console.log(relationships)
         let people = relationships.people.data
+        let description = list.attributes.description.replaceAll("'", '"')
+
+        let listName = list.attributes.name;
+
+        if(listName == null){
+            listName = description;
+        }
+
+
         for (const person of people) {
             let subList = new ListPeople(
                 list.id,
-                list.attributes.description.replaceAll("'", '"'),
-                list.attributes.name,
+                description,
+                listName,
                 list.attributes.total_people,
                 person.id);
             subList.relationships = relationships;

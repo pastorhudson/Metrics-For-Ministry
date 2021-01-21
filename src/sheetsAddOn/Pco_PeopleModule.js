@@ -68,7 +68,6 @@ async function getLists() {
         }
 
 
-        let relationships = list.relationships;
         let subList = new List(
             list.id,
             description,

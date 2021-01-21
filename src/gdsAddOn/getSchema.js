@@ -1,4 +1,3 @@
-let cc = DataStudioApp.createCommunityConnector();
 
 
 //Throws an error if they have not selected the list type for this connector.
@@ -15,6 +14,7 @@ function validateConfig(config) {
 }
 
 function getSchema(request) {
+  
   console.log(request);
 
 

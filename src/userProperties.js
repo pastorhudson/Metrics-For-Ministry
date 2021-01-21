@@ -15,6 +15,7 @@
  * @param {string} syncPercentComplete
  * @param {string} dateSelectorDiv
  * @param {string} syncStatus - notSignedIn/ready/syncing
+ * @param {string} setupStatus - true / false - based on if the user has already set it up.
 
  ********************************************/
 
@@ -32,6 +33,7 @@
     setUserProperty("syncPercentComplete", "n/a");
     setUserProperty("dateSelectorDiv", "n/a");
     setUserProperty('syncStatus', "notSignedIn")
+    setUserProperty('setupStatus', 'true')
 
 
  }
@@ -61,7 +63,6 @@ function getUserProperty(property) {
     var returnUserProperty = PropertiesService.getUserProperties().getProperty(
         property
     );
-    //console.log(returnUserProperty);
     return returnUserProperty;
 
 

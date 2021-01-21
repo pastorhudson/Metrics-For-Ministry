@@ -1,0 +1,171 @@
+<script>
+
+    window.addEventListener('load', () => {
+        let today = new Date()
+        let twoDaysAgo = today.setDate(today.getDate() - 2);
+        let newDate = new Date(twoDaysAgo).toISOString().split('T')[0];
+
+        const html = `<label for="start" id="labelDate">Sync Data After (optional):</label>
+            <input type="date" id="start" name="" min="1969-01-01" max="${newDate}"">`
+
+        document.getElementById('dateSelectorDiv').innerHTML = html;
+
+    });
+
+    document.getElementById('syncListsButton').addEventListener('click', () => {
+
+        document.getElementById('refreshIconSettings').classList.add('refreshIcon-spin');
+
+        google.script.run
+            .withSuccessHandler(() => {
+                document.getElementById('refreshIconSettings').classList.remove('refreshIcon-spin')
+            })
+            .updateListTab();
+    })
+
+    document.getElementById('settingsButton').addEventListener("click", () => {
+        document.getElementById('menuDiv').classList.add('hidden')
+        document.getElementById('settingsDiv').classList.remove('hidden')
+    })
+
+    document.getElementById('backToHomeButton-settings').addEventListener("click", () => {
+        document.getElementById('menuDiv').classList.remove('hidden')
+        document.getElementById('settingsDiv').classList.add('hidden')
+    })
+
+    document.getElementById('infoButton').addEventListener("click", () => {
+        document.getElementById('menuDiv').classList.add('hidden')
+        document.getElementById('infoDiv').classList.remove('hidden')
+    })
+
+    document.getElementById('backToHomeButton-info').addEventListener("click", () => {
+        document.getElementById('menuDiv').classList.remove('hidden')
+        document.getElementById('infoDiv').classList.add('hidden')
+    })
+
+
+    document.getElementById('syncNowButton').addEventListener('click', () => {
+        //syncNow();
+
+
+        google.script.run
+            .withSuccessHandler((status) => {
+                console.log(`Metrics for Ministry Sync Status: ${status}`)
+
+                if (status == "ready") {
+                    document.getElementById('syncNowContent').classList.add('hidden')
+                    document.getElementById('syncNowProgressBar').classList.remove('hidden')
+                    document.getElementById('refreshIcon').classList.add('refreshIcon-spin');
+
+                    let percentComplete = 0;
+
+                    var intervalId = setInterval(function () {
+
+                        google.script.run
+                            .withSuccessHandler((e) => {
+                                percentComplete = e;
+                                if (percentComplete < 100) {
+                                    console.log(percentComplete);
+                                    document.getElementById("myBar").style.width = percentComplete + "%";
+
+                                    //gradualWidthIncrease(percentComplete)
+
+                                } else {
+                                    clearInterval(intervalId);
+                                    document.getElementById("myBar").style.width = 0 + "%";
+                                }
+                            })
+                            .withFailureHandler()
+                            .getUserProperty('syncPercentComplete')
+
+                    }, 7500);
+
+
+                    google.script.run
+                        .withSuccessHandler(() => {
+                            document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
+                            document.getElementById('syncNowContent').classList.remove('hidden')
+                            document.getElementById('syncNowProgressBar').classList.add('hidden')
+                        })
+                        .withFailureHandler(() => {
+                            clearInterval(intervalId);
+
+                            document.getElementById('syncNowContent').classList.remove('hidden')
+                            document.getElementById('syncNowProgressBar').classList.add('hidden')
+                            document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
+
+                        })
+                        .updateSpreadsheet();
+
+                    percentComplete = 0;
+                    document.getElementById("myBar").style.width = percentComplete + "%";
+
+                } else if (status == "notSignedIn") {
+                    // TODO -- add a model popup here saying they're not signed in.
+                }
+            })
+            .withFailureHandler() // TODO - add a failure handler here.
+            .getUserProperty('syncStatus')
+
+
+
+    })
+
+
+
+    document.getElementById('helpButton').addEventListener("click", () => {
+        window.open("https://docs.metricsforministry.com", '_blank');
+    });
+
+    document.getElementById('gdsConnectorButton').addEventListener("click", () => {
+        window.open("https://datastudio.google.com/u/0/", '_blank');
+    });
+
+
+
+    //selecting the modules that are checked to be used as the scope in the OAuth Call.
+    function selectedModules() {
+        const modules = document.getElementsByClassName('pcoModuleSelector');
+        let modulesSelectedNameArray = [];
+
+        for (let i = 0; i < modules.length; i++) {
+            if (modules[i].checked) { modulesSelectedNameArray.push(modules[i].value) }
+        }
+        return modulesSelectedNameArray.join(" ");
+    }
+
+    document.getElementById("btn-authorize").addEventListener("click", authorize)
+    function authorize() {
+        let modules = selectedModules();
+
+        let dateSelector = document.getElementById('start').value
+
+
+        google.script.run
+            .withSuccessHandler(function (url) {
+                window.open(url, '_blank');
+                window.top.close();
+            })
+            .withFailureHandler(function (err) {
+                console.error(err.message);
+            })
+
+            //passing selected modules to out OAuth Function
+            .authorizeSidebarButton(modules);
+
+        if (dateSelector != "") {
+            dateSelector = new Date(document.getElementById('start').value).toISOString();
+            google.script.run.setUserProperty('syncStartDate', dateSelector)
+        }
+
+
+    };
+
+
+
+
+    document.getElementById('logOutButton').addEventListener("click", () => {
+        google.script.run.reset();
+    })
+
+</script>

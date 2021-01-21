@@ -261,7 +261,8 @@ async function updateSpreadsheet() {
         }
 
         syncPercentComplete(100);
-        setUserProperty('syncStatus', "ready")
+        setUserProperty('syncStatus', "ready");
+        setLastSyncTime();
 
     } else {
         console.log("actively syncing.")

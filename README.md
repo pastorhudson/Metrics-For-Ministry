@@ -1,32 +1,31 @@
 # Summary
 
-Date : 2021-01-13 15:26:58
+Date : 2021-01-21 13:08:38
 
-Directory /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics For Ministry - Dev
+Directory /Users/coltonshaw/Library/Mobile Documents/com~apple~CloudDocs/Scripts/Metrics for Ministry - Prod
 
-Total : 23 files,  2878 codes, 332 comments, 573 blanks, all 3783 lines
+Total : 33 files,  3213 codes, 388 comments, 873 blanks, all 4474 lines
 
 [details](details.md)
 
 ## Languages
 | language | files | code | comment | blank | total |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| JavaScript | 18 | 2,658 | 328 | 519 | 3,505 |
-| HTML | 2 | 181 | 4 | 46 | 231 |
-| JSON | 2 | 29 | 0 | 3 | 32 |
-| Markdown | 1 | 10 | 0 | 5 | 15 |
+| JavaScript | 18 | 1,912 | 376 | 623 | 2,911 |
+| HTML | 4 | 1,122 | 11 | 230 | 1,363 |
+| XML | 8 | 116 | 1 | 9 | 126 |
+| JSON | 2 | 40 | 0 | 1 | 41 |
+| Markdown | 1 | 23 | 0 | 10 | 33 |
 
 ## Directories
 | path | files | code | comment | blank | total |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| . | 23 | 2,878 | 332 | 573 | 3,783 |
-| helperData | 2 | 1,020 | 0 | 9 | 1,029 |
-| src | 19 | 1,847 | 332 | 558 | 2,737 |
+| . | 33 | 3,213 | 388 | 873 | 4,474 |
+| assets | 8 | 116 | 1 | 9 | 126 |
+| helperData | 1 | 171 | 12 | 53 | 236 |
+| src | 22 | 2,902 | 375 | 800 | 4,077 |
 | src/classes | 1 | 54 | 10 | 11 | 75 |
-| src/gdsAddOn | 4 | 431 | 76 | 163 | 670 |
-| src/sheetsAddOn | 7 | 671 | 127 | 250 | 1,048 |
-| src/testData | 1 | 171 | 12 | 53 | 236 |
+| src/gdsAddOn | 4 | 539 | 78 | 195 | 812 |
+| src/sheetsAddOn | 11 | 1,718 | 145 | 494 | 2,357 |
 
 [details](details.md)
-
-

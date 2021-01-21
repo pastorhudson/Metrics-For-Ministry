@@ -142,7 +142,7 @@ function getSchema(request) {
       .setId(peopleInfo.metrics.personCount.id)
       .setName(peopleInfo.metrics.personCount.name)
       .setType(types.NUMBER)
-      .setFormula(peopleInfo.metrics.personCount.formula)
+      // .setFormula(peopleInfo.metrics.personCount.formula)
       .setDescription(peopleInfo.metrics.personCount.description)
 
   } else if (connectorType == 'giving') {

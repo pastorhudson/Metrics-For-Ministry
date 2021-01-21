@@ -87,11 +87,20 @@ async function getListsWithPeople() {
         let relationships = list.relationships;
         //console.log(relationships)
         let people = relationships.people.data
+        let description = list.attributes.description.replaceAll("'", '"')
+
+        let listName = list.attributes.name;
+
+        if(listName == null){
+            listName = list.attributes.description;
+        }
+
+
         for (const person of people) {
             let subList = new ListPeople(
                 list.id,
-                list.attributes.description.replaceAll("'", '"'),
-                list.attributes.name,
+                description,
+                listName,
                 list.attributes.total_people,
                 person.id);
             subList.relationships = relationships;

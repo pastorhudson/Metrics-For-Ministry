@@ -461,9 +461,10 @@
                     </div>
                 </div>
             </div>
-            <div id="dateSelectorDiv">
+            <!-- <div id="dateSelectorDiv"> 
 
-            </div>
+            </div>-->
+
             <!-- Authorization Button. -->
             <!-- This gets hidden when authorized.-->
             <div class="authorizeDiv header">
@@ -643,17 +644,17 @@
 
     <script>
 
-        window.addEventListener('load', () => {
-            let today = new Date()
-            let twoDaysAgo = today.setDate(today.getDate() - 2);
-            let newDate = new Date(twoDaysAgo).toISOString().split('T')[0];
+        // window.addEventListener('load', () => {
+        //     let today = new Date()
+        //     let twoDaysAgo = today.setDate(today.getDate() - 2);
+        //     let newDate = new Date(twoDaysAgo).toISOString().split('T')[0];
 
-            const html = `<label for="start" id="labelDate">Sync Data After (optional):</label>
-                <input type="date" id="start" name="" min="1969-01-01" max="${newDate}"">`
+        //     const html = `<label for="start" id="labelDate">Sync Data After (optional):</label>
+        //         <input type="date" id="start" name="" min="1969-01-01" max="${newDate}"">`
 
-            document.getElementById('dateSelectorDiv').innerHTML = html;
+        //     document.getElementById('dateSelectorDiv').innerHTML = html;
 
-        });
+        // });
 
         document.getElementById('syncListsButton').addEventListener('click', () => {
 
@@ -774,14 +775,14 @@
             for (let i = 0; i < modules.length; i++) {
                 if (modules[i].checked) { modulesSelectedNameArray.push(modules[i].value) }
             }
+            console.log(modulesSelectedNameArray);
             return modulesSelectedNameArray.join(" ");
         }
 
-        document.getElementById("btn-authorize").addEventListener("click", authorize)
-        function authorize() {
+        document.getElementById("btn-authorize").addEventListener("click", () => {
             let modules = selectedModules();
 
-            let dateSelector = document.getElementById('start').value
+            //let dateSelector = document.getElementById('start').value
 
 
             google.script.run
@@ -796,13 +797,13 @@
                 //passing selected modules to out OAuth Function
                 .authorizeSidebarButton(modules);
 
-            if (dateSelector != "") {
-                dateSelector = new Date(document.getElementById('start').value).toISOString();
-                google.script.run.setUserProperty('syncStartDate', dateSelector)
-            }
+            // if (dateSelector != "") {
+            //     dateSelector = new Date(document.getElementById('start').value).toISOString();
+            //     google.script.run.setUserProperty('syncStartDate', dateSelector)
+            // }
 
 
-        };
+        });
 
 
 

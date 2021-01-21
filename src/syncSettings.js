@@ -17,7 +17,7 @@ function triggerSync() {
 
         updateSpreadsheet();
         //updating the last sync time
-        setLastSyncTime();
+        
 
         //setting a property to confirm that we have sync'd and are not ready to sync.
 

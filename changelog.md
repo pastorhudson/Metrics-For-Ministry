@@ -1,8 +1,8 @@
 # Changelog
 
-## [Unreleased](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/HEAD)
+## [1.0.8](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/1.0.8) (2021-01-21)
 
-[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/76fd2b619757f179cd7de20de98ece9587f17954...HEAD)
+[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/76fd2b619757f179cd7de20de98ece9587f17954...1.0.8)
 
 **Closed issues:**
 
@@ -12,6 +12,7 @@
 
 **Merged pull requests:**
 
+- Beta 1.0.8 [\#26](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/26) ([coltoneshaw](https://github.com/coltoneshaw))
 - Beta 1.0.7 [\#25](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/25) ([coltoneshaw](https://github.com/coltoneshaw))
 - Beta 1.0.6 [\#24](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/24) ([coltoneshaw](https://github.com/coltoneshaw))
 - Beta V5 [\#23](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/23) ([coltoneshaw](https://github.com/coltoneshaw))

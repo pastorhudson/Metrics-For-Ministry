@@ -20,14 +20,14 @@ function getConfig(request) {
   }
 
   config.newInfo()
-    .setId('PCO People Connector Instructions')
+    .setId('Metrics for Ministry Instructions')
     .setText(
-      'This PCO People connector supports two connection types - people data and list data. Select what you are attempting to connect. You can add two connecters to capture both sets of data.'
+      'This connector supports data coming from Google Sheets. In order to use this you must have already configured Google Sheets to contain your PCO information. Once that is done you will configure a connector here for each type of data that you want to connect.'
     );
 
   config.newInfo()
     .setId('spreadsheetIDText')
-    .setText(`Your Spreadsheet ID is: ${spreadsheetID}. You need to copy and paste this in the below field.`)
+    .setText(`Your Spreadsheet ID is: ${spreadsheetID}. If this is blank that means you have not configured the Google Sheets integration yet. Please configure that first.`)
 
   const option1 = config.newOptionBuilder()
     .setLabel(spreadsheetID)

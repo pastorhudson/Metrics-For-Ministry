@@ -11,6 +11,7 @@ function getConfig(request) {
   let spreadsheetID = getUserProperty('activeSpreadsheetID');
   console.log(configParams)
   const isFirstRequest = configParams === undefined;
+  var cc = DataStudioApp.createCommunityConnector();
   const config = cc.getConfig();
 
   if (isFirstRequest) {

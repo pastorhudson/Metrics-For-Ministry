@@ -327,7 +327,7 @@ function tabNamesReturn() {
                         "id": "personCount",
                         "name": "Person Count",
                         "description": "This gives a count of one for each person.",
-                        "formula": "COUNT($personId)"
+                        "formula": "1"
                     }
                 }
             }

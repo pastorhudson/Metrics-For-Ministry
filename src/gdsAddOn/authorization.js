@@ -7,7 +7,7 @@ function getAuthType() {
   const cc = DataStudioApp.createCommunityConnector();
   
   return cc.newAuthTypeResponse()
-    .setAuthType(cc.AuthType.OAUTH2)
+    .setAuthType(cc.AuthType.NONE)
     .build();
 }
 

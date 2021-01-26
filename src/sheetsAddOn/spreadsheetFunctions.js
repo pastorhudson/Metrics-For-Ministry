@@ -337,13 +337,16 @@ function getSheetHeaders(name) {
 function getSpreadsheetDataByName(tab) {
     const spreadsheet = getDefaultSpreadsheetId();
     let ss = spreadsheet.getSheetByName(tab);
-    let lastRow = ss.getDataRange().getNumRows();
-    let lastCol = ss.getLastColumn();
+    let lastRow = ss.getDataRange().getNumRows() - 1;
+    let lastCol = ss.getDataRange().getLastColumn();
+
+    console.log(`last Row: ${lastRow}... last Column: ${lastCol}`)
 
     let headers = getSheetHeaders(tab);
 
     let output = [];
     let spreadsheetData = ss.getRange(2, 1, lastRow, lastCol).getValues();
+    console.log(spreadsheetData)
 
     //doing a loop over each row in your spreadsheet. this runs top to bottom.
     for (let i = 0; i < lastRow; i++) {

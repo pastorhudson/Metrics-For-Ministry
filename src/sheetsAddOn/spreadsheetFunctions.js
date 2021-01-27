@@ -148,7 +148,12 @@ function pushToSheet(tabInfo, data) {
     }
 
     let output = [];
-    ss.getRange(2, 1, ss.getLastRow(), ss.getLastColumn()).clearContent();
+    if(ss.getLastRow() > 0 && s.getLastColumn() > 0 ){
+        ss.getRange(2, 1, ss.getLastRow(), ss.getLastColumn()).clearContent();
+    }
+
+    updateHeaders(tabInfo);
+    
 
     if (data.length != 0) {
         //looping over the length of our data and turning it into an array that Google Sheets will accept.
@@ -167,7 +172,6 @@ function pushToSheet(tabInfo, data) {
 
     removeEmptyRows(tabInfo.name);
     removeEmptyColumns(tabInfo.name);
-    updateHeaders(tabInfo);
     resizeColumns(tabInfo.name);
 
 }
@@ -292,29 +296,37 @@ async function updateListTab() {
     let listSpreadsheetData = getSpreadsheetDataByName(tabs.people.listTab.name);
     let listArray = [];
 
-    for (const list of listApiCall) {
-        const syncThisList = listSpreadsheetData.filter(function (spreadsheetList) {
-            if (spreadsheetList["List ID"] == list.listId) {
-                return spreadsheetList
+    console.log(listSpreadsheetData.length)
+
+    if(listSpreadsheetData.length > 0){
+        for (const list of listApiCall) {
+            const syncThisList = listSpreadsheetData.filter(function (spreadsheetList) {
+                if (spreadsheetList["List ID"] == list.listId) {
+                    return spreadsheetList
+                }
+            });
+    
+            //console.log(syncThisList.length)
+    
+            if (syncThisList.length > 0) {
+                let syncList = syncThisList[0]["Sync This List"]
+                list["listSync"] = syncList;
+    
+            } else {
+                let syncList = false;
+                list["listSync"] = syncList;
+    
             }
-        });
-
-        console.log(syncThisList.length)
-
-        if (syncThisList.length > 0) {
-            let syncList = syncThisList[0]["Sync This List"]
-            list["listSync"] = syncList;
-
-        } else {
-            let syncList = false;
-            list["listSync"] = syncList;
-
+    
+    
+            listArray.push(list);
         }
-
-
-        listArray.push(list);
+        pushToSheet(tabs.people.listTab, listArray);
+    } else {
+        pushToSheet(tabs.people.listTab, listApiCall);
     }
-    pushToSheet(tabs.people.listTab, listArray);
+
+    
     dataValidation(tabs.people.listTab.name)
 
 
@@ -337,40 +349,46 @@ function getSheetHeaders(name) {
 function getSpreadsheetDataByName(tab) {
     const spreadsheet = getDefaultSpreadsheetId();
     let ss = spreadsheet.getSheetByName(tab);
-    let lastRow = ss.getDataRange().getNumRows() - 1;
+    let lastRow = ss.getLastRow();
     let lastCol = ss.getDataRange().getLastColumn();
 
     console.log(`last Row: ${lastRow}... last Column: ${lastCol}`)
 
-    let headers = getSheetHeaders(tab);
+    if (lastRow > 0) {
+        let headers = getSheetHeaders(tab);
 
-    let output = [];
-    let spreadsheetData = ss.getRange(2, 1, lastRow, lastCol).getValues();
-    console.log(spreadsheetData)
+        let output = [];
+        let spreadsheetData = ss.getRange(2, 1, lastRow, lastCol).getValues();
+        //console.log(spreadsheetData)
 
-    //doing a loop over each row in your spreadsheet. this runs top to bottom.
-    for (let i = 0; i < lastRow; i++) {
-        let currentRow = spreadsheetData[i];
+        //doing a loop over each row in your spreadsheet. this runs top to bottom.
+        for (let i = 0; i < lastRow - 1; i++) {
+            let currentRow = spreadsheetData[i];
 
-        //creating an empty object for each loop
-        let object = {};
+            //creating an empty object for each loop
+            let object = {};
 
-        //doing a loop over each cell in your spreadsheet. this runs left to right.
-        for (j = 0; j < currentRow.length; j++) {
+            //doing a loop over each cell in your spreadsheet. this runs left to right.
+            for (j = 0; j < currentRow.length; j++) {
 
-            //setting the key to be the column header that matches the column data
-            let keyData = headers[j];
-            let valueData = currentRow[j];
+                //setting the key to be the column header that matches the column data
+                let keyData = headers[j];
+                let valueData = currentRow[j];
 
-            //this is where we actually create teh key:value pairing.
-            object[keyData] = valueData;
+                //this is where we actually create teh key:value pairing.
+                object[keyData] = valueData;
+            }
+
+            //the object we created above is stored in our ouput array.
+            output.push(object);
+
         }
 
-        //the object we created above is stored in our ouput array.
-        output.push(object);
-
+        //returning the data of your spreadsheet in a key:value pair.
+        return output;
+    } else {
+        return [];
     }
 
-    //returning the data of your spreadsheet in a key:value pair.
-    return output;
+
 }

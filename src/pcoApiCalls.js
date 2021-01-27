@@ -149,3 +149,10 @@ async function pcoApiLoopedCall_giving(url, include = false, includeURL = undefi
 }
 
 
+function getToken() {
+    let token = getOAuthService().getAccessToken();
+    console.log(token)
+  }
+
+  
+

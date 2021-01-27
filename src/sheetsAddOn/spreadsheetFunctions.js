@@ -148,7 +148,7 @@ function pushToSheet(tabInfo, data) {
     }
 
     let output = [];
-    if(ss.getLastRow() > 0 && s.getLastColumn() > 0 ){
+    if(ss.getLastRow() > 0 && ss.getLastColumn() > 0 ){
         ss.getRange(2, 1, ss.getLastRow(), ss.getLastColumn()).clearContent();
     }
 
@@ -223,50 +223,56 @@ async function updateSpreadsheet() {
     let syncStatus = getUserProperty('syncStatus')
 
     if (syncStatus == "ready") {
-        setUserProperty('syncStatus', "syncing")
-        const tabs = tabNamesReturn();
-
-        let modules = getModuleUserObject();
-
-        if (modules.people) {
-
-            //pushToSheet(tabs.people.campusTab.name, await getCampuses());
-            syncPercentComplete(0)
-            syncPercentComplete(10)
-
-            pushToSheet(tabs.people.personTab, await personDataCall());
-            syncPercentComplete(30);
-            //add an update to the progress bar here for each function
-            pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople());
-            syncPercentComplete(60);
-            await updateListTab();
-            syncPercentComplete(70);
-
-            dataValidation(tabs.people.listTab.name);
+        try{
+            setUserProperty('syncStatus', "syncing")
+            const tabs = tabNamesReturn();
+    
+            let modules = getModuleUserObject();
+    
+            if (modules.people) {
+    
+                //pushToSheet(tabs.people.campusTab.name, await getCampuses());
+                syncPercentComplete(0)
+                syncPercentComplete(10)
+    
+                pushToSheet(tabs.people.personTab, await personDataCall());
+                syncPercentComplete(30);
+                //add an update to the progress bar here for each function
+                pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople());
+                syncPercentComplete(60);
+                await updateListTab();
+                syncPercentComplete(70);
+    
+                dataValidation(tabs.people.listTab.name);
+            }
+            if (modules.check_ins) {
+                pushToSheet(tabs.check_ins.headcountsTab, await getCheckInsData());
+                syncPercentComplete(80);
+    
+            }
+            if (modules.giving) {
+                pushToSheet(tabs.giving.donationsTab, await getGivingDonations());
+                syncPercentComplete(90);
+    
+            }
+            if (modules.groups) {
+    
+            }
+            if (modules.calendar) {
+    
+            }
+            if (modules.services) {
+    
+            }
+    
+            syncPercentComplete(100);
+            setUserProperty('syncStatus', "ready");
+            setLastSyncTime();
+        } catch(err){
+            console.log(err)
+            setUserProperty('syncStatus', "ready");
         }
-        if (modules.check_ins) {
-            pushToSheet(tabs.check_ins.headcountsTab, await getCheckInsData());
-            syncPercentComplete(80);
-
-        }
-        if (modules.giving) {
-            pushToSheet(tabs.giving.donationsTab, await getGivingDonations());
-            syncPercentComplete(90);
-
-        }
-        if (modules.groups) {
-
-        }
-        if (modules.calendar) {
-
-        }
-        if (modules.services) {
-
-        }
-
-        syncPercentComplete(100);
-        setUserProperty('syncStatus', "ready");
-        setLastSyncTime();
+        
 
     } else {
         console.log("actively syncing.")

@@ -133,48 +133,56 @@ function updateHeaders(tabInfo) {
     let ss = spreadsheet.getSheetByName(name);
     ss.getRange(1, 1, 1, headers[0].length).setValues(headers);
 
-    ss.setFrozenRows(1);
+    // ss.setFrozenRows(1);
 }
 
 
 function pushToSheet(tabInfo, data) {
-    const ss = getDefaultSpreadsheetId().getSheetByName(tabInfo.name);
 
-    var protections = ss.getProtections(SpreadsheetApp.ProtectionType.RANGE);
+    try{
+        const ss = getDefaultSpreadsheetId().getSheetByName(tabInfo.name);
 
-    for (var i = 0; i < protections.length; i++) {
-        var protection = protections[i];
-        if (protection.canEdit()) {
-            protection.remove();
-        }
-    }
-
-    let output = [];
-    if(ss.getLastRow() > 0 && ss.getLastColumn() > 0 ){
-        ss.getRange(2, 1, ss.getLastRow(), ss.getLastColumn()).clearContent();
-    }
-
-    updateHeaders(tabInfo);
+        var protections = ss.getProtections(SpreadsheetApp.ProtectionType.RANGE);
     
-
-    if (data.length != 0) {
-        //looping over the length of our data and turning it into an array that Google Sheets will accept.
-        for (i = 0; i < data.length; i++) {
-            output.push(Object.values(data[i]));
+        for (var i = 0; i < protections.length; i++) {
+            var protection = protections[i];
+            if (protection.canEdit()) {
+                protection.remove();
+            }
         }
-
-        //setting the rows / columns based on the total length of our data once done.
-        ss.getRange(2, 1, output.length, output[0].length).setValues(output);
-        ss.getRange(1, 1, 1, output[0].length).setFontWeight("bold");
-        ss.getRange(1, 1, ss.getLastRow(), ss.getLastColumn())
-            .setHorizontalAlignment("center")
-            .protect()
-            .setWarningOnly(true)
+    
+        let output = [];
+        if(ss.getLastRow() > 0 && ss.getLastColumn() > 0 ){
+            ss.getRange(2, 1, ss.getLastRow(), ss.getLastColumn()).clearContent();
+        }
+    
+        updateHeaders(tabInfo);
+        
+    
+        if (data.length != 0) {
+            //looping over the length of our data and turning it into an array that Google Sheets will accept.
+            for (i = 0; i < data.length; i++) {
+                output.push(Object.values(data[i]));
+            }
+    
+            //setting the rows / columns based on the total length of our data once done.
+            ss.getRange(2, 1, output.length, output[0].length).setValues(output);
+            ss.getRange(1, 1, 1, output[0].length).setFontWeight("bold");
+            ss.getRange(1, 1, ss.getLastRow(), ss.getLastColumn())
+                .setHorizontalAlignment("center")
+                .protect()
+                .setWarningOnly(true)
+        }
+    
+        removeEmptyRows(tabInfo.name);
+        removeEmptyColumns(tabInfo.name);
+        resizeColumns(tabInfo.name);
+        return "sync successful"
+    } catch(err){
+        console.log(err);
+        return `sync Failed. Reason - ${err}`
     }
-
-    removeEmptyRows(tabInfo.name);
-    removeEmptyColumns(tabInfo.name);
-    resizeColumns(tabInfo.name);
+    
 
 }
 
@@ -182,6 +190,7 @@ function removeEmptyRows(tab) {
     const ss = getDefaultSpreadsheetId().getSheetByName(tab);
     var maxRows = ss.getMaxRows();
     var lastRow = ss.getLastRow();
+    console.log(`max Rows: ${maxRows}. Last Row: ${lastRow}. Sheet: ${tab}`)
     if (maxRows > lastRow) {
         ss.deleteRows(lastRow + 1, maxRows - lastRow);
     }
@@ -225,6 +234,7 @@ async function updateSpreadsheet() {
     let syncStatus = getUserProperty('syncStatus')
 
     if (syncStatus == "ready") {
+        let syncStateText = [];
         try{
             setUserProperty('syncStatus', "syncing")
             const tabs = tabNamesReturn();
@@ -237,23 +247,31 @@ async function updateSpreadsheet() {
                 syncPercentComplete(0)
                 syncPercentComplete(10)
     
-                pushToSheet(tabs.people.personTab, await personDataCall());
+                let peopleSync = pushToSheet(tabs.people.personTab, await personDataCall());
+                syncStateText.push(`PCO People: ${peopleSync}`)
+
                 syncPercentComplete(30);
-                //add an update to the progress bar here for each function
-                pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople());
+
+                let peopleListSync = pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople());
+                syncStateText.push(`PCO People Lists: ${peopleListSync}`)
+
                 syncPercentComplete(60);
                 await updateListTab();
+
                 syncPercentComplete(70);
     
                 dataValidation(tabs.people.listTab.name);
             }
             if (modules.check_ins) {
-                pushToSheet(tabs.check_ins.headcountsTab, await getCheckInsData());
+                let headcountsSync = pushToSheet(tabs.check_ins.headcountsTab, await getCheckInsData());
+                syncStateText.push(`PCO Check in Headcounts: ${headcountsSync}`)
                 syncPercentComplete(80);
     
             }
             if (modules.giving) {
-                pushToSheet(tabs.giving.donationsTab, await getGivingDonations());
+                let donations = pushToSheet(tabs.giving.donationsTab, await getGivingDonations());
+                syncStateText.push(`PCO Giving Donations: ${donations}`)
+
                 syncPercentComplete(90);
     
             }
@@ -270,8 +288,10 @@ async function updateSpreadsheet() {
             syncPercentComplete(100);
             setUserProperty('syncStatus', "ready");
             setLastSyncTime();
+            console.log(syncStateText);
         } catch(err){
             console.log(err)
+            console.log(syncStateText);
             setUserProperty('syncStatus', "ready");
         }
         

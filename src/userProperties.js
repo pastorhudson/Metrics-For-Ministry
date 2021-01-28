@@ -79,6 +79,11 @@ function deleteUserProperty(property) {
     userProperties.deleteProperty(property);
 }
 
+function deleteID(){
+    deleteUserProperty('activeSpreadsheetID')
+
+}
+
 /**
  * @description fetching the active sheetID and setting it as a property. This is called during the OAuth Auth flow.
  */

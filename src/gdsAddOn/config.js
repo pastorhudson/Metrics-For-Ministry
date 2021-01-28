@@ -8,7 +8,6 @@ function getConfig(request) {
 
   const configParams = request.configParams;
 
-  let spreadsheetID = getUserProperty('activeSpreadsheetID');
   console.log(configParams)
   const isFirstRequest = configParams === undefined;
   var cc = DataStudioApp.createCommunityConnector();
@@ -22,16 +21,35 @@ function getConfig(request) {
   config.newInfo()
     .setId('Metrics for Ministry Instructions')
     .setText(
-      'This connector supports data coming from Google Sheets. In order to use this you must have already configured Google Sheets to contain your PCO information. Once that is done you will configure a connector here for each type of data that you want to connect.'
+      'This connector supports data coming from Google Sheets. In order to use this you must have already configured Google Sheets to contain your PCO information. Once that is done you will configure a connector here for each type of data that you want to connect. '
     );
 
-  config.newInfo()
-    .setId('spreadsheetIDText')
-    .setText(`Your Spreadsheet ID is: ${spreadsheetID}. If this is blank that means you have not configured the Google Sheets integration yet. Please configure that first.`)
+  let spreadsheetID = getUserProperty('activeSpreadsheetID');
+  let option1 = config.newOptionBuilder()
+    .setLabel("null - set up the Google Sheets Addon first")
+    .setValue("null - set up the Google Sheets Addon first");
 
-  const option1 = config.newOptionBuilder()
-    .setLabel(spreadsheetID)
-    .setValue(spreadsheetID);
+  if (spreadsheetID != null) {
+    config.newInfo()
+      .setId('spreadsheetIDText')
+      .setText(`Your Spreadsheet ID is: ${spreadsheetID}. If this is blank that means you have not configured the Google Sheets integration yet. Please configure that first.`)
+
+    option1 = config.newOptionBuilder()
+      .setLabel(spreadsheetID)
+      .setValue(spreadsheetID);
+
+  } else {
+
+    config.newInfo()
+      .setId('spreadsheetIDText')
+      .setText(`It looks like you have not set up the Google Sheets add on yet. Please configure this first. For more information go to https://docs.metricsforministry.com. Please note that you must use the same Google account for this connector as you used to set up the Metrics for Ministry plugin. Once you have set that up click next or refresh the page to continue setup.`)
+
+    //console.log(err)
+
+    return config.build();
+
+
+    }
 
   config.newSelectSingle()
     .setId('spreadsheetIdSingle')

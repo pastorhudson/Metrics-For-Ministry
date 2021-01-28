@@ -73,7 +73,6 @@ function authCallback(request) {
   console.log(authorized)
   if (authorized) {
 
-    
     setActiveSpreadsheetID();
     pcoModuleUserProperties(undefined);
     setUpDocument();

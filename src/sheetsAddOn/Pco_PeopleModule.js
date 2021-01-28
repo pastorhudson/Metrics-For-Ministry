@@ -149,11 +149,36 @@ async function getListsWithPeople() {
 }
 
 
-function calculate_age(dob) {
-    var diff_ms = Date.now() - dob.getTime();
-    var age_dt = new Date(diff_ms);
+// function calculate_age(dob) {
 
-    return Math.abs(age_dt.getUTCFullYear() - 1970);
+//     if(dob != null && dob > 0){
+//         var diff_ms = Date.now() - dob.getTime();
+//         var age_dt = new Date(diff_ms);
+//         return Math.abs(age_dt.getUTCFullYear() - 1970);
+//     } else{
+//         return null;
+//     }
+    
+
+    
+// }
+
+function getAge(birthday) {
+    if(birthday != null){
+        birthday = new Date(birthday)
+        var today = new Date();
+        var thisYear = 0;
+        if (today.getMonth() < birthday.getMonth()) {
+            thisYear = 1;
+        } else if ((today.getMonth() == birthday.getMonth()) && today.getDate() < birthday.getDate()) {
+            thisYear = 1;
+        }
+        var age = today.getFullYear() - birthday.getFullYear() - thisYear;
+        return age;
+    } else {
+        return ''
+    }
+ 
 }
 
 
@@ -177,7 +202,7 @@ async function personDataCall() {
         let elementPerson = {}
         elementPerson.personId = element.id;
         elementPerson.personBirthdate = attributes.birthdate;
-        elementPerson.personAge = calculate_age(new Date(attributes.birthdate));
+        elementPerson.personAge = getAge(attributes.birthdate);
         elementPerson.personIsChild = attributes.child;
         elementPerson.personGender = attributes.gender;
         elementPerson.personGrade = attributes.grade;
@@ -199,7 +224,7 @@ async function personDataCall() {
         personArray.push(elementPerson);
     }
 
-    console.log(personArray[9000]);
+    console.log(personArray[5]);
     //console.log(personArray)
     return personArray;
 

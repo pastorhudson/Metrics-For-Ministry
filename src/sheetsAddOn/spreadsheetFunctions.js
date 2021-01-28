@@ -132,6 +132,8 @@ function updateHeaders(tabInfo) {
     let headers = [tabInfo.headers]
     let ss = spreadsheet.getSheetByName(name);
     ss.getRange(1, 1, 1, headers[0].length).setValues(headers);
+
+    ss.setFrozenRows(1);
 }
 
 

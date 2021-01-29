@@ -100,7 +100,7 @@ async function getGivingDonations() {
             donationElement.id = donation.id;
 
             // this is our primary key to link the databases.
-            donationElement.personId = relationships.person.data.id;
+            donationElement['Person ID'] = (relationships.person.data != null) ? relationships.person.data.id : 'anon';
 
             // when the donation has been received & last updated. This will be for later so we don't sync the entire database again.
 

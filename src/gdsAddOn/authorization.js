@@ -81,6 +81,7 @@ function authCallback(request) {
     setUserProperty("isSignedIn","true");
     setUserProperty('syncStatus', "ready")
     getOrgData();
+    setUserProperty('syncUpdatedOnly', 'false')
 
     return HtmlService.createHtmlOutput('Success. You can close this tab');
   } else {

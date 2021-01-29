@@ -1,14 +1,14 @@
 class List {
     constructor(id, description, listName, totalPeople) {
         //this.syncThisList;
-        this.listId = id;
-        this.listDescription = description;
-        this.listName = listName;
-        this.totalPeople = totalPeople;
-        this.campusId = undefined;
-        this.campusName = undefined;
-        this.categoryId = undefined;
-        this.categoryName = undefined;
+        this['List ID'] = id;
+        this['List Description'] = description;
+        this['List Name'] = listName;
+        this['Total People'] = totalPeople;
+        this['Campus ID'] = undefined;
+        this['Campus Name'] = undefined;
+        this['Category ID'] = undefined;
+        this['Category Name'] = undefined;
     }
 
     get syncthisList(){
@@ -28,38 +28,38 @@ class List {
     set relationships(listData) {
         // to do - move the below id pulling to my list class where i can just provide it the campus data.
         if (listData.campus.data != null) {
-            this.campusId = listData.campus.data.id;
+            this['Campus ID'] = listData.campus.data.id;
 
         } else {
-            this.campusId = null;
+            this['Campus ID'] = null;
         }
         if (listData.category.data != null) {
-            this.categoryId = listData.category.data.id;
+            this['Category ID'] = listData.category.data.id;
 
         } else {
-            this.categoryId = null;
+            this['Category ID'] = null;
         }
     }
 
 
 
     set campus(campus){
-        if (this.campusId != null) {
+        if (this['Campus ID'] != null) {
             campus.filter(value => {
-                if (value.id == this.campusId) {
+                if (value.id == this['Campus ID']) {
                     //console.log(value.attributes.name)
-                    this.campusName = value.name;
+                    this['Campus Name'] = value.name;
                 }
             });
         }
     }
 
     set category(category){
-        if (this.categoryId != null) {
+        if (this['Category ID'] != null) {
             category.filter(value => {
-                if (value.id == this.categoryId) {
+                if (value.id == this['Category ID']) {
                     //console.log(value.attributes.name)
-                    this.categoryName = value.name;
+                    this['Category Name'] = value.name;
                 }
             });
         }
@@ -70,6 +70,6 @@ class List {
 class ListPeople extends List {
     constructor(id, description, listName, totalPeople, personID){
         super(id, description, listName, totalPeople)
-        this.personID = personID
+        this['Person ID'] = personID
     }
 }

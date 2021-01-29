@@ -3,7 +3,7 @@ async function getGivingFunds() {
     * @return {fundArray} - filtered array of Fund Data.
     */
 
-    const fundApiCall = await pcoApiLoopedCall("https://api.planningcenteronline.com/giving/v2/funds");
+    const fundApiCall = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/funds", false, false, '');
     let fundArray = [];
 
     for (const fund of fundApiCall) {
@@ -25,7 +25,7 @@ async function getGivingLabels() {
     * @return {getGivingLabels} - filtered array of label Data.
     */
 
-    const labelApiCall = await pcoApiLoopedCall("https://api.planningcenteronline.com/giving/v2/labels");
+    const labelApiCall = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/labels", false, false, '');
     let labelArray = [];
 
     //console.log(labelApiCall)
@@ -47,7 +47,7 @@ async function getGivingPaymentSources() {
     * @return {paymentSourceArray} - filtered array of payment source Data.
     */
 
-    const paymentSourceApiCall = await pcoApiLoopedCall("https://api.planningcenteronline.com/giving/v2/payment_sources");
+    const paymentSourceApiCall = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/payment_sources", false, false, '');
     let paymentSourceArray = [];
 
     //console.log(labelApiCall)
@@ -66,13 +66,13 @@ async function getGivingPaymentSources() {
 
 
 
-async function getGivingDonations() {
+async function getGivingDonations(onlyUpdated, tab) {
     /**
      * @return {donationArray} - 
      * @description - 
      */
 
-    const donationData = await pcoApiLoopedCall_giving("https://api.planningcenteronline.com/giving/v2/donations", true, "&include=designations");
+    const donationData = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/donations", onlyUpdated,  true, "&include=designations");
     const funds = await getGivingFunds();
     const labels = await getGivingLabels();
     const paymentSources = await getGivingPaymentSources();
@@ -97,7 +97,7 @@ async function getGivingDonations() {
             let donationElement = {}
 
             // this will not be unique if the donation is split.
-            donationElement.id = donation.id;
+            donationElement['Donation ID'] = donation.id;
 
             // this is our primary key to link the databases.
             donationElement['Person ID'] = (relationships.person.data != null) ? relationships.person.data.id : 'anon';
@@ -106,35 +106,32 @@ async function getGivingDonations() {
 
             // Removing update at to not configure people on which date metric to use.
             //donationElement.updatedAt = attributes.updated_at;
-            donationElement.receivedAt = attributes.received_at;
+            donationElement['Recieved At'] = attributes.received_at;
 
             // true/false if it's been refunded or not.
-            donationElement.refunded = attributes.refunded;
+            donationElement['Refunded'] = attributes.refunded;
 
             // basic payment information.
-            donationElement.paymentMethod = attributes.payment_method;
+            donationElement['Payment Method'] = attributes.payment_method;
 
             // showing credit/debit
-            donationElement.paymentMethodType = attributes.payment_method_sub;
+            donationElement['Payment Method Type'] = attributes.payment_method_sub;
 
             if(relationships.batch.data == null){
-                donationElement.paymentChannel = "stripe"
+                donationElement['Payment Channel'] = "stripe"
             } else {
-                donationElement.paymentChannel = "batch"
+                donationElement['Payment Channel'] = "batch"
             }
             
 
             // this what we'd expect to update.
-            donationElement.paymentStatus = attributes.payment_status;
-            donationElement.paymentBrand = attributes.payment_brand;
+            donationElement['Status'] = attributes.payment_status;
+            donationElement['Card Brand'] = attributes.payment_brand;
             
-
-
-
             //donationElement.paymentSourceId = relationships.payment_source.data.id;
 
             let paymentSource = paymentSources.find(source => source.id === relationships.payment_source.data.id);
-            donationElement.paymentSourceName = paymentSource.name;
+            donationElement['Source'] = paymentSource.name;
 
 
             if (relationships.labels.data != null) {
@@ -145,10 +142,10 @@ async function getGivingDonations() {
                     labelArray.push(label.name)
                 }
 
-                donationElement.donationLabels = labelArray.join(', ');
+                donationElement['Labels'] = labelArray.join(', ');
 
             } else {
-                donationElement.donationLabels = undefined;
+                donationElement['Labels'] = undefined;
             }
 
             let designationId = designation.id;
@@ -161,11 +158,11 @@ async function getGivingDonations() {
             let subAmount = designationData.attributes.amount_cents / 100
 
 
-            donationElement.fundName = subFund.name;
-            donationElement.ledgerCode = subFund.ledgerCode;
-            donationElement.amount = subAmount;
-            donationElement.fee = subFee;
-            donationElement.netAmount = (subAmount + subFee);
+            donationElement['Fund Name'] = subFund.name;
+            donationElement['Ledger Code'] = subFund.ledgerCode;
+            donationElement['Amount'] = subAmount;
+            donationElement['Fee'] = subFee;
+            donationElement['Net Amount'] = (subAmount + subFee);
 
             donationArray.push(donationElement);
 
@@ -173,8 +170,23 @@ async function getGivingDonations() {
 
     }
 
-    console.log(donationArray[100]);
-    //console.log(donationArray)
-    return donationArray;
+        // parsing the data from the sheet if we are requesting only updated info.
+        if(onlyUpdated){
+            return compareWithSpreadsheet(donationArray, "Donation ID", tab)
+        } else {
+            return donationArray
+        }
 
+    //console.log(donationArray[100]);
+    //console.log(donationArray)
+    //return donationArray;
+
+}
+
+
+function test(){
+    const tabs = tabNamesReturn();
+    getGivingDonations(true, tabs.giving.donationsTab)
+
+   // setUserProperty('syncStatus', "ready");
 }

@@ -468,8 +468,8 @@ function tabNamesReturn() {
                 "name": "checkIns_headcounts",
                 "headers": [
                     //"Updated At", // updated at for the Event Time.
-                    "Event ID", // Foreign Key
                     "EventTime ID", // Primary Key
+                    "Event ID", // Foreign Key
                     //"Headcount ID", // Foreign Key
                     //Attendee Type ID", // Foreign Key
                     "Event Name", // pulled from Events

@@ -34,8 +34,6 @@
     setUserProperty("dateSelectorDiv", "n/a");
     setUserProperty('syncStatus', "notSignedIn")
     setUserProperty('setupStatus', 'true')
-
-
  }
 
 /**

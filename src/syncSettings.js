@@ -1,19 +1,54 @@
+function addTriggers(){
+    removeAllTriggers();
+    dailySyncAdd();
+    weeklySyncAdd();
+
+}
+
+function removeAllTriggers() {
+    var allTriggers = ScriptApp.getProjectTriggers();
+    for (var i = 0; i < allTriggers.length; i++) {
+        ScriptApp.deleteTrigger(allTriggers[i]);
+    }    
+}
+
 function dailySyncAdd() {
     //creating a trigger to run at noon
     ScriptApp.newTrigger("triggerSyncDaily")
         .timeBased()
         .atHour(23)
+        .nearMinute(45)
         .everyDays(1)
         .create();
+}
+
+function weeklySyncAdd() {
+    //creating a trigger to run at noon
+    ScriptApp.newTrigger("resetFullSyncStatus")
+        .timeBased()
+        .atHour(23)
+        .nearMinute(0)
+        .everyDays(5)
+        .create();
+}
+
+function resetFullSyncStatus(){
+    setUserProperty('syncUpdatedOnly', 'false')
+}
+
+function getFullSyncStatus(){
+    let syncStatus = JSON.parse(getUserProperty('syncUpdatedOnly'));
+    console.log(syncStatus)
+    return syncStatus;
 }
 
 function triggerSyncDaily() {
     let isSignedIn = getUserProperty('isSignedIn');
     var service = getOAuthService();
 
-
     if (isSignedIn == "true" && service.hasAccess()) {
-        updateSpreadsheet(true);
+        let updatedOnlySync = getFullSyncStatus();
+        console.log(updatedOnlySync);
     } else {
         Logger.log("No sync right now");
     }
@@ -32,23 +67,10 @@ function setLastSyncTime() {
 
 
 
-function dailySyncRemove() {
-    const dailySyncStatus = getUserProperty("DailySyncTrigger");
 
-    if (dailySyncStatus == "true") {
-        // Loop over all triggers and delete them
-        var allTriggers = ScriptApp.getProjectTriggers();
-        for (var i = 0; i < allTriggers.length; i++) {
-            ScriptApp.deleteTrigger(allTriggers[i]);
-        }
-        setUserProperty("DailySyncTrigger", "false");
-    }
-
-}
 
 function updateSpreadsheetFromSidebar(){
-    let updatedOnlySync = JSON.parse(getUserProperty('syncUpdatedOnly'));
-    console.log(updatedOnlySync);
+    let updatedOnlySync = getFullSyncStatus();
     updateSpreadsheet(updatedOnlySync);
 }
 

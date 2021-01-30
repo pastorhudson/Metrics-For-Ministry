@@ -77,7 +77,7 @@ function authCallback(request) {
     pcoModuleUserProperties(undefined);
     setUpDocument();
     deleteSheet("Metrics for Ministry has been reset");
-    dailySyncAdd();
+    addTriggers();
     setUserProperty("isSignedIn","true");
     setUserProperty('syncStatus', "ready")
     getOrgData();

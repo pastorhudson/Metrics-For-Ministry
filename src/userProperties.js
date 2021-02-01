@@ -19,7 +19,7 @@
 
  ********************************************/
 
- function newUserUserProperties(){
+function newUserUserProperties() {
     setActiveSpreadsheetID();
     setUserProperty("requestedModules", "n/a");
     setUserProperty("enabledModules", "n/a");
@@ -34,7 +34,25 @@
     setUserProperty("dateSelectorDiv", "n/a");
     setUserProperty('syncStatus', "notSignedIn")
     setUserProperty('setupStatus', 'true')
- }
+}
+
+function userData() {
+    let userEmail = Session.getActiveUser().getEmail();
+    let organization = getUserProperty('org_name')
+    let totalSheetUsage = getUserProperty('totalPercentUsed');
+    let modulesEnabled = getUserProperty('enabledModules');
+
+    let userReport =
+        `
+        Email: ${userEmail}
+        Organization: ${organization}
+        Total Usage: ${totalSheetUsage}%
+        Modules Enabled: ${modulesEnabled}
+        `
+
+    console.log(userReport)
+
+}
 
 /**
  * Used to set the user properties.
@@ -77,7 +95,14 @@ function deleteUserProperty(property) {
     userProperties.deleteProperty(property);
 }
 
-function deleteID(){
+function deleteAllProperties() {
+    // Deletes all user properties.
+    var userProperties = PropertiesService.getUserProperties();
+    userProperties.deleteAllProperties();
+    console.log('deleted the properties')
+}
+
+function deleteID() {
     deleteUserProperty('activeSpreadsheetID')
 
 }

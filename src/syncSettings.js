@@ -49,6 +49,8 @@ function triggerSyncDaily() {
     if (isSignedIn == "true" && service.hasAccess()) {
         let updatedOnlySync = getFullSyncStatus();
         console.log(updatedOnlySync);
+
+        updateSpreadsheet(updatedOnlySync)
     } else {
         Logger.log("No sync right now");
     }

@@ -5,6 +5,8 @@ function onInstall(e) {
    * add-on to execute.
    */
   onOpen(e);
+
+  deleteAllProperties();
   
 }
 
@@ -24,6 +26,7 @@ function onOpen(e) {
 // Display's the sidebar
 function showSidebar() {
   setActiveSpreadsheetID();
+  userData();
   let status = getUserProperty('setupStatus');
   console.log(status)
 

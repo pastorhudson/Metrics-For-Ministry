@@ -7,6 +7,7 @@ function onInstall(e) {
   onOpen(e);
 
   deleteAllProperties();
+  userData();
   
 }
 

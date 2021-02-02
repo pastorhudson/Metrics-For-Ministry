@@ -24,38 +24,45 @@ function getConfig(request) {
       'This connector supports data coming from Google Sheets. In order to use this you must have already configured Google Sheets to contain your PCO information. Once that is done you will configure a connector here for each type of data that you want to connect. '
     );
 
-  let spreadsheetID = getUserProperty('activeSpreadsheetID');
-  let option1 = config.newOptionBuilder()
-    .setLabel("null - set up the Google Sheets Addon first")
-    .setValue("null - set up the Google Sheets Addon first");
+  // let spreadsheetID = getUserProperty('activeSpreadsheetID');
+  // let option1 = config.newOptionBuilder()
+  //   .setLabel("null - set up the Google Sheets Addon first")
+  //   .setValue("null - set up the Google Sheets Addon first");
 
-  if (spreadsheetID != null) {
-    config.newInfo()
-      .setId('spreadsheetIDText')
-      .setText(`Your Spreadsheet ID is: ${spreadsheetID}. If this is blank that means you have not configured the Google Sheets integration yet. Please configure that first.`)
+  // if (spreadsheetID != null) {
+  // config.newInfo()
+  //   .setId('spreadsheetIDText')
+  //   .setText(`Your Spreadsheet ID is: ${spreadsheetID}. If this is blank that means you have not configured the Google Sheets integration yet. Please configure that first.`)
 
-    option1 = config.newOptionBuilder()
-      .setLabel(spreadsheetID)
-      .setValue(spreadsheetID);
+  // option1 = config.newOptionBuilder()
+  //   .setLabel(spreadsheetID)
+  //   .setValue(spreadsheetID);
 
-  } else {
+  // } else {
 
-    config.newInfo()
-      .setId('spreadsheetIDText')
-      .setText(`It looks like you have not set up the Google Sheets add on yet. Please configure this first. For more information go to https://docs.metricsforministry.com. Please note that you must use the same Google account for this connector as you used to set up the Metrics for Ministry plugin. Once you have set that up click next or refresh the page to continue setup.`)
+  //   config.newInfo()
+  //     .setId('spreadsheetIDText')
+  //     .setText(`It looks like you have not set up the Google Sheets add on yet. Please configure this first. For more information go to https://docs.metricsforministry.com. Please note that you must use the same Google account for this connector as you used to set up the Metrics for Ministry plugin. Once you have set that up click next or refresh the page to continue setup.`)
 
-    //console.log(err)
+  //   //console.log(err)
 
-    return config.build();
+  //   return config.build();
 
 
-    }
+  //   }
 
-  config.newSelectSingle()
+  config
+    .newTextInput()
     .setId('spreadsheetIdSingle')
     .setName('Spreadsheet ID')
-    .setHelpText("There should only be one item in the dropdown, that's your spreadsheet ID.")
-    .addOption(option1)
+    .setHelpText('This is the ID for the spreadsheet where Metrics for Ministry is configured.')
+    .setPlaceholder('spreadsheet id here.');
+
+  // config.newSelectSingle()
+  //   .setId('spreadsheetIdSingle')
+  //   .setName('Spreadsheet ID')
+  //   .setHelpText("There should only be one item in the dropdown, that's your spreadsheet ID.")
+  //   .addOption(option1)
 
 
   //can look at making this dynamic based on what modules they have enabled. 
@@ -77,7 +84,8 @@ function getConfig(request) {
 
   if (!isFirstRequest) {
 
-    if (configParams.spreadsheetIdSingle != spreadsheetID || configParams.spreadsheetIdSingle === undefined || configParams.spreadsheetIdSingle == '') {
+    //   if (configParams.spreadsheetIdSingle != spreadsheetID || configParams.spreadsheetIdSingle === undefined || configParams.spreadsheetIdSingle == '') {
+    if (configParams.spreadsheetIdSingle === undefined || configParams.spreadsheetIdSingle == '') {
       cc.newUserError().setText('You must add a spreadsheet ID or verify you are using the right spreadsheet ID.').throwException();
     }
 
@@ -110,6 +118,8 @@ function getConfig(request) {
         .addOption(config.newOptionBuilder().setLabel('People Checkins').setValue('peopleCheckinsData'))
 
     }
+
+    setUserProperty("activeSpreadsheetID", configParams.spreadsheetIdSingle);
 
   }
 

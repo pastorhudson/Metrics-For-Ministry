@@ -33,14 +33,20 @@ async function getListCategories() {
     let categoryArray = [];
 
     for (const element of apiCall) {
-        let attributes = element.attributes;
-        let subElement = {}
-        subElement.id = element.id;
-        subElement.name = attributes.name;
+        console.log(element)
+
+        const {attributes, id} = element;
+        //let attributes = element.attributes;
+        let subElement = {
+            id: id,
+            name: attributes.name
+        }
+        // subElement.id = id;
+        // subElement.name = attributes.name;
         categoryArray.push(subElement);
     }
 
-    //console.log(categoryArray)
+    console.log(categoryArray)
 
     return categoryArray;
 }

@@ -1,8 +1,8 @@
 # Changelog
 
-## [Unreleased](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/HEAD)
+## [v1.1.0](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/v1.1.0) (2021-02-09)
 
-[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.0.8...HEAD)
+[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.0.8...v1.1.0)
 
 **Implemented enhancements:**
 
@@ -11,9 +11,13 @@
 
 **Fixed bugs:**
 
-- Bug: If donor is anonymous the giving function fails [\#37](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/37)
 - Bug: If user deletes the info, the age column auto formats as a date, not number [\#28](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/28)
 - Bug: if a user has not set up the add-on they get an error on GDS [\#27](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/27)
+- Bug: If donor is anonymous the giving function fails [\#37](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/37)
+
+**Merged pull requests:**
+
+- Beta 1.1.0 [\#45](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/45) ([coltoneshaw](https://github.com/coltoneshaw))
 
 ## [v1.0.8](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/v1.0.8) (2021-01-21)
 

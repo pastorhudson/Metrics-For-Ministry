@@ -19,7 +19,7 @@ function onOpen(e) {
     .addItem('Sidebar', 'showSidebar')
     .addItem('Log Out', 'reset')
     .addItem('Force Full Sync', 'resetFullSyncStatus')
-    .addItem('Setup Properties', 'newUserUserProperties')
+    //.addItem('Setup Properties', 'newUserUserProperties')
     .addToUi();
 }
 

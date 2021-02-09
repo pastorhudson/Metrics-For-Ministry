@@ -84,7 +84,7 @@ function getPcoPeopleData(request) {
 
   console.log(request)
 
-  const timezone = "America/New_York" //getUserProperty('time_zone')
+  const timezone = getUserProperty('time_zone')
 
   const moduleDataJson = tabNamesReturn();
 

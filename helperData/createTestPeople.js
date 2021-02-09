@@ -95,13 +95,18 @@ function personRandom(people){
   return people[number][0];
 }
 
+function gifts(){
+  addGiftsToPCO();
+  addGiftsToPCO();
+
+}
 
 
 function addGiftsToPCO() {
 
   let people = personArray();
 
-  for (let i = 0; i < 90 ; i++) {
+  for (let i = 0; i < 2000 ; i++) {
 
     let giftYear = randomNumber(2010, 2020);
     let giftMonth = randomNumber(1, 12);
@@ -110,7 +115,7 @@ function addGiftsToPCO() {
     let personID = personRandom(people);
     let giftPaymentSource = paymentSource();
     let label = paymentLabel();
-    let amount = randomNumber(5, 85000);
+    let amount = randomNumber(500, 85000);
     let fundID = paymentFund();
 
     let jsonObject = `{
@@ -206,7 +211,7 @@ function pcoUpdateCall(data, type) {
       'contentType': 'application/json',
       'payload': data
     }
-    let url = "https://api.planningcenteronline.com/giving/v2/batches/1/donations";
+    let url = "https://api.planningcenteronline.com/giving/v2/batches/4/donations";
     let response = UrlFetchApp.fetch(url, options);
     console.log(response);
 

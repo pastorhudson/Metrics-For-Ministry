@@ -8,9 +8,9 @@ function getConfig(request) {
 
   const configParams = request.configParams;
 
-  let spreadsheetID = getUserProperty('activeSpreadsheetID');
   console.log(configParams)
   const isFirstRequest = configParams === undefined;
+  var cc = DataStudioApp.createCommunityConnector();
   const config = cc.getConfig();
 
   if (isFirstRequest) {
@@ -19,24 +19,50 @@ function getConfig(request) {
   }
 
   config.newInfo()
-    .setId('PCO People Connector Instructions')
+    .setId('Metrics for Ministry Instructions')
     .setText(
-      'This PCO People connector supports two connection types - people data and list data. Select what you are attempting to connect. You can add two connecters to capture both sets of data.'
+      'This connector supports data coming from Google Sheets. In order to use this you must have already configured Google Sheets to contain your PCO information. Once that is done you will configure a connector here for each type of data that you want to connect. '
     );
 
-  config.newInfo()
-    .setId('spreadsheetIDText')
-    .setText(`Your Spreadsheet ID is: ${spreadsheetID}. You need to copy and paste this in the below field.`)
+  // let spreadsheetID = getUserProperty('activeSpreadsheetID');
+  // let option1 = config.newOptionBuilder()
+  //   .setLabel("null - set up the Google Sheets Addon first")
+  //   .setValue("null - set up the Google Sheets Addon first");
 
-  const option1 = config.newOptionBuilder()
-    .setLabel(spreadsheetID)
-    .setValue(spreadsheetID);
+  // if (spreadsheetID != null) {
+  // config.newInfo()
+  //   .setId('spreadsheetIDText')
+  //   .setText(`Your Spreadsheet ID is: ${spreadsheetID}. If this is blank that means you have not configured the Google Sheets integration yet. Please configure that first.`)
 
-  config.newSelectSingle()
+  // option1 = config.newOptionBuilder()
+  //   .setLabel(spreadsheetID)
+  //   .setValue(spreadsheetID);
+
+  // } else {
+
+  //   config.newInfo()
+  //     .setId('spreadsheetIDText')
+  //     .setText(`It looks like you have not set up the Google Sheets add on yet. Please configure this first. For more information go to https://docs.metricsforministry.com. Please note that you must use the same Google account for this connector as you used to set up the Metrics for Ministry plugin. Once you have set that up click next or refresh the page to continue setup.`)
+
+  //   //console.log(err)
+
+  //   return config.build();
+
+
+  //   }
+
+  config
+    .newTextInput()
     .setId('spreadsheetIdSingle')
     .setName('Spreadsheet ID')
-    .setHelpText("There should only be one item in the dropdown, that's your spreadsheet ID.")
-    .addOption(option1)
+    .setHelpText('This is the ID for the spreadsheet where Metrics for Ministry is configured.')
+    .setPlaceholder('spreadsheet id here.');
+
+  // config.newSelectSingle()
+  //   .setId('spreadsheetIdSingle')
+  //   .setName('Spreadsheet ID')
+  //   .setHelpText("There should only be one item in the dropdown, that's your spreadsheet ID.")
+  //   .addOption(option1)
 
 
   //can look at making this dynamic based on what modules they have enabled. 
@@ -58,7 +84,8 @@ function getConfig(request) {
 
   if (!isFirstRequest) {
 
-    if (configParams.spreadsheetIdSingle != spreadsheetID || configParams.spreadsheetIdSingle === undefined || configParams.spreadsheetIdSingle == '') {
+    //   if (configParams.spreadsheetIdSingle != spreadsheetID || configParams.spreadsheetIdSingle === undefined || configParams.spreadsheetIdSingle == '') {
+    if (configParams.spreadsheetIdSingle === undefined || configParams.spreadsheetIdSingle == '') {
       cc.newUserError().setText('You must add a spreadsheet ID or verify you are using the right spreadsheet ID.').throwException();
     }
 
@@ -91,6 +118,8 @@ function getConfig(request) {
         .addOption(config.newOptionBuilder().setLabel('People Checkins').setValue('peopleCheckinsData'))
 
     }
+
+    setUserProperty("activeSpreadsheetID", configParams.spreadsheetIdSingle);
 
   }
 

@@ -132,50 +132,66 @@ function updateHeaders(tabInfo) {
     let headers = [tabInfo.headers]
     let ss = spreadsheet.getSheetByName(name);
     ss.getRange(1, 1, 1, headers[0].length).setValues(headers);
+
+    // ss.setFrozenRows(1);
 }
 
 
 function pushToSheet(tabInfo, data) {
-    const ss = getDefaultSpreadsheetId().getSheetByName(tabInfo.name);
 
-    var protections = ss.getProtections(SpreadsheetApp.ProtectionType.RANGE);
+    try{
+        const ss = getDefaultSpreadsheetId().getSheetByName(tabInfo.name);
 
-    for (var i = 0; i < protections.length; i++) {
-        var protection = protections[i];
-        if (protection.canEdit()) {
-            protection.remove();
+        var protections = ss.getProtections(SpreadsheetApp.ProtectionType.RANGE);
+    
+        for (var i = 0; i < protections.length; i++) {
+            var protection = protections[i];
+            if (protection.canEdit()) {
+                protection.remove();
+            }
         }
-    }
-
-    let output = [];
-    ss.getRange(2, 1, ss.getLastRow(), ss.getLastColumn()).clearContent();
-
-    if (data.length != 0) {
-        //looping over the length of our data and turning it into an array that Google Sheets will accept.
-        for (i = 0; i < data.length; i++) {
-            output.push(Object.values(data[i]));
+    
+        let output = [];
+        if(ss.getLastRow() > 0 && ss.getLastColumn() > 0 ){
+            ss.getRange(2, 1, ss.getLastRow(), ss.getLastColumn()).clearContent();
         }
+    
+        updateHeaders(tabInfo);
+        
+    
+        if (data.length != 0) {
+            //looping over the length of our data and turning it into an array that Google Sheets will accept.
+            for (i = 0; i < data.length; i++) {
+                output.push(Object.values(data[i]));
+            }
+    
+            //setting the rows / columns based on the total length of our data once done.
 
-        //setting the rows / columns based on the total length of our data once done.
-        ss.getRange(2, 1, output.length, output[0].length).setValues(output);
-        ss.getRange(1, 1, 1, output[0].length).setFontWeight("bold");
-        ss.getRange(1, 1, ss.getLastRow(), ss.getLastColumn())
-            .setHorizontalAlignment("center")
-            .protect()
-            .setWarningOnly(true)
+            //setting the formatting here causes a bug where it breaks the check boxes.
+            ss.getRange(2, 1, output.length, output[0].length).setValues(output)//.setNumberFormat('@');
+            ss.getRange(1, 1, 1, output[0].length).setFontWeight("bold");
+            ss.getRange(1, 1, ss.getLastRow(), ss.getLastColumn())
+                .setHorizontalAlignment("center")
+                .protect()
+                .setWarningOnly(true)
+        }
+    
+        removeEmptyRows(tabInfo.name);
+        removeEmptyColumns(tabInfo.name);
+        resizeColumns(tabInfo.name);
+        return "sync successful"
+    } catch(err){
+        console.log(err);
+        return `sync Failed. Reason - ${err}`
     }
-
-    removeEmptyRows(tabInfo.name);
-    removeEmptyColumns(tabInfo.name);
-    updateHeaders(tabInfo);
-    resizeColumns(tabInfo.name);
-
+    
 }
 
 function removeEmptyRows(tab) {
     const ss = getDefaultSpreadsheetId().getSheetByName(tab);
     var maxRows = ss.getMaxRows();
     var lastRow = ss.getLastRow();
+    console.log(`max Rows: ${maxRows}. Last Row: ${lastRow}. Sheet: ${tab}`)
     if (maxRows > lastRow) {
         ss.deleteRows(lastRow + 1, maxRows - lastRow);
     }
@@ -210,65 +226,12 @@ function removeEmptyColumns(tab) {
 function dataValidation(tab) {
     const spreadsheet = getDefaultSpreadsheetId();
     let ss = spreadsheet.getSheetByName(tab);
-    var cell = ss.getRange(2, ss.getLastColumn(), ss.getLastRow(), 1)
+    var cell = ss.getRange(2, ss.getLastColumn(), ss.getLastRow(), 1);
     var rule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
     cell.setDataValidation(rule);
 }
 
-async function updateSpreadsheet() {
-    let syncStatus = getUserProperty('syncStatus')
 
-    if (syncStatus == "ready") {
-        setUserProperty('syncStatus', "syncing")
-        const tabs = tabNamesReturn();
-
-        let modules = getModuleUserObject();
-
-        if (modules.people) {
-
-            //pushToSheet(tabs.people.campusTab.name, await getCampuses());
-            syncPercentComplete(0)
-            syncPercentComplete(10)
-
-            pushToSheet(tabs.people.personTab, await personDataCall());
-            syncPercentComplete(30);
-            //add an update to the progress bar here for each function
-            pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople());
-            syncPercentComplete(60);
-            await updateListTab();
-            syncPercentComplete(70);
-
-            dataValidation(tabs.people.listTab.name);
-        }
-        if (modules.check_ins) {
-            pushToSheet(tabs.check_ins.headcountsTab, await getCheckInsData());
-            syncPercentComplete(80);
-
-        }
-        if (modules.giving) {
-            pushToSheet(tabs.giving.donationsTab, await getGivingDonations());
-            syncPercentComplete(90);
-
-        }
-        if (modules.groups) {
-
-        }
-        if (modules.calendar) {
-
-        }
-        if (modules.services) {
-
-        }
-
-        syncPercentComplete(100);
-        setUserProperty('syncStatus', "ready");
-        setLastSyncTime();
-
-    } else {
-        console.log("actively syncing.")
-    }
-
-}
 
 
 // function createDialog() {
@@ -292,29 +255,35 @@ async function updateListTab() {
     let listSpreadsheetData = getSpreadsheetDataByName(tabs.people.listTab.name);
     let listArray = [];
 
-    for (const list of listApiCall) {
-        const syncThisList = listSpreadsheetData.filter(function (spreadsheetList) {
-            if (spreadsheetList["List ID"] == list.listId) {
-                return spreadsheetList
+    //console.log(listSpreadsheetData.length)
+
+    if(listSpreadsheetData.length > 0){
+        for (const list of listApiCall) {
+            const syncThisList = listSpreadsheetData.filter(function (spreadsheetList) {
+                if (spreadsheetList["List ID"] == list['List ID']) {
+                    return spreadsheetList
+                }
+            });
+        
+            if (syncThisList.length > 0) {
+                let syncList = syncThisList[0]["Sync This List"]
+                list["listSync"] = syncList;
+    
+            } else {
+                let syncList = false;
+                list["listSync"] = syncList;
+    
             }
-        });
-
-        console.log(syncThisList.length)
-
-        if (syncThisList.length > 0) {
-            let syncList = syncThisList[0]["Sync This List"]
-            list["listSync"] = syncList;
-
-        } else {
-            let syncList = false;
-            list["listSync"] = syncList;
-
+    
+    
+            listArray.push(list);
         }
-
-
-        listArray.push(list);
+        pushToSheet(tabs.people.listTab, listArray);
+    } else {
+        pushToSheet(tabs.people.listTab, listApiCall);
     }
-    pushToSheet(tabs.people.listTab, listArray);
+
+    
     dataValidation(tabs.people.listTab.name)
 
 
@@ -337,37 +306,46 @@ function getSheetHeaders(name) {
 function getSpreadsheetDataByName(tab) {
     const spreadsheet = getDefaultSpreadsheetId();
     let ss = spreadsheet.getSheetByName(tab);
-    let lastRow = ss.getDataRange().getNumRows();
-    let lastCol = ss.getLastColumn();
+    let lastRow = ss.getLastRow();
+    let lastCol = ss.getDataRange().getLastColumn();
 
-    let headers = getSheetHeaders(tab);
+    //console.log(`last Row: ${lastRow}... last Column: ${lastCol}`)
 
-    let output = [];
-    let spreadsheetData = ss.getRange(2, 1, lastRow, lastCol).getValues();
+    if (lastRow > 0) {
+        let headers = getSheetHeaders(tab);
 
-    //doing a loop over each row in your spreadsheet. this runs top to bottom.
-    for (let i = 0; i < lastRow; i++) {
-        let currentRow = spreadsheetData[i];
+        let output = [];
+        let spreadsheetData = ss.getRange(2, 1, lastRow, lastCol).getValues();
+        //console.log(spreadsheetData)
 
-        //creating an empty object for each loop
-        let object = {};
+        //doing a loop over each row in your spreadsheet. this runs top to bottom.
+        for (let i = 0; i < lastRow - 1; i++) {
+            let currentRow = spreadsheetData[i];
 
-        //doing a loop over each cell in your spreadsheet. this runs left to right.
-        for (j = 0; j < currentRow.length; j++) {
+            //creating an empty object for each loop
+            let object = {};
 
-            //setting the key to be the column header that matches the column data
-            let keyData = headers[j];
-            let valueData = currentRow[j];
+            //doing a loop over each cell in your spreadsheet. this runs left to right.
+            for (j = 0; j < currentRow.length; j++) {
 
-            //this is where we actually create teh key:value pairing.
-            object[keyData] = valueData;
+                //setting the key to be the column header that matches the column data
+                let keyData = headers[j];
+                let valueData = currentRow[j];
+
+                //this is where we actually create teh key:value pairing.
+                object[keyData] = valueData;
+            }
+
+            //the object we created above is stored in our ouput array.
+            output.push(object);
+
         }
 
-        //the object we created above is stored in our ouput array.
-        output.push(object);
-
+        //returning the data of your spreadsheet in a key:value pair.
+        return output;
+    } else {
+        return [];
     }
 
-    //returning the data of your spreadsheet in a key:value pair.
-    return output;
+
 }

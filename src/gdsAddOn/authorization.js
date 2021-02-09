@@ -7,7 +7,7 @@ function getAuthType() {
   const cc = DataStudioApp.createCommunityConnector();
   
   return cc.newAuthTypeResponse()
-    .setAuthType(cc.AuthType.OAUTH2)
+    .setAuthType(cc.AuthType.NONE)
     .build();
 }
 
@@ -36,19 +36,30 @@ function isAuthValid() {
   return getOAuthService().hasAccess();
 }
 
+// function secrets(){
+//   var scriptProperties = PropertiesService.getScriptProperties();
+//   var clientID = scriptProperties.getProperty('clientID');
+//   var clientSecret = scriptProperties.getProperty('clientSecret');
+
+//   console.log(clientID)
+//   console.log(clientSecret)
+// }
+
 
 /**
  * Returns the configured OAuth Service.
  * @return {Service} The OAuth Service
  */
 function getOAuthService(requestedModules) {
-
+  var scriptProperties = PropertiesService.getScriptProperties();
+  var clientID = scriptProperties.getProperty('clientID');
+  var clientSecret = scriptProperties.getProperty('clientSecret');
   
   return OAuth2.createService('metricsForMinistry')
     .setAuthorizationBaseUrl("https://api.planningcenteronline.com/oauth/authorize")
     .setTokenUrl("https://api.planningcenteronline.com/oauth/token")
-    .setClientId("16f33e2f7ef0bf0f44df437f2b00d7060a47f7c8c08e614132ad9e4a7ae176e7")
-    .setClientSecret("b29cb5440cf79ab2242566cda51335d37e54dac1b9c88edc3cc5a8d8f8522555")
+    .setClientId(clientID)
+    .setClientSecret(clientSecret)
     .setPropertyStore(PropertiesService.getUserProperties())
     .setCallbackFunction('authCallback')
     .setScope(requestedModules);
@@ -73,15 +84,15 @@ function authCallback(request) {
   console.log(authorized)
   if (authorized) {
 
-    
     setActiveSpreadsheetID();
     pcoModuleUserProperties(undefined);
     setUpDocument();
     deleteSheet("Metrics for Ministry has been reset");
-    dailySyncAdd();
+    addTriggers();
     setUserProperty("isSignedIn","true");
     setUserProperty('syncStatus', "ready")
     getOrgData();
+    setUserProperty('syncUpdatedOnly', 'false')
 
     return HtmlService.createHtmlOutput('Success. You can close this tab');
   } else {

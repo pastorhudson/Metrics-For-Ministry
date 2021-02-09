@@ -1,11 +1,11 @@
-
+// cannot do an updatedAt call.
 async function getHeadcounts() {
 
     /**
      * @return {dataArray} - filtered array of the headcount data
      */
 
-    const apiCall = await pcoApiLoopedCall_giving("https://api.planningcenteronline.com/check-ins/v2/headcounts", true, "&include=attendance_type");
+    const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/headcounts", false, true, "&include=attendance_type");
     let dataArray = [];
     let data = apiCall.data;
     let included = apiCall.included;
@@ -25,7 +25,7 @@ async function getHeadcounts() {
         dataArray.push(elementHeadcount);
     }
 
-    console.log(dataArray[0])
+    //console.log(dataArray[0])
 
     return dataArray;
 }
@@ -36,12 +36,11 @@ async function getEvents() {
      * @return {dataArray} - filtered array of the event data
      */
 
-    const apiCall = await pcoApiLoopedCall_giving("https://api.planningcenteronline.com/check-ins/v2/events");
+    const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/events", false, false, '');
     let dataArray = [];
-    let data = apiCall.data;
-    let included = apiCall.included;
 
-    for (const event of data) {
+
+    for (const event of apiCall) {
         let attributes = event.attributes;
         let relationships = event.relationships;
 
@@ -60,21 +59,28 @@ async function getEvents() {
     return dataArray;
 }
 
+function test3(){
+    const tabs = tabNamesReturn();
+    getCheckInsData(true, tabs.check_ins.headcountsTab)
 
-async function getCheckInsData() {
+   // setUserProperty('syncStatus', "ready");
+}
+
+async function getCheckInsData(onlyUpdated, tab) {
 
     /**
      * @return {dataArray} - filtered array of the event data
      */
 
-    const apiCall = await pcoApiLoopedCall_giving("https://api.planningcenteronline.com/check-ins/v2/event_times", true, "&include=event,headcounts");
+     onlyUpdated = false;
+
+    const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/event_times", onlyUpdated, true, "&include=event,headcounts");
     const headcountsData = await getHeadcounts();
     const eventsData = await getEvents();
 
     let dataArray = [];
-    let data = apiCall.data;
 
-    for (const eventTime of data) {
+    for (const eventTime of apiCall.data) {
         let attributes = eventTime.attributes;
         let relationships = eventTime.relationships;
         let headcounts = relationships.headcounts.data;
@@ -101,18 +107,17 @@ async function getCheckInsData() {
             let amount = counts[count]
             if (amount > 0) {
                 let elementEventTime = {}
-                elementEventTime.eventTimeID = eventTime.id; // primary key
-                elementEventTime.eventID = eventID;
-                elementEventTime.eventName = event.name;
-                elementEventTime.eventArchivedAt = event.archived_at;
-                elementEventTime.eventFrequency = event.frequency;
-                elementEventTime.timeName = attributes.name;
+                elementEventTime['EventTime ID'] = eventTime.id; // primary key
+                elementEventTime['Event ID'] = eventID;
+                elementEventTime['Event Name'] = event.name;
+                elementEventTime['Archived At'] = event.archived_at;
+                elementEventTime['Event Frequency'] = event.frequency;
+                elementEventTime['Event Time Name'] = attributes.name;
                 // elementEventTime.date = Utilities.formatDate(new Date(attributes.starts_at), "EST", "yyyy-MM-dd");
                 // elementEventTime.time = Utilities.formatDate(new Date(attributes.starts_at), "EST", "HH:mm a");
-                elementEventTime.startsAt = Utilities.formatDate(new Date(attributes.starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-                elementEventTime.countType = count;
-                elementEventTime.count = counts[count]
+                elementEventTime['Starts'] = Utilities.formatDate(new Date(attributes.starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'");
+                elementEventTime['Count Type'] = count;
+                elementEventTime['Count'] = counts[count]
                 dataArray.push(elementEventTime);
 
             }
@@ -120,5 +125,11 @@ async function getCheckInsData() {
         }
     }
 
-    return dataArray;
+        // parsing the data from the sheet if we are requesting only updated info.
+        if(onlyUpdated){
+            return compareWithSpreadsheet(dataArray, "EventTime ID", tab)
+        } else {
+            return dataArray
+        }
+
 }

@@ -12,16 +12,19 @@
     ]
   },
   "dataStudio": {
-    "name": "PCO Connector",
-    "logoUrl": "https://www.savvytoolbelt.com/wp-content/uploads/2020/09/Savvy-Tool-Belt_Horizontal_Color_on-Dark.png",
+    "name": "Metrics for Ministry",
+    "logoUrl": "https://savvytoolbelt.com/wp-content/uploads/2021/01/icon-40x40-1.png",
     "company": "Savvy Tool Belt",
     "companyUrl": "https://savvytoolbelt.com",
-    "addonUrl": "https://savvytoolbelt.com",
-    "supportUrl": "https://savvytoolbelt.com",
-    "description": "Integrate Planning Center Online with Google Data Studio",
-    "sources": [
-      "npm"
-    ]
+    "addonUrl": "https://metricsforministry.com",
+    "supportUrl": "https://savvytoolbelt.com/solutions/",
+    "privacyPolicyUrl": "https://docs.metricsforministry.com/privacy-policy",
+    "termsOfServiceUrl": "https://docs.metricsforministry.com/terms-of-service",
+    "description": "Integrate Planning Center Online with Google Data Studio to gain additional insights and understanding of your ministry. This connector works alongside the Google Sheets Addon found here - https://workspace.google.com/marketplace/app/metrics_for_ministry/938009781292",
+    "shortDescription": "Integrate Planning Center Online with Google Data Studio",
+    "feeType": ["FREE"],
+    "authType": ["OAUTH2"],
+    "sources": ["GOOGLE_DRIVE"]
   },
   "oauthScopes": [
     "https://www.googleapis.com/auth/drive.file",

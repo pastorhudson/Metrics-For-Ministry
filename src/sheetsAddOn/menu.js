@@ -5,28 +5,40 @@ function onInstall(e) {
    * add-on to execute.
    */
   onOpen(e);
+
+  deleteAllProperties();
+  userData();
+  
 }
 
 
 // add custom menu
 function onOpen(e) {
-  // newUserUserProperties();
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('Metrics for Ministry')
     .addItem('Sidebar', 'showSidebar')
     .addItem('Log Out', 'reset')
+    .addItem('Force Full Sync', 'resetFullSyncStatus')
+    .addItem('Setup Properties', 'newUserUserProperties')
     .addToUi();
 }
 
 
 // Display's the sidebar
 function showSidebar() {
-
+  setActiveSpreadsheetID();
+  userData();
   let status = getUserProperty('setupStatus');
+  console.log(status)
 
-  if (status == null) {
-    setUserProperty('setupStatus', 'true')
-    newUserUserProperties();
+  if (status != 'true') {
+    try{
+      newUserUserProperties();
+      setUserProperty('setupStatus', 'true')
+    } catch (err){
+      setUserProperty('setupStatus', 'false')
+    }
+
   }
 
   const html = HtmlService.createTemplateFromFile('sheetsAddOn/sidebar');
@@ -67,9 +79,9 @@ function authorizeSidebarButton(requestedModules) {
 function reset() {
 
   resetAuth();
-  dailySyncRemove();
+  removeAllTriggers();
   newUserUserProperties();
-  deleteSheetsCreated()
+  deleteSheetsCreated();
 
   showSidebar();
 

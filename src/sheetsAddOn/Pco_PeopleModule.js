@@ -1,5 +1,3 @@
-
-
 async function getCampuses() {
 
     /**
@@ -9,7 +7,7 @@ async function getCampuses() {
      * @description - This function returns the array of our campuses. This is a bit more reliable than running an 'includes'
      */
 
-    const campusApiCall = await pcoApiLoopedCall("https://api.planningcenteronline.com/people/v2/campuses");
+    const campusApiCall = await pcoApiCall("https://api.planningcenteronline.com/people/v2/campuses", false, false, '');
     let campusArray = [];
 
     for (const campus of campusApiCall) {
@@ -31,30 +29,36 @@ async function getListCategories() {
      * @description - This function returns the array of the list category data. This is a bit more reliable than running an 'includes'
      */
 
-    const apiCall = await pcoApiLoopedCall("https://api.planningcenteronline.com/people/v2/list_categories");
+    const apiCall = await pcoApiCall("https://api.planningcenteronline.com/people/v2/list_categories", false, false, '');
     let categoryArray = [];
 
     for (const element of apiCall) {
-        let attributes = element.attributes;
-        let subElement = {}
-        subElement.id = element.id;
-        subElement.name = attributes.name;
+        console.log(element)
+
+        const {attributes, id} = element;
+        //let attributes = element.attributes;
+        let subElement = {
+            id: id,
+            name: attributes.name
+        }
+        // subElement.id = id;
+        // subElement.name = attributes.name;
         categoryArray.push(subElement);
     }
 
-    //console.log(categoryArray)
+    console.log(categoryArray)
 
     return categoryArray;
 }
 
 async function getLists() {
-    let listApiCall = await pcoApiLoopedCall("https://api.planningcenteronline.com/people/v2/lists", true, "&include=campus,category");
+    let listApiCall = await pcoApiCall("https://api.planningcenteronline.com/people/v2/lists", false, true, "&include=campus,category");
     let campuses = await getCampuses();
     let categories = await getListCategories();
 
     let listArrayListData = [];
 
-    for (const list of listApiCall) {
+    for (const list of listApiCall.data) {
 
 
         let relationships = list.relationships;
@@ -77,8 +81,8 @@ async function getLists() {
         //subList.listSync = null;
         subList.campus = campuses;
         subList.category = categories;
-        delete subList.campusId;
-        delete subList.categoryId;
+        delete subList['Campus ID'];
+        delete subList['Category ID'];
 
         listArrayListData.push(subList);
     }
@@ -88,25 +92,27 @@ async function getLists() {
 
 }
 
-async function getListsWithPeople() {
-    let listApiCall = await pcoApiLoopedCall("https://api.planningcenteronline.com/people/v2/lists", true, "&include=campus,category,people");
+
+// we use the includes only for the relationship data. The other data is ignored
+async function getListsWithPeople(onlyUpdated, tab) {
+    let listApiCall = await pcoApiCall("https://api.planningcenteronline.com/people/v2/lists", onlyUpdated , true, "&include=campus,category,people");
     let campuses = await getCampuses();
     let categories = await getListCategories();
 
     let listArrayListData = [];
 
-    for (const list of listApiCall) {
+    for (const list of listApiCall.data) {
+
         let relationships = list.relationships;
-        //console.log(relationships)
         let people = relationships.people.data
         let description = list.attributes.description.replaceAll("'", '"')
-
         let listName = list.attributes.name;
 
-        if(listName == null){
+        if(listName == null || listName == undefined){
             listName = description;
         }
 
+        // this is where to add a looped call to get the people of each list.
 
         for (const person of people) {
             let subList = new ListPeople(
@@ -118,10 +124,10 @@ async function getListsWithPeople() {
             subList.relationships = relationships;
             subList.campus = campuses;
             subList.category = categories;
-            delete subList.campusId;
-            delete subList.categoryId;
+            delete subList['Campus ID'];
+            delete subList['Category ID'];
             
-            subList.personID = person.id;
+            subList["Person ID"] = person.id;
             listArrayListData.push(subList);
         }
 
@@ -144,22 +150,47 @@ async function getListsWithPeople() {
         }
     }
 
-    return syncThesePeople;
+    //console.log(syncThesePeople);
+
+    // parsing the data from the sheet if we are requesting only updated info.
+    if(onlyUpdated){
+        return compareWithSpreadsheet(syncThesePeople, "Person ID", tab)
+    } else {
+        return syncThesePeople
+    }
+
+    //return syncThesePeople;
 
 }
 
 
-function calculate_age(dob) {
-    var diff_ms = Date.now() - dob.getTime();
-    var age_dt = new Date(diff_ms);
+function getAge(birthday) {
+    if(birthday != null){
+        birthday = new Date(birthday)
+        var today = new Date();
+        var thisYear = 0;
+        if (today.getMonth() < birthday.getMonth()) {
+            thisYear = 1;
+        } else if ((today.getMonth() == birthday.getMonth()) && today.getDate() < birthday.getDate()) {
+            thisYear = 1;
+        }
+        var age = today.getFullYear() - birthday.getFullYear() - thisYear;
+        return age;
+    } else {
+        return ''
+    }
+ 
+}
 
-    return Math.abs(age_dt.getUTCFullYear() - 1970);
+function test(){
+    const tabs = tabNamesReturn();
+    getListsWithPeople(true, tabs.people.listPeopleTab)
+
+    setUserProperty('syncStatus', "ready");
 }
 
 
-
-
-async function personDataCall() {
+async function personDataCall(onlyUpdated, tab) {
     /**
      * The person data call
      * 
@@ -167,41 +198,47 @@ async function personDataCall() {
      * @description - 
      */
 
-    const personData = await pcoApiLoopedCall("https://api.planningcenteronline.com/people/v2/people");
+    const personData = await pcoApiCall("https://api.planningcenteronline.com/people/v2/people", onlyUpdated, false, '');
     const campusArray = await getCampuses();
 
-    let personArray = [];
+    let newPeopleArray = [];
 
-    for (const element of personData) {
-        let attributes = element.attributes;
-        let elementPerson = {}
-        elementPerson.personId = element.id;
-        elementPerson.personBirthdate = attributes.birthdate;
-        elementPerson.personAge = calculate_age(new Date(attributes.birthdate));
-        elementPerson.personIsChild = attributes.child;
-        elementPerson.personGender = attributes.gender;
-        elementPerson.personGrade = attributes.grade;
-        elementPerson.personMembership = attributes.membership;
-        elementPerson.personStatus = attributes.status;
-        //elementPerson.personCount = 1;
-
-        if (element.relationships.primary_campus.data != null) {
-            let campusNumber = element.relationships.primary_campus.data.id;
-            let campus = campusArray.find(o => o.id === campusNumber);
-            //elementPerson.campusId = campusNumber;
-            elementPerson.campusName = campus.name;
-
-        } else {
-            //elementPerson.campusId = undefined;
-            elementPerson.campusName = "undefined";
+    if(personData.length > 0 ){
+        for (const element of personData) {
+            let attributes = element.attributes;
+            let elementPerson = {}
+            elementPerson['Person ID'] = element.id;
+            elementPerson['Birthday'] = attributes.birthdate;
+            elementPerson['Age'] = getAge(attributes.birthdate);
+            elementPerson['Is Child'] = attributes.child;
+            elementPerson['Gender'] = attributes.gender;
+            elementPerson['Grade'] = attributes.grade;
+            elementPerson['Membership'] = attributes.membership;
+            elementPerson['Status'] = attributes.status;
+    
+            if (element.relationships.primary_campus.data != null) {
+                let campusNumber = element.relationships.primary_campus.data.id;
+                let campus = campusArray.find(o => o.id === campusNumber);
+                elementPerson['Campus Name'] = campus.name;
+    
+            } else {
+                elementPerson['Campus Name'] = "undefined";
+            }
+    
+            newPeopleArray.push(elementPerson);
         }
-
-        personArray.push(elementPerson);
+    
     }
 
-    console.log(personArray[9000]);
-    //console.log(personArray)
-    return personArray;
+
+    // parsing the data from the sheet if we are requesting only updated info.
+    if(onlyUpdated){
+        return compareWithSpreadsheet(newPeopleArray, "Person ID", tab)
+    } else {
+        return newPeopleArray
+    }
 
 }
+
+
 

@@ -30,11 +30,11 @@ function fetchCall(url) {
  * 
  * @description - Here we create a promise that is returned with data from the PCO API.
  */
-function promiseApiWithTimeout(url, offset, includeURL, retries = 5, timeout = 0) {
+function promiseApiWithTimeout(url, offset, includeURL, updatedAt, retries = 5, timeout = 0) {
     Utilities.sleep(timeout)
 
     return promise = new Promise((resolve, reject) => {
-        let fetchCallResponse = fetchCall(`${url}?per_page=100&offset=${offset}` + includeURL);
+        let fetchCallResponse = fetchCall(`${url}?per_page=100&offset=${offset}${includeURL}${updatedAt}`);
         let responseCode = fetchCallResponse.getResponseCode();
         let listCallContent = JSON.parse(fetchCallResponse.getContentText());
         let headers = fetchCallResponse.getAllHeaders();
@@ -47,7 +47,7 @@ function promiseApiWithTimeout(url, offset, includeURL, retries = 5, timeout = 0
             let retryPeriod = parseInt(headers["Retry-After"]);
             console.log(`Retry after: ${retryPeriod}`);
             console.log(headers);
-            return resolve(promiseApiWithTimeout(url, offset, includeURL, retries - 1, retryPeriod * 1000))
+            return resolve(promiseApiWithTimeout(url, offset, includeURL, updatedAt, retries - 1, retryPeriod * 1000))
         }
         else {
             reject("rejected homie");
@@ -57,95 +57,175 @@ function promiseApiWithTimeout(url, offset, includeURL, retries = 5, timeout = 0
 
 }
 
-
-
-/**
- * The looped API call.
- *
- * @param {string} url - this is the base URL that we are requesting. We add the end on this URL.
- * @param {boolean} include - This is to define the return based on if you have an includes or not.
- * @param {string} includeURL - This is the additional URL. This is required to be structured like '&include=value1,value2'
- * 
- * @var {number} totalCount - this is returned by PCO and is the total amount of items in that API call. We increment over this in chunks of 100
- * 
- * @return {data} - This is our complete array of data to parse. 
- * 
- * @description - This call will continue to loop in increments of 100 until the entire total_count is complete.
- */
-async function pcoApiLoopedCall(url, include = false, includeURL = undefined) {
-    var service = getOAuthService();
-    if (service.hasAccess()) {
-        let offset = 0;
-        let data = [];
-
-        let fetchedData = await promiseApiWithTimeout(url, offset, includeURL)
-
-        let totalCount = fetchedData.meta.total_count;
-
-        data.push(...fetchedData.data)
-
-        for (let i = 100; i < totalCount; i += 100) {
-            const response = await promiseApiWithTimeout(url, i, includeURL);
-            data.push(...response.data);
-            const final = response.data;
-            // const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
-            // console.log(report)
-            //console.log(response.included)
-        }
-        //console.log(`the data is: ${data.length} long.`);
-        return data;
-
-    } else {
-        return new Error('Whoops, looks like you are not signed in!')
-    }
-
-}
-
-async function pcoApiOrgCall(url) {
-    var service = getOAuthService();
-    if (service.hasAccess()) {
-
-
-        let fetchedData = await promiseApiWithTimeout(url)
-        return fetchedData.data;
-
-    }
-
-}
-
-
-async function pcoApiLoopedCall_giving(url, include = false, includeURL = undefined) {
+async function pcoApiCall(url, onlyUpdated, include, includeURL) {
     var service = getOAuthService();
     if (service.hasAccess()) {
         let offset = 0;
         let data = [];
         let included = [];
 
-        let fetchedData = await promiseApiWithTimeout(url, offset, includeURL)
+        let updatedAt = '';
+        if(onlyUpdated){
+            let lastSyncTimeISOString = getUserProperty('lastSyncTimeISOString')
+            updatedAt = `&where[updated_at][gte]=${lastSyncTimeISOString}`
+            console.log(updatedAt)
+        }
+
+
+        let fetchedData = await promiseApiWithTimeout(url, offset, includeURL, updatedAt)
 
         let totalCount = fetchedData.meta.total_count;
 
         data.push(...fetchedData.data)
-        included.push(...fetchedData.included)
+
+        if(include){
+            included.push(...fetchedData.included)
+        }
 
         for (let i = 100; i < totalCount; i += 100) {
-            const response = await promiseApiWithTimeout(url, i, includeURL);
+            const response = await promiseApiWithTimeout(url, i, includeURL, updatedAt);
             data.push(...response.data);
-            included.push(...response.included)
-            const final = response.data;
+
+            if(include){
+                included.push(...response.included)
+            }
+            
+            //const final = response.data;
             // const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
             // console.log(report)
             //console.log(response.included)
         }
         //console.log(`the data is: ${data.length} long.`);
-        
-        return {
-            "data" : data,
-            "included" : included
-        };
+        if(include){
+            return {
+                "data": data,
+                "included": included
+            };
+        }
+
+        return data;
+
 
     }
+}
 
+
+
+function compareWithSpreadsheet(apiCallData, idAttribute, tabInfo){
+    let spreadsheetData = getSpreadsheetDataByName(tabInfo.name);
+
+    // removing the existing instance of that person/value
+    for(const element of apiCallData){
+
+        // see if a person exists
+        // spreadsheetData.forEach(function(e) {if(e['Person ID'] == person['Person ID']){console.log(e)}});
+
+        spreadsheetData.forEach(function(e) {
+            if(e[idAttribute] == element[idAttribute]){
+                let index = spreadsheetData.indexOf(e);
+                spreadsheetData.splice(index, 1)
+                // console.log('spliced the data, yo')
+            }
+
+        })
+
+        // verify the person does not exist anymore.
+        // spreadsheetData.forEach(function(e) {if(e['Person ID'] == person['Person ID']){console.log(e)}});
+
+    }
+    //console.log(apiCallData);
+
+    let dataArray = [];
+    dataArray.push(...apiCallData);
+    dataArray.push(...spreadsheetData);
+
+    return dataArray
+}
+
+
+// /**
+//  * The looped API call.
+//  *
+//  * @param {string} url - this is the base URL that we are requesting. We add the end on this URL.
+//  * @param {boolean} include - This is to define the return based on if you have an includes or not.
+//  * @param {string} includeURL - This is the additional URL. This is required to be structured like '&include=value1,value2'
+//  * 
+//  * @var {number} totalCount - this is returned by PCO and is the total amount of items in that API call. We increment over this in chunks of 100
+//  * 
+//  * @return {data} - This is our complete array of data to parse. 
+//  * 
+//  * @description - This call will continue to loop in increments of 100 until the entire total_count is complete.
+//  */
+// async function pcoApiLoopedCall(url, include = false, includeURL = undefined) {
+//     var service = getOAuthService();
+//     if (service.hasAccess()) {
+//         let offset = 0;
+//         let data = [];
+
+//         let fetchedData = await promiseApiWithTimeout(url, offset, includeURL)
+
+//         let totalCount = fetchedData.meta.total_count;
+
+//         data.push(...fetchedData.data)
+
+//         for (let i = 100; i < totalCount; i += 100) {
+//             const response = await promiseApiWithTimeout(url, i, includeURL);
+//             data.push(...response.data);
+//             const final = response.data;
+//             // const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
+//             // console.log(report)
+//             //console.log(response.included)
+//         }
+//         //console.log(`the data is: ${data.length} long.`);
+//         return data;
+
+//     } else {
+//         return new Error('Whoops, looks like you are not signed in!')
+//     }
+
+// }
+
+
+
+// async function pcoApiLoopedCall_giving(url, include = false, includeURL = undefined) {
+//     var service = getOAuthService();
+//     if (service.hasAccess()) {
+//         let offset = 0;
+//         let data = [];
+//         let included = [];
+
+
+
+//         let fetchedData = await promiseApiWithTimeout(url, offset, includeURL)
+
+//         let totalCount = fetchedData.meta.total_count;
+
+//         data.push(...fetchedData.data)
+//         included.push(...fetchedData.included)
+
+//         for (let i = 100; i < totalCount; i += 100) {
+//             const response = await promiseApiWithTimeout(url, i, includeURL);
+//             data.push(...response.data);
+//             included.push(...response.included)
+//             const final = response.data;
+//             // const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
+//             // console.log(report)
+//             //console.log(response.included)
+//         }
+//         //console.log(`the data is: ${data.length} long.`);
+
+//         return {
+//             "data": data,
+//             "included": included
+//         };
+
+//     }
+// }
+
+
+function getToken() {
+    let token = getOAuthService().getAccessToken();
+    console.log(token)
 }
 
 

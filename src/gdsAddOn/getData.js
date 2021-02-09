@@ -5,7 +5,7 @@
  * @param {Request} request - a JavaScript object containing the data request parameters.
  * @param {Response} response - A JavaScript object that contains the schema and data for the given request.
  */
-async function getData(request) {
+function getData(request) {
 
   console.log(request);
   let module = request.configParams.pcoConnectorType;
@@ -38,10 +38,7 @@ async function getData(request) {
         .throwException();
 
     }
-  }
-
-
-  else if (module == 'checkins') {
+  } else if (module == 'checkins') {
 
     try {
       // API request that can be malformed.
@@ -57,11 +54,6 @@ async function getData(request) {
   }
 
   return data;
-
-
-
-
-
 
 }
 
@@ -90,12 +82,16 @@ function getPcoPeopleData(request) {
   var data = [];
   let requestedData;
 
-  const timezone = getUserProperty('time_zone')
+  console.log(request)
+
+  const timezone = "America/New_York" //getUserProperty('time_zone')
 
   const moduleDataJson = tabNamesReturn();
 
   var schemaData = getSchema(request).schema;
+  //console.log(request)
 
+if(request.fields != undefined){
   // Prepare the schema for the fields requested.
   var dataSchema = request.fields.map(function (field) {
     for (var i = 0; i < schemaData.length; i++) {
@@ -104,6 +100,12 @@ function getPcoPeopleData(request) {
       }
     }
   });
+} else {
+  return {
+    schema: '',
+    rows: ''
+  }
+}
 
   let module = request.configParams.pcoConnectorType
 
@@ -129,8 +131,8 @@ function getPcoPeopleData(request) {
           "personMembership": person["Membership"],
           "personStatus": person["Status"],
           //"personCount": +person["Person Count"],
-          "campusId": +person["Campus Number"],
-          "campusName": person["Campus Name"],
+          //"campusId": +person["Campus Number"],
+          "campusName": person["Campus Name"]
         }
         tempArray.push(tempPerson);
       }
@@ -146,12 +148,12 @@ function getPcoPeopleData(request) {
         let tempPerson = {
           "personId": +person["Person ID"],
           "personCount": 1,
-          "campusId": +person["Campus Number"],
+          //"campusId": +person["Campus Number"],
           "campusName": person["Campus Name"],
-          "listId": +person["List ID"],
+          //"listId": +person["List ID"],
           "listDescription": person["List Description"],
           "listName": person["List Name"],
-          "categoryId": +person["Category ID"],
+          //"categoryId": +person["Category ID"],
           "categoryName": person["Category Name"]
         }
         tempArray.push(tempPerson);
@@ -232,17 +234,19 @@ function getPcoPeopleData(request) {
 
 
 
-  console.log(requestedData[2])
+  //console.log(requestedData[2])
 
 
   let requestedKeys = [];
+
+  //console.log(dataSchema)
 
   //this is filtering the names of the fields that i've requested.
   for (const field of dataSchema) {
     requestedKeys.push(field.name)
   }
 
-  console.log(requestedKeys);
+  //console.log(requestedKeys);
 
   //instead of one by one adding here, would it be easier to filter the data based on key values?
   for (const row of requestedData) {
@@ -264,7 +268,7 @@ function getPcoPeopleData(request) {
 
   }
 
-  console.log(data[100])
+  //console.log(data[100])
 
 
   let returnData = {

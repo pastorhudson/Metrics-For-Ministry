@@ -19,7 +19,7 @@
 
  ********************************************/
 
- function newUserUserProperties(){
+function newUserUserProperties() {
     setActiveSpreadsheetID();
     setUserProperty("requestedModules", "n/a");
     setUserProperty("enabledModules", "n/a");
@@ -34,9 +34,25 @@
     setUserProperty("dateSelectorDiv", "n/a");
     setUserProperty('syncStatus', "notSignedIn")
     setUserProperty('setupStatus', 'true')
+}
 
+function userData() {
+    let userEmail = Session.getActiveUser().getEmail();
+    let organization = getUserProperty('org_name')
+    let totalSheetUsage = getUserProperty('totalPercentUsed');
+    let modulesEnabled = getUserProperty('enabledModules');
 
- }
+    let userReport =
+        `
+        Email: ${userEmail}
+        Organization: ${organization}
+        Total Usage: ${totalSheetUsage}%
+        Modules Enabled: ${modulesEnabled}
+        `
+
+    console.log(userReport)
+
+}
 
 /**
  * Used to set the user properties.
@@ -77,6 +93,18 @@ function getUserProperty(property) {
 function deleteUserProperty(property) {
     var userProperties = PropertiesService.getUserProperties();
     userProperties.deleteProperty(property);
+}
+
+function deleteAllProperties() {
+    // Deletes all user properties.
+    var userProperties = PropertiesService.getUserProperties();
+    userProperties.deleteAllProperties();
+    console.log('deleted the properties')
+}
+
+function deleteID() {
+    deleteUserProperty('activeSpreadsheetID')
+
 }
 
 /**
@@ -327,7 +355,7 @@ function tabNamesReturn() {
                         "id": "personCount",
                         "name": "Person Count",
                         "description": "This gives a count of one for each person.",
-                        "formula": "COUNT($personId)"
+                        "formula": "1"
                     }
                 }
             }
@@ -463,8 +491,8 @@ function tabNamesReturn() {
                 "name": "checkIns_headcounts",
                 "headers": [
                     //"Updated At", // updated at for the Event Time.
-                    "Event ID", // Foreign Key
                     "EventTime ID", // Primary Key
+                    "Event ID", // Foreign Key
                     //"Headcount ID", // Foreign Key
                     //Attendee Type ID", // Foreign Key
                     "Event Name", // pulled from Events

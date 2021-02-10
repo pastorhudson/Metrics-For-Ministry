@@ -19,6 +19,10 @@ function onOpen(e) {
     .addItem('Sidebar', 'showSidebar')
     .addItem('Log Out', 'reset')
     .addItem('Force Full Sync', 'resetFullSyncStatus')
+    .addSubMenu(ui.createMenu('Sync Specific Modules')
+              .addItem('Giving', 'syncGiving')
+              .addItem('Check-ins', 'syncCheckins')
+              .addItem('People', 'syncPeople'))
     //.addItem('Setup Properties', 'newUserUserProperties')
     .addToUi();
 }

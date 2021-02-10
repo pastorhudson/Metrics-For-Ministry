@@ -76,6 +76,22 @@ function updateSpreadsheetFromSidebar(){
     updateSpreadsheet(updatedOnlySync);
 }
 
+async function syncPeople(onlyUpdated = false) {
+    const tabs = tabNamesReturn();
+    pushToSheet( tabs.people.personTab, await personDataCall(onlyUpdated, tabs.people.personTab) );
+    pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople(onlyUpdated, tabs.people.listPeopleTab));
+    await updateListTab();
+}
+
+async function syncGiving(onlyUpdated = false) {
+    const tabs = tabNamesReturn();
+    pushToSheet(tabs.giving.donationsTab, await getGivingDonations(onlyUpdated, tabs.giving.donationsTab));
+}
+
+async function syncCheckins(onlyUpdated = false) {
+    const tabs = tabNamesReturn();
+    pushToSheet(tabs.check_ins.headcountsTab, await getCheckInsData(onlyUpdated, tabs.check_ins.headcountsTab));
+}
 
 async function updateSpreadsheet(onlyUpdated) {
     let syncStatus = getUserProperty('syncStatus')

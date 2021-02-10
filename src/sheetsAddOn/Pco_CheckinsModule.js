@@ -67,6 +67,7 @@ function test3(){
 }
 
 async function getCheckInsData(onlyUpdated, tab) {
+    const timezone = getUserProperty('time_zone')
 
     /**
      * @return {dataArray} - filtered array of the event data
@@ -112,8 +113,8 @@ async function getCheckInsData(onlyUpdated, tab) {
                 elementEventTime['Event Name'] = event.name;
                 elementEventTime['Archived At'] = event.archived_at;
                 elementEventTime['Event Frequency'] = event.frequency;
-                elementEventTime['Event Time Name'] = (attributes.name == null || attributes.name == "") ? Utilities.formatDate(new Date(attributes.starts_at), "EST", "HH:mm a") : attributes.name;
-                // elementEventTime.date = Utilities.formatDate(new Date(attributes.starts_at), "EST", "yyyy-MM-dd");
+                elementEventTime['Event Time Name'] = (attributes.name == null || attributes.name == "") ? Utilities.formatDate(new Date(attributes.starts_at), timezone, "HH:mm a") : attributes.name;
+                //elementEventTime.date = Utilities.formatDate(new Date(attributes.starts_at), timezone, "yyyy-MM-dd");
                 // elementEventTime.time = Utilities.formatDate(new Date(attributes.starts_at), "EST", "HH:mm a");
                 elementEventTime['Starts'] = Utilities.formatDate(new Date(attributes.starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'");
                 elementEventTime['Count Type'] = count;

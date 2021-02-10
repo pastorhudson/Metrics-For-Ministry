@@ -125,6 +125,16 @@ function getDefaultSpreadsheetId() {
     return spreadsheet;
 }
 
+function renameSheet(){
+
+
+
+    const spreadsheet = getDefaultSpreadsheetId();
+    let ss = spreadsheet.getSheetByName("Sheet1");
+
+    ss.setName("test")
+}
+
 
 function syncPercentComplete(percent) {
     if (percent == undefined) {
@@ -368,6 +378,7 @@ function tabNamesReturn() {
                     "Person ID",
                     //"Updated At",
                     "Received At",
+                    "Date",
                     "Refunded",
                     "Payment Method",
                     "Payment Method Type",

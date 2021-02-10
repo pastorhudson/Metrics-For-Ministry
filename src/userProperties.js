@@ -218,7 +218,7 @@ function tabNamesReturn() {
     return tabNames = {
         "people": {
             "personTab": {
-                "name": "people_personTab",
+                "name": "People",
                 "headers": [
                     "Person ID",
                     "Birthday",
@@ -280,7 +280,7 @@ function tabNamesReturn() {
                 }
             },
             "listTab": {
-                "name": "people_listTab",
+                "name": "Lists",
                 "headers": [
                     "List ID",
                     "List Description",
@@ -293,7 +293,7 @@ function tabNamesReturn() {
                     "Sync This List"]
             },
             "listPeopleTab": {
-                "name": "people_listPersonTab",
+                "name": "List Data",
                 "headers": [
                     "List ID",
                     "List Description",
@@ -372,7 +372,7 @@ function tabNamesReturn() {
         },
         "giving": {
             "donationsTab": {
-                "name": "giving_donationsTab",
+                "name": "Donations",
                 "headers": [
                     "Donation ID",
                     "Person ID",
@@ -499,7 +499,7 @@ function tabNamesReturn() {
         },
         "check_ins": {
             "headcountsTab": {
-                "name": "checkIns_headcounts",
+                "name": "Headcounts",
                 "headers": [
                     //"Updated At", // updated at for the Event Time.
                     "EventTime ID", // Primary Key

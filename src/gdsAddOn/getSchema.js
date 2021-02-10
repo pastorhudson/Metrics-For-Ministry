@@ -1,17 +1,17 @@
 
 
-//Throws an error if they have not selected the list type for this connector.
+// //Throws an error if they have not selected the list type for this connector.
 
-function validateConfig(config) {
-  var config = config || {};
-  if (!config.peopleSelectorType) {
-    cc.newUserError()
-      .setText('You must select a connector type of either People Data or List Data.')
-      .throwException();
-  }
+// function validateConfig(config) {
+//   var config = config || {};
+//   if (!config.peopleSelectorType) {
+//     cc.newUserError()
+//       .setText('You must select a connector type of either People Data or List Data.')
+//       .throwException();
+//   }
 
-  return true;
-}
+//   return true;
+// }
 
 function getSchema(request) {
   

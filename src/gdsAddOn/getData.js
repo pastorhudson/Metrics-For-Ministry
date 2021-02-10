@@ -14,7 +14,6 @@ function getData(request) {
   if (module == 'people') {
 
     try {
-      // API request that can be malformed.
       data = getPcoPeopleData(request);
     } catch (e) {
       DataStudioApp.createCommunityConnector()
@@ -84,7 +83,10 @@ function getPcoPeopleData(request) {
 
   console.log(request)
 
-  const timezone = SpreadsheetApp.openById(request.configParams.spreadsheetIdSingle).getSpreadsheetTimeZone(); //getUserProperty('time_zone')
+
+    const timezone = SpreadsheetApp.openById(request.configParams.spreadsheetIdSingle).getSpreadsheetTimeZone();
+
+   //getUserProperty('time_zone')
 
   console.log(timezone);
 

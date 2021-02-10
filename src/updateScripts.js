@@ -24,9 +24,15 @@ function updateScripts(version = null){
     }
 }
 
-function updates(){
-    //updateScripts();
-    setUserProperty('currentVersion', 'null');
+// function updates(){
+//     //updateScripts();
+//     setUserProperty('currentVersion', 'null');
+// }
+
+function updatedThings(){
+    var files = DriveApp.getFilesByName('Planning Center Data');
+    let stuff = files.getAccess('hello@savvytoolbelt.com') 
+    console.log(stuff);
 }
 
 function updateSheetNames(){
@@ -38,9 +44,6 @@ function updateSheetNames(){
     if(tabs.includes('people_listPersonTab')) {spreadsheet.getSheetByName("people_listPersonTab").setName("List Data")}; 
     if(tabs.includes('checkIns_headcounts')) {spreadsheet.getSheetByName("checkIns_headcounts").setName("Headcounts")}; 
     if(tabs.includes('giving_donationsTab')) {spreadsheet.getSheetByName("giving_donationsTab").setName("Donations")}; 
-
-
-
 }
 
 

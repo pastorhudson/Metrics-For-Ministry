@@ -67,9 +67,23 @@ function setLastSyncTime() {
     setUserProperty("lastSyncTimeISOString", today.toISOString())
 }
 
+async function updateSpreadsheetFromSidebar() {
 
+    if(isAuthValid()){
+        await updateScripts();
+        let updatedOnlySync = getFullSyncStatus();
+        userData();
 
+        const updateResponse = await updateSpreadsheet(updatedOnlySync);
 
+        if(updateResponse != 'success'){
+            sheetsUiError('An Error occured while trying to sync',updateResponse.text)
+        }
+
+        
+    } else {
+        sheetsUiError("Not Signed In","It appears that you're not signed in. Try to Authorize again. If the issue persists email hello@savvytoolbelt.com for help.")
+    }
 
 function updateSpreadsheetFromSidebar(){
     let updatedOnlySync = getFullSyncStatus();
@@ -162,6 +176,16 @@ async function updateSpreadsheet(onlyUpdated) {
             console.log(err)
             console.log(syncStateText);
             setUserProperty('syncStatus', "ready");
+            
+            // need to look into throwing an error here if the sync fails.
+            console.log(error)
+            console.log(syncStateText);
+
+            return {
+                'error': error,
+                'text' : syncStateText
+            }
+            
         }
         
 

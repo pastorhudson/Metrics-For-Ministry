@@ -95,9 +95,17 @@ function authCallback(request) {
     getOrgData();
     setUserProperty('syncUpdatedOnly', 'false')
 
-    return HtmlService.createHtmlOutput('Success. You can close this tab');
+
+    return HtmlService.createHtmlOutputFromFile('sheetsAddOn/signin-success');
   } else {
-    return HtmlService.createHtmlOutput('Denied. You can close this tab');
+    return HtmlService.createHtmlOutputFromFile('sheetsAddOn/signin-failure');
   };
 };
+
+// function signinWindow(loginStatus){
+//   const html = HtmlService.createTemplateFromFile('sheetsAddOn/signin');
+//   html.signin = loginStatus;
+//   return html.evaluate().getContent();
+
+// }
 

@@ -4,10 +4,10 @@
     <base target="_top" />
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css" />
     <style>
-        @font-face {
+        /* @font-face {
             font-family: cuina;
-            src: url(../../assets/cunia.ttf) format('truetype');
-        }
+            src: url('../../assets/cunia.ttf') format('truetype');
+        } */
 
         .container {
             display: flex;
@@ -43,7 +43,7 @@
             align-content: center;
             justify-content: flex-start;
             padding-top: 20px;
-
+            max-width: 400px;
         }
 
         footer {
@@ -69,14 +69,24 @@
 
         .loginStatus {
             text-align: center;
+            
         }
 
         .loginStatus h2 {
-            font-size: 3em;
+            font-size: 2.5em;
+            padding-bottom: 30px;
+        }
+
+        .loginStatus h3 {
+            font-size: 2em;
+            font-weight: normal;
         }
 
         .loginStatus p {
             font-size: 1.5em;
+            line-height: 1.15em;
+            font-weight: 100;
+            
         }
 
         .column1 {
@@ -147,7 +157,6 @@
             padding: 5px;
             fill: #212B3B;
         }
-
     </style>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -206,12 +215,12 @@
     </header>
 
     <content>
-        <div class="loginStatus">
-
-            <h2>Success!</h2>
-            <p>Looks like you've signed in successfully to Planning Center.</p>
-            <p>You can close this window now!</p>
-
+        <div class="loginStatus" id="loginStatus">
+            <h3>Login:</h3>
+            <h2>Failed.</h2>
+        <p>It looks like an error occured when you attempted to log into Planning Center.</p>
+        <p> This could be due to an incorrect password, closing the login browser, or not being an admin for the modules you selected. </p>
+        <p>Double check the above, close this tab and try again!</p>
         </div>
 
         <div id="menuDiv" class="">
@@ -285,25 +294,37 @@
         </div>
 
 
-        
+
 
 
     </content>
 
     <footer>
-        <span>This plugin was built by Savvy Tool Belt and is in no way affiliated with Planning Center.</span>
-        <p class="copyright">©<a href="https://savvytoolbelt.com">SavvyToolBelt</a> 2019-2021.</p>
+        <span>This plugin was built by Savvy Tool Belt and is not affiliated with Planning Center.</span>
+        <span id="emailContact"><a href="hello@savvytoolbelt.com">hello@savvytoolbelt.com</a></span>
+        <p class="copyright" id='copyright'>©<a href="https://savvytoolbelt.com">SavvyToolBelt</a> 2019-2021.</p>
     </footer>
 
 
     <script>
-                document.getElementById('helpButton').addEventListener("click", () => {
+        document.getElementById('helpButton').addEventListener("click", () => {
             window.open("https://docs.metricsforministry.com", '_blank');
         });
 
         document.getElementById('gdsConnectorButton').addEventListener("click", () => {
             window.open("https://datastudio.google.com/u/0/", '_blank');
         });
+
+        document.getElementById('copyright').addEventListener("click", () => {
+            window.open("https://savvytoolbelt.com", '_blank');
+        });
+
+        document.getElementById('emailContact').addEventListener("click", () => {
+            window.open("mailto:hello@savvytoolbelt.com", '_blank');
+        });
+
+  
+
 
 
 

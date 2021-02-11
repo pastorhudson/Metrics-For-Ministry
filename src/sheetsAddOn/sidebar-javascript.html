@@ -12,15 +12,14 @@
 
     // });
 
-    document.getElementById('syncListsButton').addEventListener('click', () => {
+    document.getElementById('setupDocument').addEventListener('click', () => {
 
-        document.getElementById('refreshIconSettings').classList.add('refreshIcon-spin');
 
         google.script.run
             .withSuccessHandler(() => {
-                document.getElementById('refreshIconSettings').classList.remove('refreshIcon-spin')
+                console.log('Document Setup is Complete')
             })
-            .updateListTab();
+            .initialConfiguration();
     })
 
     document.getElementById('settingsButton').addEventListener("click", () => {
@@ -102,6 +101,9 @@
 
                 } else if (status == "notSignedIn") {
                     // TODO -- add a model popup here saying they're not signed in.
+
+                    google.script.run.sheetsUiError("Not Signed In","It appears that you're not signed in. Try to Authorize again. If the issue persists email hello@savvytoolbelt.com for help.")
+
                 }
             })
             .withFailureHandler() // TODO - add a failure handler here.

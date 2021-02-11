@@ -16,6 +16,9 @@
  * @param {string} dateSelectorDiv
  * @param {string} syncStatus - notSignedIn/ready/syncing
  * @param {string} setupStatus - true / false - based on if the user has already set it up.
+ * @param {string} syncCount - Incrementer that  managers how many syncs before resetting the full sync status.
+ * @param {string} syncUpdatedOnly - true if we are only syncing updated content.
+ * @param {string} currentVersion - 
 
  ********************************************/
 
@@ -24,7 +27,7 @@ function newUserUserProperties() {
     setUserProperty("requestedModules", "n/a");
     setUserProperty("enabledModules", "n/a");
     setUserProperty("lastSyncTime", "n/a");
-    setUserProperty("isSignedIn", "false");
+    //setUserProperty("isSignedIn", "false");
     setUserProperty("lastSyncTimeISOString", "n/a");
     setUserProperty("date_format", "n/a");
     setUserProperty("org_name", "n/a");
@@ -34,25 +37,10 @@ function newUserUserProperties() {
     setUserProperty("dateSelectorDiv", "n/a");
     setUserProperty('syncStatus', "notSignedIn")
     setUserProperty('setupStatus', 'true')
+    setUserProperty('syncCount', '0');
 }
 
-function userData() {
-    let userEmail = Session.getActiveUser().getEmail();
-    let organization = getUserProperty('org_name')
-    let totalSheetUsage = getUserProperty('totalPercentUsed');
-    let modulesEnabled = getUserProperty('enabledModules');
 
-    let userReport =
-        `
-        Email: ${userEmail}
-        Organization: ${organization}
-        Total Usage: ${totalSheetUsage}%
-        Modules Enabled: ${modulesEnabled}
-        `
-
-    console.log(userReport)
-
-}
 
 /**
  * Used to set the user properties.

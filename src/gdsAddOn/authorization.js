@@ -5,7 +5,7 @@
  */
 function getAuthType() {
   const cc = DataStudioApp.createCommunityConnector();
-  
+
   return cc.newAuthTypeResponse()
     .setAuthType(cc.AuthType.NONE)
     .build();
@@ -36,14 +36,6 @@ function isAuthValid() {
   return getOAuthService().hasAccess();
 }
 
-// function secrets(){
-//   var scriptProperties = PropertiesService.getScriptProperties();
-//   var clientID = scriptProperties.getProperty('clientID');
-//   var clientSecret = scriptProperties.getProperty('clientSecret');
-
-//   console.log(clientID)
-//   console.log(clientSecret)
-// }
 
 
 /**
@@ -54,7 +46,7 @@ function getOAuthService(requestedModules) {
   var scriptProperties = PropertiesService.getScriptProperties();
   var clientID = scriptProperties.getProperty('clientID');
   var clientSecret = scriptProperties.getProperty('clientSecret');
-  
+
   return OAuth2.createService('metricsForMinistry')
     .setAuthorizationBaseUrl("https://api.planningcenteronline.com/oauth/authorize")
     .setTokenUrl("https://api.planningcenteronline.com/oauth/token")
@@ -67,10 +59,10 @@ function getOAuthService(requestedModules) {
 
 
 
-    // TODO
+// TODO
 
-    // [ ] - Need to create the authorized response to go to Savvy's site where the GDS guide is. This might be on gitbook.io as well.
-    // [ ] - create a denied response on Gitbook.
+// [ ] - Need to create the authorized response to go to Savvy's site where the GDS guide is. This might be on gitbook.io as well.
+// [ ] - create a denied response on Gitbook.
 
 /**
  * The OAuth callback.
@@ -83,19 +75,6 @@ function authCallback(request) {
   var authorized = testService.handleCallback(request);
   console.log(authorized)
   if (authorized) {
-
-    setActiveSpreadsheetID();
-    pcoModuleUserProperties(undefined);
-    setUpDocument();
-    deleteSheet("Metrics for Ministry has been reset");
-    removeAllTriggers();
-    addTriggers();
-    setUserProperty("isSignedIn","true");
-    setUserProperty('syncStatus', "ready")
-    getOrgData();
-    setUserProperty('syncUpdatedOnly', 'false')
-
-
     return HtmlService.createHtmlOutputFromFile('sheetsAddOn/signin-success');
   } else {
     return HtmlService.createHtmlOutputFromFile('sheetsAddOn/signin-failure');
@@ -109,3 +88,21 @@ function authCallback(request) {
 
 // }
 
+function initialConfiguration() {
+
+  var service = getOAuthService();
+  if (service.hasAccess()) {
+    setActiveSpreadsheetID();
+    pcoModuleUserProperties(undefined);
+    setUpDocument();
+    deleteSheet("Metrics for Ministry has been reset");
+    addTriggers();
+    //setUserProperty("isSignedIn", "true");
+    setUserProperty('syncStatus', "ready");
+    getOrgData();
+    setUserProperty('syncUpdatedOnly', 'false');
+    updateListTab();
+  } else {
+    sheetsUiError("Not Signed In","It appears that you're not signed in. Try to Authorize again. If the issue persists email hello@savvytoolbelt.com for help.")
+  }
+}

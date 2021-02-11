@@ -9,3 +9,8 @@ function throwUserError(message) {
       .setText(message)
       .throwException();
   }
+
+function sheetsUiError(title,message) {
+  var ui = SpreadsheetApp.getUi();
+  ui.alert(title,message, ui.ButtonSet.OK);
+}

@@ -303,8 +303,13 @@ function getSheetHeaders(name) {
 }
 
 //to use this you call the spreadsheet by the name. You can adjust this if needed. 
-function getSpreadsheetDataByName(tab) {
-    const spreadsheet = getDefaultSpreadsheetId();
+function getSpreadsheetDataByName(tab, spreadsheetID = null) {
+
+    const spreadsheet = (spreadsheetID == null) ? getDefaultSpreadsheetId() : SpreadsheetApp.openById(spreadsheetID);
+
+    console.log(spreadsheet);
+
+    //const spreadsheet = getDefaultSpreadsheetId();
     let ss = spreadsheet.getSheetByName(tab);
     let lastRow = ss.getLastRow();
     let lastCol = ss.getDataRange().getLastColumn();

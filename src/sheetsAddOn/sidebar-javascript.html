@@ -12,15 +12,14 @@
 
     // });
 
-    document.getElementById('syncListsButton').addEventListener('click', () => {
+    document.getElementById('setupDocument').addEventListener('click', () => {
 
-        document.getElementById('refreshIconSettings').classList.add('refreshIcon-spin');
 
         google.script.run
             .withSuccessHandler(() => {
-                document.getElementById('refreshIconSettings').classList.remove('refreshIcon-spin')
+                console.log('Document Setup is Complete')
             })
-            .updateListTab();
+            .initialConfiguration();
     })
 
     document.getElementById('settingsButton').addEventListener("click", () => {
@@ -102,6 +101,9 @@
 
                 } else if (status == "notSignedIn") {
                     // TODO -- add a model popup here saying they're not signed in.
+
+                    google.script.run.sheetsUiError("Not Signed In","It appears that you're not signed in. Try to Authorize again. If the issue persists email hello@savvytoolbelt.com for help.")
+
                 }
             })
             .withFailureHandler() // TODO - add a failure handler here.
@@ -117,8 +119,20 @@
         window.open("https://docs.metricsforministry.com", '_blank');
     });
 
+    document.getElementById('copyright').addEventListener("click", () => {
+        window.open("https://savvytoolbelt.com", '_blank');
+    });
+
+    document.getElementById('emailContact').addEventListener("click", () => {
+        window.open("mailto:hello@savvytoolbelt.com", '_blank');
+    });
+
     document.getElementById('gdsConnectorButton').addEventListener("click", () => {
         window.open("https://datastudio.google.com/datasources/create?connectorId=AKfycbxRuVlDYx8x8UXA7lINkp7yr-hvSnq3R4GBwJjoYptH927-IoqnyuKIIMlp9FesqBDT3A", '_blank');
+    });
+
+    document.getElementById('tipJarButton').addEventListener("click", () => {
+        window.open("https://www.paypal.com/donate?hosted_button_id=89CNQWNBJ7DAJ", '_blank');
     });
 
 

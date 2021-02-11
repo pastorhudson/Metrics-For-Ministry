@@ -14,7 +14,6 @@ function getData(request) {
   if (module == 'people') {
 
     try {
-      // API request that can be malformed.
       data = getPcoPeopleData(request);
     } catch (e) {
       DataStudioApp.createCommunityConnector()
@@ -84,7 +83,12 @@ function getPcoPeopleData(request) {
 
   console.log(request)
 
-  const timezone = "America/New_York" //getUserProperty('time_zone')
+
+    const timezone = SpreadsheetApp.openById(request.configParams.spreadsheetIdSingle).getSpreadsheetTimeZone();
+
+   //getUserProperty('time_zone')
+
+  console.log(timezone);
 
   const moduleDataJson = tabNamesReturn();
 
@@ -113,7 +117,8 @@ if(request.fields != undefined){
     let requestType = request.configParams.peopleSelectorType;
 
     if (requestType == "peopleData") {
-      let personData = getSpreadsheetDataByName(moduleDataJson.people.personTab.name);
+      //console.log(request.configParams.spreadsheetIdSingle)
+      let personData = getSpreadsheetDataByName(moduleDataJson.people.personTab.name, request.configParams.spreadsheetIdSingle);
 
       let tempArray = [];
 
@@ -140,7 +145,7 @@ if(request.fields != undefined){
       requestedData = tempArray;
 
     } else if (requestType == "listData") {
-      let listData = getSpreadsheetDataByName(moduleDataJson.people.listPeopleTab.name);
+      let listData = getSpreadsheetDataByName(moduleDataJson.people.listPeopleTab.name, request.configParams.spreadsheetIdSingle);
 
       let tempArray = [];
 
@@ -165,7 +170,7 @@ if(request.fields != undefined){
     }
 
   } else if (module == 'giving') {
-    let donationData = getSpreadsheetDataByName(moduleDataJson.giving.donationsTab.name);
+    let donationData = getSpreadsheetDataByName(moduleDataJson.giving.donationsTab.name, request.configParams.spreadsheetIdSingle);
 
     let tempArray = [];
 
@@ -203,7 +208,7 @@ if(request.fields != undefined){
     let requestType = request.configParams.checkinsSelectorType;
 
     if (requestType == "headcountData") {
-      let headcountData = getSpreadsheetDataByName(moduleDataJson.check_ins.headcountsTab.name);
+      let headcountData = getSpreadsheetDataByName(moduleDataJson.check_ins.headcountsTab.name, request.configParams.spreadsheetIdSingle);
 
       let tempArray = [];
 

@@ -19,13 +19,22 @@ function onOpen(e) {
     .addItem('Sidebar', 'showSidebar')
     .addItem('Log Out', 'reset')
     .addItem('Force Full Sync', 'resetFullSyncStatus')
-    .addItem('Setup Properties', 'newUserUserProperties')
+    .addSubMenu(ui.createMenu('Sync Specific Modules')
+              .addItem('Giving', 'syncGiving')
+              .addItem('Check-ins', 'syncCheckins')
+              .addItem('People', 'syncPeople'))
+    .addSubMenu(ui.createMenu('Debugging Info')
+              .addItem('Remove Triggers', 'removeAllTriggers')
+              .addItem('Add Default Triggers', 'addTriggers')
+              )
+    //.addItem('Setup Properties', 'newUserUserProperties')
     .addToUi();
 }
 
 
 // Display's the sidebar
 function showSidebar() {
+  
   setActiveSpreadsheetID();
   userData();
   let status = getUserProperty('setupStatus');
@@ -35,27 +44,30 @@ function showSidebar() {
     try{
       newUserUserProperties();
       setUserProperty('setupStatus', 'true')
+
+      var scriptProperties = PropertiesService.getScriptProperties();
+      const mostRecentVersion = scriptProperties.getProperty('mostRecentVersion');
+      setUserProperty('currentVersion',mostRecentVersion)
     } catch (err){
       setUserProperty('setupStatus', 'false')
     }
 
   }
 
+  let updated = updateScripts();
+
   const html = HtmlService.createTemplateFromFile('sheetsAddOn/sidebar');
   const page = html.evaluate();
   page.setTitle("Savvy Tool Belt");
   SpreadsheetApp.getUi().showSidebar(page);
 
+  // will only show this if the spreadsheet was updated.
+  if(updated != false){
+    sheetsUiError("Metrics for Ministry was updated!",`Looks like you were running ${updated.oldVersion} and we updated you to ${updated.newVersion}. If you have questions about this change visit www.metricsforministry.com and checkout the changelog!`)
+  }
 
 }
 
-// Display's the sidebar
-function showSidebarOld() {
-  const html = HtmlService.createTemplateFromFile('sheetsAddOn/sidebar-old');
-  const page = html.evaluate();
-  page.setTitle("Savvy Tool Belt");
-  SpreadsheetApp.getUi().showSidebar(page);
-}
 
 
 function returnData(data) {

@@ -81,6 +81,16 @@
                     <p>Click here to link create a new Google Data Studio Connector</p>
                 </div>
             </div>
+            <div class="contentOption" id="tipJarButton">
+                <div class="contentSubOptionImg column1">
+                    <?!= HtmlService.createHtmlOutputFromFile('assets/jar').getContent(); ?>
+
+                </div>
+                <div class="contentSubOptionInfo column2">
+                    <h3>Donate</h3>
+                    <p>Help us keep this tool free for all churches!</p>
+                </div>
+            </div>
         </div>
         <div id="settingsDiv" class="page hidden">
             <h2>Settings</h2>
@@ -130,17 +140,17 @@
             </div>
 
             <div class="settingsSyncButtons">
-                <div class="contentOption" id="syncListsButton">
+
+                <div class="contentOption" id="setupDocument">
                     <div class="contentSubOptionImg column1">
-                        <?!= HtmlService.createHtmlOutputFromFile('assets/refreshIconSettings').getContent(); ?>
+                        <?!= HtmlService.createHtmlOutputFromFile('assets/documentIcon').getContent(); ?>
                     </div>
                     <div class="contentSubOptionInfo column2">
                         <div id="syncNowContent">
-                            <h3>Sync Lists</h3>
-                            <p>Update your PCO List Data</p>
+                            <h3>Setup Document</h3>
+                            <p>Setup the Sheets Document</p>
                         </div>
                     </div>
-
                 </div>
                 <div class="contentOption" id="logOutButton">
                     <div class="contentSubOptionImg column1">
@@ -219,7 +229,7 @@
                 <div class="infoContentDivs">
                     <h3>Spreadsheet ID</h3>
                     <p>
-                        <?= getUserProperty("activeSpreadsheetID");; ?> %
+                        <?= getUserProperty("activeSpreadsheetID");; ?>
                     </p>
                 </div>
             </div>
@@ -239,8 +249,9 @@
     </content>
 
     <footer>
-        <span>This plugin was built by Savvy Tool Belt and is in no way affiliated with Planning Center.</span>
-        <p class="copyright">©<a href="https://savvytoolbelt.com">SavvyToolBelt</a> 2019-2021.</p>
+        <span>This plugin was built by Savvy Tool Belt and is not affiliated with Planning Center.</span>
+        <span id="emailContact"><a href="hello@savvytoolbelt.com">hello@savvytoolbelt.com</a></span>
+        <p class="copyright" id='copyright'>©<a href="https://savvytoolbelt.com">SavvyToolBelt</a> 2019-2021.</p>
     </footer>
 
     <?!= HtmlService.createHtmlOutputFromFile('sheetsAddOn/sidebar-javascript').getContent(); ?>

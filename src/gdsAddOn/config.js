@@ -1,21 +1,34 @@
 
+
 function isAdminUser() {
   return true
 }
 
 // https://developers.google.com/datastudio/connector/reference#getconfig
-function getConfig(request) {
+function getConfig(request, step) {
 
   const configParams = request.configParams;
 
   console.log(configParams)
-  const isFirstRequest = configParams === undefined;
+  const isFirstStep = configParams === undefined;
+  let isSecondStep = false;
+  let isThirdStep = false;
+
   var cc = DataStudioApp.createCommunityConnector();
   const config = cc.getConfig();
 
-  if (isFirstRequest) {
-    config.setIsSteppedConfig(true);
+  if(!isFirstStep){
+    isSecondStep = (configParams.haveAccess == null) ? true : false;
 
+    if(!isSecondStep){
+      isThirdStep = (configParams.pcoConnectorType == "people" || configParams.pcoConnectorType == "checkins") ? true : false;
+    } else {
+      config.setIsSteppedConfig(true);
+    }
+  }
+
+  if (isFirstStep) {
+    config.setIsSteppedConfig(true);
   }
 
   config.newInfo()
@@ -24,46 +37,12 @@ function getConfig(request) {
       'This connector supports data coming from Google Sheets. In order to use this you must have already configured Google Sheets to contain your PCO information. Once that is done you will configure a connector here for each type of data that you want to connect. '
     );
 
-  // let spreadsheetID = getUserProperty('activeSpreadsheetID');
-  // let option1 = config.newOptionBuilder()
-  //   .setLabel("null - set up the Google Sheets Addon first")
-  //   .setValue("null - set up the Google Sheets Addon first");
-
-  // if (spreadsheetID != null) {
-  // config.newInfo()
-  //   .setId('spreadsheetIDText')
-  //   .setText(`Your Spreadsheet ID is: ${spreadsheetID}. If this is blank that means you have not configured the Google Sheets integration yet. Please configure that first.`)
-
-  // option1 = config.newOptionBuilder()
-  //   .setLabel(spreadsheetID)
-  //   .setValue(spreadsheetID);
-
-  // } else {
-
-  //   config.newInfo()
-  //     .setId('spreadsheetIDText')
-  //     .setText(`It looks like you have not set up the Google Sheets add on yet. Please configure this first. For more information go to https://docs.metricsforministry.com. Please note that you must use the same Google account for this connector as you used to set up the Metrics for Ministry plugin. Once you have set that up click next or refresh the page to continue setup.`)
-
-  //   //console.log(err)
-
-  //   return config.build();
-
-
-  //   }
-
   config
     .newTextInput()
     .setId('spreadsheetIdSingle')
     .setName('Spreadsheet ID')
     .setHelpText('This is the ID for the spreadsheet where Metrics for Ministry is configured.')
     .setPlaceholder('spreadsheet id here.');
-
-  // config.newSelectSingle()
-  //   .setId('spreadsheetIdSingle')
-  //   .setName('Spreadsheet ID')
-  //   .setHelpText("There should only be one item in the dropdown, that's your spreadsheet ID.")
-  //   .addOption(option1)
-
 
   //can look at making this dynamic based on what modules they have enabled. 
   config
@@ -82,18 +61,35 @@ function getConfig(request) {
     .addOption(config.newOptionBuilder().setLabel('Services').setValue('services'))
 
 
-  if (!isFirstRequest) {
+  if (isSecondStep) {
 
     //   if (configParams.spreadsheetIdSingle != spreadsheetID || configParams.spreadsheetIdSingle === undefined || configParams.spreadsheetIdSingle == '') {
     if (configParams.spreadsheetIdSingle === undefined || configParams.spreadsheetIdSingle == '') {
       cc.newUserError().setText('You must add a spreadsheet ID or verify you are using the right spreadsheet ID.').throwException();
-    }
+    } else if (configParams.spreadsheetIdSingle.length > 1) {
 
-    if (configParams.pcoConnectorType === undefined) {
-      cc.newUserError().setText('You must select a Connector Type').throwException();
-    }
 
-    //this is currently stopping the stepped config. 
+      config.newInfo()
+        .setId('testSpreadsheet')
+        .setText(
+          `To ensure you have access to this spreadsheet attempt to open this URL. - https://docs.google.com/spreadsheets/d/${configParams.spreadsheetIdSingle}`
+        );
+
+      config.newCheckbox()
+        .setId("haveAccess")
+        .setName("I have access to the spreadsheet")
+        .setHelpText("Check here if you have access to the above spreadsheet")
+        }
+
+
+
+    } else if(isThirdStep) {
+
+      if (configParams.pcoConnectorType === undefined) {
+        cc.newUserError().setText('You must select a Connector Type').throwException();
+      }
+
+      //this is currently stopping the stepped config. 
     config.setIsSteppedConfig(false);
 
     // need to make a block for each module as they're enabled.
@@ -119,9 +115,14 @@ function getConfig(request) {
 
     }
 
-    setUserProperty("activeSpreadsheetID", configParams.spreadsheetIdSingle);
+    //setUserProperty("activeSpreadsheetID", configParams.spreadsheetIdSingle);
 
-  }
+    }
+
+
+
+
+
 
   return config.build();
 }

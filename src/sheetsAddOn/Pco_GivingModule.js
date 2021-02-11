@@ -72,6 +72,9 @@ async function getGivingDonations(onlyUpdated, tab) {
      * @description - 
      */
 
+    const timezone = getUserProperty('time_zone')
+
+
     const donationData = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/donations", onlyUpdated,  true, "&include=designations");
     const funds = await getGivingFunds();
     const labels = await getGivingLabels();
@@ -107,6 +110,7 @@ async function getGivingDonations(onlyUpdated, tab) {
             // Removing update at to not configure people on which date metric to use.
             //donationElement.updatedAt = attributes.updated_at;
             donationElement['Recieved At'] = attributes.received_at;
+            donationElement['Date'] = Utilities.formatDate(new Date(attributes.received_at), timezone, "yyyy-MM-dd");
 
             // true/false if it's been refunded or not.
             donationElement['Refunded'] = attributes.refunded;
@@ -169,6 +173,8 @@ async function getGivingDonations(onlyUpdated, tab) {
         }
 
     }
+
+    console.log(donationArray[0])
 
         // parsing the data from the sheet if we are requesting only updated info.
         if(onlyUpdated){

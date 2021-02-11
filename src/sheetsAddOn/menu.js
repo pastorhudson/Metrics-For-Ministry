@@ -30,6 +30,7 @@ function onOpen(e) {
 
 // Display's the sidebar
 function showSidebar() {
+  
   setActiveSpreadsheetID();
   userData();
   let status = getUserProperty('setupStatus');
@@ -44,6 +45,8 @@ function showSidebar() {
     }
 
   }
+
+  updateScripts();
 
   const html = HtmlService.createTemplateFromFile('sheetsAddOn/sidebar');
   const page = html.evaluate();

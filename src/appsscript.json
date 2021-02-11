@@ -22,9 +22,15 @@
     "termsOfServiceUrl": "https://docs.metricsforministry.com/terms-of-service",
     "description": "Integrate Planning Center Online with Google Data Studio to gain additional insights and understanding of your ministry. This connector works alongside the Google Sheets Addon found here - https://workspace.google.com/marketplace/app/metrics_for_ministry/938009781292",
     "shortDescription": "Integrate Planning Center Online with Google Data Studio",
-    "feeType": ["FREE"],
-    "authType": ["OAUTH2"],
-    "sources": ["GOOGLE_DRIVE"]
+    "feeType": [
+      "FREE"
+    ],
+    "authType": [
+      "OAUTH2"
+    ],
+    "sources": [
+      "GOOGLE_DRIVE"
+    ]
   },
   "oauthScopes": [
     "https://www.googleapis.com/auth/drive.file",

@@ -45,6 +45,14 @@ function getFullSyncStatus(){
 function triggerSyncDaily() {
     let isSignedIn = getUserProperty('isSignedIn');
     var service = getOAuthService();
+    let syncCount = +getUserProperty('syncCount');
+    console.log(syncCount)
+
+    if (service.hasAccess()) {
+
+        // updates anything needed if they're not on the latest version.
+        await updateScripts();
+        userData();
 
     if (isSignedIn == "true" && service.hasAccess()) {
         let updatedOnlySync = getFullSyncStatus();

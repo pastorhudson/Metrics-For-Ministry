@@ -1,76 +1,81 @@
-function updateScripts(version = null, oldVersion, updating = false){
+function updateScripts(currentVersion = null, oldVersion, updating = false) {
     var scriptProperties = PropertiesService.getScriptProperties();
     const mostRecentVersion = scriptProperties.getProperty('mostRecentVersion');
-    let currentVersion = getUserProperty('currentVersion');
+    currentVersion = getUserProperty('currentVersion');
 
-    console.log(currentVersion);
+    //console.log(currentVersion);
 
-    while (currentVersion != mostRecentVersion) {
-        version = currentVersion;
-        if(!updating){oldVersion = currentVersion;}
-        
+    //version = currentVersion;
 
-        if (version == "v1.0.9"){
-            // changes made in the sheet names require these to be automatically updated.
-            updateSheetNames();
+    if (!updating) { oldVersion = currentVersion; }
 
-            //syncing Giving to include the  new Date Column.
-            syncGiving();
+    if (currentVersion == mostRecentVersion) {
+        console.log(`On most recent version - ${mostRecentVersion}`)
+        return false;
+    } else if (currentVersion == "v1.0.9") {
+        // changes made in the sheet names require these to be automatically updated.
+        updateSheetNames();
 
-            version = "v1.1.0"
-            setUserProperty('currentVersion', version);
+        //syncing Giving to include the  new Date Column.
+        syncGiving();
 
-            return updateScripts(version, oldVersion, true);
-        } else if(version == "v1.1.0"){
-            // most recent version.
-            try{
+        currentVersion = "v1.1.0"
+        setUserProperty('currentVersion', currentVersion);
 
-                // implemeted for the 5 day sync reset counter. Issue #52
-                // https://github.com/coltoneshaw/Metrics-For-Ministry/issues/52
-                addTriggers();
-                setUserProperty('syncCount', '0')
+        return updateScripts(currentVersion, oldVersion, true);
+    } else if (currentVersion == "v1.1.0") {
+        try {
+            // implemeted for the 5 day sync reset counter. Issue #52
+            // https://github.com/coltoneshaw/Metrics-For-Ministry/issues/52
+            addTriggers();
+            setUserProperty('syncCount', '0')
 
-                version = "v1.2.0";
+            currentVersion = "v1.2.0";
 
-                setUserProperty('currentVersion', mostRecentVersion);
-                console.log("Updated to the current version")
-                return {
-                    'oldVersion': oldVersion,
-                    "newVersion": mostRecentVersion
-                }
-            } catch(err){
-                console.log('Failed to update current version.')
-            }
-            return updateScripts(version, oldVersion, true);
-        }else {
-            version = "v1.0.9"
-            setUserProperty('currentVersion', version);
-            oldVersion = "v1.0.9";
-            
-            return updateScripts(version, oldVersion, true);
+            setUserProperty('currentVersion', currentVersion);
+            return updateScripts(currentVersion, oldVersion, true);
+        } catch (error) {
+            console.log(`Failed to update current version. error: ${error}`)
         }
-    } 
 
-    console.log(`On most recent version - ${mostRecentVersion}`)
-    return false;
+    } else if(currentVersion == "v1.2.0") {
 
- 
+        // most recent version - v1.2.1
+        console.log("Updated to the current version");
+
+        currentVersion = mostRecentVersion;
+
+        setUserProperty('currentVersion', currentVersion);
+
+        return {
+            'oldVersion': oldVersion,
+            "newVersion": mostRecentVersion
+
+        }
+    } else {
+        currentVersion = "v1.0.9"
+        setUserProperty('currentVersion', currentVersion);
+        oldVersion = "v1.0.9";
+
+        return updateScripts(currentVersion, oldVersion, true);
+    }
+
 }
 
-function update(){
-  setUserProperty('currentVersion', 'null');
+function update() {
+    setUserProperty('currentVersion', 'null');
 }
 
 
-function updateSheetNames(){
+function updateSheetNames() {
     const tabs = tabList();
     const spreadsheet = getDefaultSpreadsheetId();
 
-    if(tabs.includes('people_personTab')) {spreadsheet.getSheetByName("people_personTab").setName("People")}; 
-    if(tabs.includes('people_listTab')) {spreadsheet.getSheetByName("people_listTab").setName("Lists")}; 
-    if(tabs.includes('people_listPersonTab')) {spreadsheet.getSheetByName("people_listPersonTab").setName("List Data")}; 
-    if(tabs.includes('checkIns_headcounts')) {spreadsheet.getSheetByName("checkIns_headcounts").setName("Headcounts")}; 
-    if(tabs.includes('giving_donationsTab')) {spreadsheet.getSheetByName("giving_donationsTab").setName("Donations")}; 
+    if (tabs.includes('people_personTab')) { spreadsheet.getSheetByName("people_personTab").setName("People") };
+    if (tabs.includes('people_listTab')) { spreadsheet.getSheetByName("people_listTab").setName("Lists") };
+    if (tabs.includes('people_listPersonTab')) { spreadsheet.getSheetByName("people_listPersonTab").setName("List Data") };
+    if (tabs.includes('checkIns_headcounts')) { spreadsheet.getSheetByName("checkIns_headcounts").setName("Headcounts") };
+    if (tabs.includes('giving_donationsTab')) { spreadsheet.getSheetByName("giving_donationsTab").setName("Donations") };
 }
 
 

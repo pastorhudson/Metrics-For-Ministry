@@ -54,26 +54,19 @@ async function getEvents() {
         dataArray.push(elementEvent);
     }
 
-    console.log(dataArray[0])
 
     return dataArray;
 }
 
-function test3(){
-    const tabs = tabNamesReturn();
-    getCheckInsData(true, tabs.check_ins.headcountsTab)
 
-   // setUserProperty('syncStatus', "ready");
-}
-
-async function getCheckInsData(onlyUpdated, tab) {
+async function getHeadcountsJoinedData(onlyUpdated, tab) {
     const timezone = getUserProperty('time_zone')
 
     /**
      * @return {dataArray} - filtered array of the event data
      */
 
-     onlyUpdated = false;
+    onlyUpdated = false;
 
     const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/event_times", onlyUpdated, true, "&include=event,headcounts");
     const headcountsData = await getHeadcounts();
@@ -127,11 +120,143 @@ async function getCheckInsData(onlyUpdated, tab) {
     }
 
 
-        // parsing the data from the sheet if we are requesting only updated info.
-        if(onlyUpdated){
-            return compareWithSpreadsheet(dataArray, "EventTime ID", tab)
-        } else {
-            return dataArray
+    // parsing the data from the sheet if we are requesting only updated info.
+    if (onlyUpdated) {
+        return compareWithSpreadsheet(dataArray, "EventTime ID", tab)
+    } else {
+        return dataArray
+    }
+
+}
+
+
+async function getCheckIns(onlyUpdated, tab) {
+    const timezone = getUserProperty('time_zone')
+    /**
+     * @return {dataArray} - filtered array of the headcount data
+     */
+
+    const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/check_ins", onlyUpdated, true, "&include=event,locations,person,event_times,check_in_times");
+    let dataArray = []
+    const CHECK_INS = apiCall.data;
+    const LOCATIONS = apiCall.included.filter((e) => { if (e.type == "Location") { return e } });
+    const EVENT_TIMES = apiCall.included.filter((e) => { if (e.type == "EventTime") { return e } });
+    const EVENTS = apiCall.included.filter((e) => { if (e.type == "Event") { return e } });
+    const CHECK_IN_TIMES = apiCall.included.filter((e) => { if (e.type == "CheckInTime") { return e } });
+
+
+    for (checkInTime of CHECK_IN_TIMES) {
+
+        // checkins to check_in_times is a one to one relationship
+        let checkin = CHECK_INS.find((e) => checkInTime.relationships.check_in.data.id == e.id)
+
+        let relationships = checkin.relationships;
+        //let attributes = checkin.attributes;
+
+        let personID = (relationships.person.data != null) ? relationships.person.data.id : undefined;
+
+
+        let subElement = {
+            "Checkin ID": checkin.id,
+            "Person ID": personID,
         }
+
+
+        // checkins to events is a one to one relationship. Not accounting for multiple returned.
+        //  using the checkin data and NOT check_in_times because event data is not stored in the check_in_times.
+        if (relationships.event.data != null) {
+            let eventData = EVENTS.find((event) => event.id == relationships.event.data.id);
+
+            // console.log(eventData)
+
+            subEvent = {
+                "Event ID": eventData.id,
+                "Event Name": eventData.attributes.name,
+                "Archived At": eventData.attributes.archived_at,
+                "Event Frequency": eventData.attributes.frequency
+            }
+
+            Object.assign(subElement, subEvent)
+        } else {
+            subEvent = {
+                "Event Name": null,
+                "Archived At": null,
+                "Event Frequency": null
+            }
+
+            Object.assign(subElement, subEvent)
+        }
+
+        // one to one relationship from event_Time to check_in_times.
+        if (checkInTime.relationships.event_time.data != null) {
+
+            let eventTimeData = EVENT_TIMES.find((event_time) => event_time.id == checkInTime.relationships.event_time.data.id);
+            let eventTimeName = (eventTimeData.attributes.name == null || eventTimeData.attributes.name == "") ? Utilities.formatDate(new Date(eventTimeData.attributes.starts_at), timezone, "HH:mm a") : eventTimeData.attributes.name;
+            let starts = Utilities.formatDate(new Date(eventTimeData.attributes.starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+            // console.log(eventTimeData)
+
+            subEventTime = {
+                "Event Time ID": eventTimeData.id,
+                "Event Time Name": eventTimeName,
+                "Starts": starts,
+            }
+
+            Object.assign(subElement, subEventTime)
+        }
+
+        // one to one relationship from event_Time to location.
+        if (checkInTime.relationships.location.data != null) {
+            let locationData = LOCATIONS.find((location) => location.id == checkInTime.relationships.location.data.id);
+
+            subLocation = {
+                "Location ID": locationData.id,
+                "Location Name": locationData.attributes.name,
+            }
+
+            Object.assign(subElement, subLocation);
+
+            // // current location parents are not included on the includes.
+            // if (locationData.relationships.parent.data != null) {
+            //     //let locationParent = LOCATIONS.find((parent) => parent.id == locationData.relationships.parent.data.id);
+
+            //     // console.log(locationParent)
+            //     subLocationParent = {
+            //         "Location Parent ID": "parent ID",
+            //         "Location Parent Name": "parent name",
+            //     }
+
+            //     Object.assign(subElement, subLocationParent);
+            // } else {
+            //     subLocationParent = {
+            //         "Location Parent ID": null,
+            //         "Location Parent Name": null,
+            //     }
+
+            //     Object.assign(subElement, subLocationParent);
+            // }
+        } else {
+            subLocation = {
+                "Location ID": null,
+                "Location Name": null,
+                // "Location Parent ID": null,
+                // "Location Parent Name": null,
+            }
+
+            Object.assign(subElement, subLocation);
+        }
+
+        dataArray.push(subElement)
+    }
+
+    console.log(`total Length: ${dataArray.length}`)
+    console.log(tab)
+
+
+    if (onlyUpdated) {
+        return compareWithSpreadsheet(dataArray, "Checkin ID", tab)
+    } else {
+        return dataArray
+    }
 
 }

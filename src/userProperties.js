@@ -506,15 +506,80 @@ function tabNamesReturn() {
                 ],
 
                 "dimensions": {
-                    "eventId": {
-                        "id": "checkinsEventId",
-                        "name": "Event ID",
-                        "description": "Auto-generated ID for each Event."
+                    "countType": {
+                        "id": "countType",
+                        "name": "Count Type",
+                        "description": "This is the data directly from the headcounts tab. If you have custom headcounts they will also show here."
                     },
+                },
+                "metrics": {
+                    "count": {
+                        "id": "count",
+                        "name": "Count",
+                        "description": "Total number of people who are accounted for the headcounts."
+                    }
+                }
+            },
+            "checkinsTab": {
+                "name": "Check-ins",
+                "headers": [
+                    "Checkin ID", // Primary Key
+                    "Person ID", // Foreign Key
+                    "Event ID",
+                    "Event Name", // pulled from Events
+                    "Archived At", // pulled from Events
+                    "Event Frequency", // Pulled from Events
+                    "Event Time ID", 
+                    "Event Time Name",// custom name in PCO for the event Time. Ex: First Service
+                    "Starts", // Pulled from Event Times
+                    "Location ID",
+                    "Location Name",
+                    // "Location Parent ID",
+                    // "Location Parent Name"
+                ],
+
+                "dimensions": {
+                    "checkinID": {
+                        "id": "checkinID",
+                        "name": "Checkin ID",
+                        "description": "Auto-generated ID for each unique checkin."
+                    },   
+                    "personID": {
+                        "id": "personID",
+                        "name": "Person ID",
+                        "description": "This is the unique value for each person assigned by PCO."
+                    },
+                    "locationID": {
+                        "id": "locationID",
+                        "name": "Location ID",
+                        "description": "This is the unique value for each location created in PCO."
+                    },
+                    "locationName": {
+                        "id": "locationName",
+                        "name": "Location Name",
+                        "description": "This is the name for the location that is configured within Checkins"
+                    },
+                    
+                },
+                "metrics": {
+                    "count": {
+                        "id": "checkinCount",
+                        "name": "Checkin Count",
+                        "description": "This counts 1 for each checkin. Use this as your metric"
+                    }
+                }
+            },
+            "universal": {
+                "dimensions": {
                     "eventTimeID": {
                         "id": "eventTimeID",
                         "name": "Event Time ID",
                         "description": "Auto-generated ID for each Event Time."
+                    },
+                    "eventId": {
+                        "id": "eventId",
+                        "name": "Event ID",
+                        "description": "Auto-generated ID for each Event."
                     },
                     "eventName": {
                         "id": "eventName",
@@ -555,18 +620,6 @@ function tabNamesReturn() {
                         "id": "eventYearMonth",
                         "name": "Starts - Year / Month",
                         "description": "This is your date metric to use. This is in long format and looks like 'YYYYMM'."
-                    },
-                    "countType": {
-                        "id": "countType",
-                        "name": "Count Type",
-                        "description": "This is the data directly from the headcounts tab. If you have custom headcounts they will also show here."
-                    },
-                },
-                "metrics": {
-                    "count": {
-                        "id": "count",
-                        "name": "Count",
-                        "description": "Total number of people who are accounted for the headcounts."
                     }
                 }
             }

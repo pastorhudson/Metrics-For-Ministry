@@ -84,7 +84,8 @@ function getPcoPeopleData(request) {
   console.log(request)
 
 
-    const timezone = SpreadsheetApp.openById(request.configParams.spreadsheetIdSingle).getSpreadsheetTimeZone();
+  const timezone = SpreadsheetApp.openById(request.configParams.spreadsheetIdSingle).getSpreadsheetTimeZone();
+
 
    //getUserProperty('time_zone')
 
@@ -215,12 +216,14 @@ if(request.fields != undefined){
 
       for (const headcount of headcountData) {
 
+        // checking if there is anything in the archived at length
+        let archivedAt = (headcount["Archived At"].length == 0) ? null : Utilities.formatDate(new Date(headcount["Archived At"]), timezone, "yyyyMMddhhmmss") ;
 
         let tempPerson = {
           "eventId": +headcount["Event ID"],
           "eventTimeID": +headcount["EventTime ID"],
           "eventName": headcount["Event Name"],
-          "archivedAt": Utilities.formatDate(new Date(headcount["Archived At"]), timezone, "yyyyMMddhhmmss"),
+          "archivedAt": archivedAt,
           "eventFrequency": headcount["Event Frequency"],
           "eventTimeName": headcount["Event Time Name"],
           "eventDate": Utilities.formatDate(new Date(headcount["Starts"]), timezone, "yyyyMMdd"),
@@ -231,6 +234,41 @@ if(request.fields != undefined){
           "count": headcount["Count"]
         }
         tempArray.push(tempPerson);
+
+        console.log(tempPerson)
+      }
+
+      requestedData = tempArray;
+    } else if (requestType == "checkinsData") {
+      let checkinData = getSpreadsheetDataByName(moduleDataJson.check_ins.checkinsTab.name, request.configParams.spreadsheetIdSingle);
+
+      let tempArray = [];
+
+
+      for (const checkin of checkinData) {
+
+        let archivedAt = (checkin["Archived At"].length == 0) ? null : Utilities.formatDate(new Date(checkin["Archived At"]), timezone, "yyyyMMddhhmmss") ;
+
+
+        let tempPerson = {
+          "eventId": +checkin["Event ID"],
+          "checkinID": +checkin["Checkin ID"],
+          "eventTimeID": +checkin["Event Time ID"],
+          "personID": +checkin["Person ID"],
+          "eventName": checkin["Event Name"],
+          "archivedAt": archivedAt,
+          "eventFrequency": checkin["Event Frequency"],
+          "eventTimeName": checkin["Event Time Name"],
+          "eventDate": Utilities.formatDate(new Date(checkin["Starts"]), timezone, "yyyyMMdd"),
+          "eventTime": Utilities.formatDate(new Date(checkin["Starts"]), timezone, "HH:mm a"),
+          "starts": Utilities.formatDate(new Date(checkin["Starts"]), timezone, "yyyyMMddhhmmss"),
+          "eventYearMonth": Utilities.formatDate(new Date(checkin["Starts"]), timezone, "yyyyMM"),
+          "locationID": checkin["Location ID"],
+          "locationName": checkin["Location Name"],
+          "checkinCount": 1
+        }
+        tempArray.push(tempPerson);
+
       }
 
       requestedData = tempArray;

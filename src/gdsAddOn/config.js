@@ -111,7 +111,7 @@ function getConfig(request, step) {
         .setHelpText('Select if this will be headcounts or people checkin data')
         .setAllowOverride(false)
         .addOption(config.newOptionBuilder().setLabel('Headcounts').setValue('headcountData'))
-        .addOption(config.newOptionBuilder().setLabel('People Checkins').setValue('peopleCheckinsData'))
+        .addOption(config.newOptionBuilder().setLabel('Checkins').setValue('checkinsData'))
 
     }
 

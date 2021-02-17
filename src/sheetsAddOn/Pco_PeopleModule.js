@@ -225,7 +225,25 @@ async function personDataCall(onlyUpdated, tab) {
                 elementPerson['Campus Name'] = "undefined";
             }
     
-            newPeopleArray.push(elementPerson);
+            Object.assign(person, {"Campus Name": campusName})
+
+            // let householdID = undefined;
+            // let householdInfo = relationships.households.data
+
+            // if(householdInfo != null){
+            //     let tempArray = []
+                
+            //     for(let i = 0; i < householdInfo.length ; i++){
+            //         let household = HOUSEHOLDS.find((home) => home.id == relationships.households.data[i].id);
+            //         tempArray.push(household.attributes.name)
+            //     }
+                
+            //     householdID = tempArray;
+            // }
+
+            // Object.assign(person, {"Household ID": householdID.join(", ")})
+    
+            newPeopleArray.push(person);
         }
     
     }

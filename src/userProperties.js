@@ -231,9 +231,8 @@ function tabNamesReturn() {
                     "Grade",
                     "Membership",
                     "Status",
-                    // "Person Count",
-                    // "Campus Number",
-                    "Campus Name"
+                    "Campus Name",
+                    //"Household ID"
                 ],
                 "dimensions": {
                     "birthday": {

@@ -103,6 +103,21 @@ function setActiveSpreadsheetID() {
     setUserProperty("activeSpreadsheetID", activeSpreadsheetID);
 }
 
+// /**
+//  * @description fetching the active sheetID and setting it as a property. This is called during the OAuth Auth flow.
+//  */
+// function setActiveSpreadsheetIdDocumentProperty() {
+//     const activeSpreadsheetID = SpreadsheetApp.getActiveSpreadsheet().getId();
+//     PropertiesService.getDocumentProperties().setProperty("activeSpreadsheetID-Doc", activeSpreadsheetID)
+// }
+
+// function getDocumentProperties(){
+//     var docprops = PropertiesService.getDocumentProperties();
+//     var id = docprops.getProperty('activeSpreadsheetID-Doc');
+
+//     console.log(id)
+// }
+
 /**
  * @description fetching the active sheetID and setting it as a property. This is called during the OAuth Auth flow.
  * @returns {string} - returns the full value for openign the spreadsheet by ID

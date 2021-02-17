@@ -150,7 +150,13 @@ async function updateSpreadsheet(onlyUpdated) {
             }
             if (modules.check_ins) {
                 let headcountsSync = pushToSheet(tabs.check_ins.headcountsTab, await getHeadcountsJoinedData(onlyUpdated, tabs.check_ins.headcountsTab));
-                syncStateText.push(`PCO Check in Headcounts: ${headcountsSync}`)
+                
+                syncStateText.push(`PCO Check in Headcounts: ${headcountsSync}`);
+
+                let checkinsSync = pushToSheet(tabs.check_ins.checkinsTab, await getCheckIns(onlyUpdated, tabs.check_ins.checkinsTab));
+
+                syncStateText.push(`PCO Check in Headcounts: ${checkinsSync}`);
+                
                 syncPercentComplete(80);
 
             }

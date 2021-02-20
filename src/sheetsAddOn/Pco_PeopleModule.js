@@ -33,7 +33,6 @@ async function getListCategories() {
     let categoryArray = [];
 
     for (const element of apiCall) {
-        console.log(element)
 
         const {attributes, id} = element;
         //let attributes = element.attributes;
@@ -46,7 +45,6 @@ async function getListCategories() {
         categoryArray.push(subElement);
     }
 
-    console.log(categoryArray)
 
     return categoryArray;
 }
@@ -59,10 +57,7 @@ async function getLists() {
     let listArrayListData = [];
 
     for (const list of listApiCall.data) {
-
-
         let relationships = list.relationships;
-        //console.log(relationships)
         let description = list.attributes.description.replaceAll("'", '"')
 
         let listName = list.attributes.name;
@@ -95,6 +90,8 @@ async function getLists() {
 
 // we use the includes only for the relationship data. The other data is ignored
 async function getListsWithPeople(onlyUpdated, tab) {
+
+    
     let listApiCall = await pcoApiCall("https://api.planningcenteronline.com/people/v2/lists", onlyUpdated , true, "&include=campus,category,people");
     let campuses = await getCampuses();
     let categories = await getListCategories();
@@ -137,14 +134,18 @@ async function getListsWithPeople(onlyUpdated, tab) {
     let syncTheseLists = [];
     let syncThesePeople = [];
 
-    for (list of updateListData) {
-        if (list._syncThisList == true) {
-            syncTheseLists.push(list.listId);
+    console.log(updateListData)
+
+    for (list2 of updateListData) {
+        if (list2._syncThisList == true) {
+            syncTheseLists.push(list2['List ID']);
         }
     }
 
+    console.log(syncTheseLists)
+
     for (i = 0; i < listArrayListData.length; i++) {
-        let value = syncTheseLists.indexOf(listArrayListData[i].listId);
+        let value = syncTheseLists.indexOf(listArrayListData[i]['List ID']);
         if (value != -1) {
             syncThesePeople.push(listArrayListData[i])
         }

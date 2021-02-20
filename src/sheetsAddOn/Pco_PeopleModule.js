@@ -43,10 +43,6 @@ async function getListCategories() {
         categoryArray.push(subElement);
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> master
     return categoryArray;
 }
 

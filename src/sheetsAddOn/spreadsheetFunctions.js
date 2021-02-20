@@ -268,11 +268,10 @@ async function updateListTab() {
             if (syncThisList.length > 0) {
                 let syncList = syncThisList[0]["Sync This List"]
                 list["listSync"] = syncList;
-    
             } else {
                 let syncList = false;
                 list["listSync"] = syncList;
-    
+
             }
     
     
@@ -285,6 +284,7 @@ async function updateListTab() {
 
     
     dataValidation(tabs.people.listTab.name)
+
 
 
     return listArray;
@@ -307,7 +307,7 @@ function getSpreadsheetDataByName(tab, spreadsheetID = null) {
 
     const spreadsheet = (spreadsheetID == null) ? getDefaultSpreadsheetId() : SpreadsheetApp.openById(spreadsheetID);
 
-    console.log(spreadsheet);
+    // console.log(spreadsheet);
 
     //const spreadsheet = getDefaultSpreadsheetId();
     let ss = spreadsheet.getSheetByName(tab);

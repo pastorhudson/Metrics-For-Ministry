@@ -155,7 +155,7 @@ if(request.fields != undefined){
           "personCount": 1,
           //"campusId": +person["Campus Number"],
           "campusName": person["Campus Name"],
-          //"listId": +person["List ID"],
+          "listId": +person["List ID"],
           "listDescription": person["List Description"],
           "listName": person["List Name"],
           //"categoryId": +person["Category ID"],

@@ -1,6 +1,10 @@
 function updateScripts(currentVersion = null, oldVersion, updating = false) {
     var scriptProperties = PropertiesService.getScriptProperties();
+<<<<<<< HEAD
     const mostRecentVersion = scriptProperties.getProperty('dev_mostRecentVersion');
+=======
+    const mostRecentVersion = scriptProperties.getProperty('mostRecentVersion');
+>>>>>>> master
     currentVersion = getUserProperty('currentVersion');
 
     //console.log(currentVersion);
@@ -40,6 +44,7 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
 
     } else if(currentVersion == "v1.2.0") {
 
+<<<<<<< HEAD
 
         currentVersion = "v1.2.1"
         setUserProperty('currentVersion', currentVersion);
@@ -67,6 +72,20 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
             console.log(`Failed to update current version. error: ${error}`)
         }
         
+=======
+        // most recent version - v1.2.1
+        console.log("Updated to the current version");
+
+        currentVersion = mostRecentVersion;
+
+        setUserProperty('currentVersion', currentVersion);
+
+        return {
+            'oldVersion': oldVersion,
+            "newVersion": mostRecentVersion
+
+        }
+>>>>>>> master
     } else {
         currentVersion = "v1.0.9"
         setUserProperty('currentVersion', currentVersion);

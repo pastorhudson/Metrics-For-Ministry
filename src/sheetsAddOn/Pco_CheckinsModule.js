@@ -216,6 +216,11 @@ async function getCheckIns(onlyUpdated, tab) {
 
             Object.assign(subElement, subLocation);
 
+
+            /**
+             * DO NOT DELETE
+             */
+
             // // current location parents are not included on the includes.
             // if (locationData.relationships.parent.data != null) {
             //     //let locationParent = LOCATIONS.find((parent) => parent.id == locationData.relationships.parent.data.id);
@@ -248,10 +253,6 @@ async function getCheckIns(onlyUpdated, tab) {
 
         dataArray.push(subElement)
     }
-
-    console.log(`total Length: ${dataArray.length}`)
-    console.log(tab)
-
 
     if (onlyUpdated) {
         return compareWithSpreadsheet(dataArray, "Checkin ID", tab)

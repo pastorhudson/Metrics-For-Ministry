@@ -92,11 +92,12 @@ async function pcoApiCall(url, onlyUpdated, include, includeURL) {
             }
             
             //const final = response.data;
-            // const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
+            //const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
             // console.log(report)
             //console.log(response.included)
         }
         //console.log(`the data is: ${data.length} long.`);
+
         if(include){
             return {
                 "data": data,

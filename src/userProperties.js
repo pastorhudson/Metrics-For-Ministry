@@ -128,15 +128,6 @@ function getDefaultSpreadsheetId() {
     return spreadsheet;
 }
 
-function renameSheet(){
-
-
-
-    const spreadsheet = getDefaultSpreadsheetId();
-    let ss = spreadsheet.getSheetByName("Sheet1");
-
-    ss.setName("test")
-}
 
 
 function syncPercentComplete(percent) {

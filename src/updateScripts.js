@@ -47,9 +47,12 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
 
     } else if(currentVersion == "v1.2.1") {
         try {
-            addCheckinsSheet()
+            addCheckinsSheet();
+
             // most recent version - v1.3.0
             console.log("Updated to the current version");
+
+
     
             currentVersion = mostRecentVersion;
     

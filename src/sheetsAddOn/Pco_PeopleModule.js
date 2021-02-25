@@ -175,7 +175,8 @@ function getAge(birthday) {
         var age = today.getFullYear() - birthday.getFullYear() - thisYear;
         return age;
     } else {
-        return ''
+        // return -1 if they don't have an age for easier filtering.
+        return -1
     }
  
 }

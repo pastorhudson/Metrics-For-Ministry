@@ -168,6 +168,27 @@ if(request.fields != undefined){
 
       requestedData = tempArray;
 
+    } else if (requestType == "listDataSummary"){
+      let listData = getSpreadsheetDataByName(moduleDataJson.people.listTab.name, request.configParams.spreadsheetIdSingle);
+      let tempArray = [];
+
+      for (const list of listData) {
+        let tempList = {
+          "listId": +list["List ID"],
+          "listDescription": list["List Description"],
+          "listName": list["List Name"],
+          "campusName": list["Campus Name"],
+          "categoryName": list["Category Name"],
+          "syncThisList": list["Sync This List"],
+          "totalPeople": +list["Total People"]
+          
+        }
+        console.log(tempList)
+        tempArray.push(tempList);
+        //console.log(tempPerson)
+      }
+
+      requestedData = tempArray;
     }
 
   } else if (module == 'giving') {
@@ -318,6 +339,8 @@ if(request.fields != undefined){
     schema: dataSchema,
     rows: data
   }
+
+  console.log(returnData)
 
 
   return returnData;

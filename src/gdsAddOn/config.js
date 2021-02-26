@@ -101,7 +101,8 @@ function getConfig(request, step) {
         .setHelpText('Select if this will be a People Data or List Data connector.')
         .setAllowOverride(false)
         .addOption(config.newOptionBuilder().setLabel('People Data').setValue('peopleData'))
-        .addOption(config.newOptionBuilder().setLabel('List Data').setValue('listData'))
+        .addOption(config.newOptionBuilder().setLabel('List People Data').setValue('listData'))
+        .addOption(config.newOptionBuilder().setLabel('List Data').setValue('listDataSummary'))
 
     } else if (configParams.pcoConnectorType == "checkins") {
       config

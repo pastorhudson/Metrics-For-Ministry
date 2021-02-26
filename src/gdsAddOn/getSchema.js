@@ -30,6 +30,7 @@ function getSchema(request) {
     const peopleInfo = moduleDataJson.people.peopleInfo;
     const peopleDataJson = moduleDataJson.people.personTab;
     const listDataJson = moduleDataJson.people.listPeopleTab;
+    const listSummaryData = moduleDataJson.people.listTab;
 
     if (request.configParams.peopleSelectorType == "peopleData") {
       fields.newDimension()
@@ -111,6 +112,51 @@ function getSchema(request) {
         .setDescription(listDataJson.dimensions.categoryName.description)
         .setType(types.TEXT)
 
+
+    } else if (request.configParams.peopleSelectorType == "listDataSummary") {
+      fields.newDimension()
+        .setId(listSummaryData.dimensions.listID.id)
+        .setName(listSummaryData.dimensions.listID.name)
+        .setDescription(listSummaryData.dimensions.listID.description)
+        .setType(types.NUMBER);
+
+      fields.newDimension()
+        .setId(listSummaryData.dimensions.listName.id)
+        .setName(listSummaryData.dimensions.listName.name)
+        .setDescription(listSummaryData.dimensions.listName.description)
+        .setType(types.TEXT);
+
+      fields.newDimension()
+        .setId(listSummaryData.dimensions.listDescription.id)
+        .setName(listSummaryData.dimensions.listDescription.name)
+        .setDescription(listSummaryData.dimensions.listDescription.description)
+        .setType(types.TEXT);
+
+      fields.newDimension()
+        .setId(peopleInfo.dimensions.campusName.id)
+        .setName(peopleInfo.dimensions.campusName.name)
+        .setDescription(peopleInfo.dimensions.campusName.description)
+        .setType(types.TEXT)
+
+      fields.newDimension()
+        .setId(listSummaryData.dimensions.categoryName.id)
+        .setName(listSummaryData.dimensions.categoryName.name)
+        .setDescription(listSummaryData.dimensions.categoryName.description)
+        .setType(types.TEXT)
+
+      fields.newDimension()
+        .setId(listSummaryData.dimensions.syncThisList.id)
+        .setName(listSummaryData.dimensions.syncThisList.name)
+        .setDescription(listSummaryData.dimensions.syncThisList.description)
+        .setType(types.BOOLEAN)
+
+      fields.newDimension()
+        .setId(listSummaryData.dimensions.totalPeople.id)
+        .setName(listSummaryData.dimensions.totalPeople.name)
+        .setDescription(listSummaryData.dimensions.totalPeople.description)
+        .setType(types.NUMBER)
+        
+        return { 'schema': fields.build() };
 
     }
 
@@ -263,34 +309,34 @@ function getSchema(request) {
     } else if (request.configParams.checkinsSelectorType == "checkinsData") {
 
       fields.newDimension()
-      .setId(checkinInfo.dimensions.checkinID.id)
-      .setName(checkinInfo.dimensions.checkinID.name)
-      .setDescription(checkinInfo.dimensions.checkinID.description)
-      .setType(types.NUMBER)
+        .setId(checkinInfo.dimensions.checkinID.id)
+        .setName(checkinInfo.dimensions.checkinID.name)
+        .setDescription(checkinInfo.dimensions.checkinID.description)
+        .setType(types.NUMBER)
 
       fields.newDimension()
-      .setId(checkinInfo.dimensions.personID.id)
-      .setName(checkinInfo.dimensions.personID.name)
-      .setDescription(checkinInfo.dimensions.personID.description)
-      .setType(types.NUMBER)
+        .setId(checkinInfo.dimensions.personID.id)
+        .setName(checkinInfo.dimensions.personID.name)
+        .setDescription(checkinInfo.dimensions.personID.description)
+        .setType(types.NUMBER)
 
       fields.newDimension()
-      .setId(checkinInfo.dimensions.locationID.id)
-      .setName(checkinInfo.dimensions.locationID.name)
-      .setDescription(checkinInfo.dimensions.locationID.description)
-      .setType(types.NUMBER)
+        .setId(checkinInfo.dimensions.locationID.id)
+        .setName(checkinInfo.dimensions.locationID.name)
+        .setDescription(checkinInfo.dimensions.locationID.description)
+        .setType(types.NUMBER)
 
       fields.newDimension()
-      .setId(checkinInfo.dimensions.locationName.id)
-      .setName(checkinInfo.dimensions.locationName.name)
-      .setDescription(checkinInfo.dimensions.locationName.description)
-      .setType(types.TEXT)
+        .setId(checkinInfo.dimensions.locationName.id)
+        .setName(checkinInfo.dimensions.locationName.name)
+        .setDescription(checkinInfo.dimensions.locationName.description)
+        .setType(types.TEXT)
 
       fields.newDimension()
-      .setId(checkinInfo.metrics.count.id)
-      .setName(checkinInfo.metrics.count.name)
-      .setDescription(checkinInfo.metrics.count.description)
-      .setType(types.NUMBER)
+        .setId(checkinInfo.metrics.count.id)
+        .setName(checkinInfo.metrics.count.name)
+        .setDescription(checkinInfo.metrics.count.description)
+        .setType(types.NUMBER)
 
 
     }

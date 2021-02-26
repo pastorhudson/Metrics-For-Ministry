@@ -7,6 +7,8 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
 
     //version = currentVersion;
 
+    let updateText = ''
+
     if (!updating) { oldVersion = currentVersion; }
 
     if (currentVersion == mostRecentVersion) {
@@ -47,13 +49,22 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
 
     } else if(currentVersion == "v1.2.1") {
         try {
-            addCheckinsSheet();
+            
+            addCheckinsSheet();    
+            currentVersion = "v1.2.1"
+            setUserProperty('currentVersion', currentVersion);
+            return updateScripts(currentVersion, oldVersion, true);
 
+        } catch (error){
+            console.log(`Failed to update current version. error: ${error}`)
+        }
+    } else if(currentVersion == "v1.2.1") {
+        try {
+
+            addTriggers();
             // most recent version - v1.3.0
             console.log("Updated to the current version");
 
-
-    
             currentVersion = mostRecentVersion;
     
             setUserProperty('currentVersion', currentVersion);
@@ -61,12 +72,11 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
             return {
                 'oldVersion': oldVersion,
                 "newVersion": mostRecentVersion
-    
             }
         } catch (error){
             console.log(`Failed to update current version. error: ${error}`)
         }
-        
+
     } else {
         currentVersion = "v1.0.9"
         setUserProperty('currentVersion', currentVersion);

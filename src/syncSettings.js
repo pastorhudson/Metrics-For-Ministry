@@ -15,7 +15,7 @@ function dailySyncAdd() {
     //creating a trigger to run at noon
     ScriptApp.newTrigger("triggerSyncDaily")
         .timeBased()
-        .atHour(23)
+        .atHour(3)
         .nearMinute(45)
         .everyDays(1)
         .create();

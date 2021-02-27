@@ -1,5 +1,79 @@
 # Changelog
 
+## [Unreleased](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/HEAD)
+
+[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.3.0...HEAD)
+
+**Merged pull requests:**
+
+-  Fixes \#56. Created the Groups connector [\#74](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/74) ([coltoneshaw](https://github.com/coltoneshaw))
+- V1.3.0 [\#73](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/73) ([coltoneshaw](https://github.com/coltoneshaw))
+
+## [v1.3.0](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/v1.3.0) (2021-02-20)
+
+[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.2.1...v1.3.0)
+
+**Implemented enhancements:**
+
+- Feature: -1 for people without ages, age range "Not Assigned" [\#71](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/71)
+- Enhancement: Adjust the sync time to be 3-4am [\#66](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/66)
+- Enhancement: Additional data source under People for simply the lists [\#65](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/65)
+- Enhancement: Create Group Sync [\#56](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/56)
+- Enhancement: Need to create Check-ins sync to pull the check-in data. [\#55](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/55)
+
+**Fixed bugs:**
+
+- Bug: The list ID is not pulled in the GDS integration [\#68](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/68)
+- Bug: List People syncs all people, not just the checked lists. [\#67](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/67)
+
+**Merged pull requests:**
+
+- Updating bugs within Lists [\#69](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/69) ([coltoneshaw](https://github.com/coltoneshaw))
+
+## [v1.2.1](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/v1.2.1) (2021-02-12)
+
+[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.2.2...v1.2.1)
+
+## [v1.2.2](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/v1.2.2) (2021-02-12)
+
+[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.2.0...v1.2.2)
+
+**Fixed bugs:**
+
+- Bug: Issue where the update script will loop through infinity. [\#57](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/57)
+
+**Merged pull requests:**
+
+- Fixed a bug in the update script where it would loop through infinity [\#58](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/58) ([coltoneshaw](https://github.com/coltoneshaw))
+
+## [v1.2.0](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/v1.2.0) (2021-02-11)
+
+[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.1.0...v1.2.0)
+
+**Implemented enhancements:**
+
+- Enhancement: Create the ability to sync specific modules [\#49](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/49)
+- Enhancement: Sidebar enhancements [\#48](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/48)
+- Enhancement: Add a date column to Giving that's converted to local time [\#46](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/46)
+- Enhancement: Improve the landing page after OAuth. [\#44](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/44)
+- Enhancement: Rename the tabs to be more user centric [\#43](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/43)
+- Enhancement: Modify the GDS connector to accept Spreadsheet IDs [\#42](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/42)
+- Enhancement: Create the GDS addon to not use any userProperties [\#40](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/40)
+- Enhancement: Create a trigger when the sheet is opened for updates [\#38](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/38)
+
+**Fixed bugs:**
+
+- Enhancement: Need to look into throwing a UI error if the sync fails. [\#53](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/53)
+- Bug: Triggers are created under the HEAD which causes issues when they run [\#52](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/52)
+
+**Closed issues:**
+
+- Feature: enable data syncing to use the `updated\_at` attribute. [\#30](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/30)
+
+**Merged pull requests:**
+
+- v1.2.0 [\#54](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/54) ([coltoneshaw](https://github.com/coltoneshaw))
+
 ## [v1.1.0](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/v1.1.0) (2021-02-09)
 
 [Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.0.8...v1.1.0)

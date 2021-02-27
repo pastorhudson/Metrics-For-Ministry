@@ -27,6 +27,7 @@ function setUpDocument() {
 
     }
     if (modules.groups) {
+        createSheet(tabs.groups.groupSummaryTab);
 
     }
     if (modules.calendar) {
@@ -46,9 +47,14 @@ function deleteSheetsCreated() {
     let tabs = tabNamesReturn();
     const spreadsheet = getDefaultSpreadsheetId();
 
-    deleteSheet("Metrics for Ministry has been reset");
 
-    spreadsheet.insertSheet("Metrics for Ministry has been reset");
+    let sheets = tabList();
+
+    if (!sheets.includes("Metrics for Ministry has been reset")) {
+        deleteSheet("Metrics for Ministry has been reset");
+        spreadsheet.insertSheet("Metrics for Ministry has been reset");
+
+    }
 
 
     deleteSheet(tabs.people.personTab.name);
@@ -57,6 +63,8 @@ function deleteSheetsCreated() {
 
     deleteSheet(tabs.check_ins.headcountsTab.name);
 
+    deleteSheet(tabs.check_ins.checkinsTab.name);
+    deleteSheet(tabs.groups.groupSummaryTab.name);
     deleteSheet(tabs.giving.donationsTab.name);
 
 }
@@ -89,7 +97,6 @@ function tabList() {
         sheetNames.push(sheets[i].getSheetName());
     }
 
-    console.log(sheetNames)
     return sheetNames;
 
 }
@@ -107,7 +114,8 @@ function createSheet(tabInfo) {
     const spreadsheet = getDefaultSpreadsheetId();
     let name = tabInfo.name
     let headers = [tabInfo.headers]
-    //console.log(headers)
+
+    //if(additionalHeaders != null){headers = [...additionalHeaders]}
 
     //if a sheet does not exist it will create it.
     if (!existingSheets.includes(name)) {
@@ -127,10 +135,13 @@ function createSheet(tabInfo) {
         .setWarningOnly(true)
 }
 
-function updateHeaders(tabInfo) {
+function updateHeaders(tabInfo,additionalHeaders) {
     const spreadsheet = getDefaultSpreadsheetId();
     let name = tabInfo.name
     let headers = [tabInfo.headers]
+
+    if(additionalHeaders != null){headers = [[...tabInfo.headers, ...additionalHeaders]]}
+
     let ss = spreadsheet.getSheetByName(name);
     ss.getRange(1, 1, 1, headers[0].length).setValues(headers);
 
@@ -138,7 +149,9 @@ function updateHeaders(tabInfo) {
 }
 
 
-function pushToSheet(tabInfo, data) {
+function pushToSheet(tabInfo, data, additionalHeaders) {
+
+    console.log(additionalHeaders)
 
     try{
         const ss = getDefaultSpreadsheetId().getSheetByName(tabInfo.name);
@@ -157,7 +170,7 @@ function pushToSheet(tabInfo, data) {
             ss.getRange(2, 1, ss.getLastRow(), ss.getLastColumn()).clearContent();
         }
     
-        updateHeaders(tabInfo);
+        updateHeaders(tabInfo, additionalHeaders);
         
     
         if (data.length != 0) {

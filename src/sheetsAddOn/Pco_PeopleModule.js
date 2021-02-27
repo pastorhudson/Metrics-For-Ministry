@@ -131,7 +131,6 @@ async function getListsWithPeople(onlyUpdated, tab) {
     let syncTheseLists = [];
     let syncThesePeople = [];
 
-    console.log(updateListData)
 
     for (list2 of updateListData) {
         if (list2._syncThisList == true) {
@@ -139,7 +138,6 @@ async function getListsWithPeople(onlyUpdated, tab) {
         }
     }
 
-    console.log(syncTheseLists)
 
     for (i = 0; i < listArrayListData.length; i++) {
         let value = syncTheseLists.indexOf(listArrayListData[i]['List ID']);
@@ -194,10 +192,9 @@ async function personDataCall(onlyUpdated, tab) {
      * @description - 
      */
 
-    const apiCall = await pcoApiCall("https://api.planningcenteronline.com/people/v2/people", false, true, '&include=households,primary_campus');
+    const apiCall = await pcoApiCall("https://api.planningcenteronline.com/people/v2/people", onlyUpdated, true, '&include=households,primary_campus');
 
     const CAMPUSES = apiCall.included.filter((e) => { if (e.type == "Campus" && apiCall.included.findIndex(t => (e.id === t.id)) == apiCall.included.indexOf(e)) { return e } })
-    console.log(CAMPUSES)
     const HOUSEHOLDS = apiCall.included.filter((e) => { if (e.type == "Household" && apiCall.included.findIndex(t => (e.id === t.id)) == apiCall.included.indexOf(e)) { return e } })
 
     //const campusArray = await getCampuses();
@@ -211,7 +208,6 @@ async function personDataCall(onlyUpdated, tab) {
             let attributes = element.attributes;
             let relationships = element.relationships;
 
-            console.log(relationships);
 
             let person = {
                 'Person ID': element.id,
@@ -228,7 +224,6 @@ async function personDataCall(onlyUpdated, tab) {
     
             if (relationships.primary_campus.data != null) {
                 let campus = CAMPUSES.find((e) => e.id == relationships.primary_campus.data.id);
-                console.log(campus);
                 campusName = campus.attributes.name;
             }
 

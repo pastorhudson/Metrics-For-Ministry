@@ -22,6 +22,9 @@ function getSchema(request) {
   var fields = cc.getFields();
   var types = cc.FieldType;
   const connectorType = request.configParams.pcoConnectorType;
+
+  console.log(connectorType)
+
   const moduleDataJson = tabNamesReturn();
 
   if (connectorType == 'people') {
@@ -155,8 +158,8 @@ function getSchema(request) {
         .setName(listSummaryData.dimensions.totalPeople.name)
         .setDescription(listSummaryData.dimensions.totalPeople.description)
         .setType(types.NUMBER)
-        
-        return { 'schema': fields.build() };
+
+      return { 'schema': fields.build() };
 
     }
 
@@ -401,8 +404,107 @@ function getSchema(request) {
       .setName(genericCheckinData.dimensions.eventYearMonth.name)
       .setDescription(genericCheckinData.dimensions.eventYearMonth.description)
       .setType(types.YEAR_MONTH)
+  } else if (connectorType == 'groups') {
+
+
+    if (request.configParams.groupsSelectorType == "groupSummary") {
+      const groupSummary = moduleDataJson.groups.groupSummaryTab;
+
+
+      fields.newDimension()
+        .setId(groupSummary.dimensions.groupId.id)
+        .setName(groupSummary.dimensions.groupId.name)
+        .setDescription(groupSummary.dimensions.groupId.description)
+        .setType(types.NUMBER)
+
+      fields.newDimension()
+        .setId(groupSummary.dimensions.groupName.id)
+        .setName(groupSummary.dimensions.groupName.name)
+        .setDescription(groupSummary.dimensions.groupName.description)
+        .setType(types.TEXT)
+
+      fields.newDimension()
+        .setId(groupSummary.dimensions.membershipCount.id)
+        .setName(groupSummary.dimensions.membershipCount.name)
+        .setDescription(groupSummary.dimensions.membershipCount.description)
+        .setType(types.NUMBER)
+
+      fields.newDimension()
+        .setId(groupSummary.dimensions.typeId.id)
+        .setName(groupSummary.dimensions.typeId.name)
+        .setDescription(groupSummary.dimensions.typeId.description)
+        .setType(types.NUMBER)
+
+      fields.newDimension()
+        .setId(groupSummary.dimensions.typeName.id)
+        .setName(groupSummary.dimensions.typeName.name)
+        .setDescription(groupSummary.dimensions.typeName.description)
+        .setType(types.TEXT)
+
+      fields.newDimension()
+        .setId(groupSummary.dimensions.groupLocationType.id)
+        .setName(groupSummary.dimensions.groupLocationType.name)
+        .setDescription(groupSummary.dimensions.groupLocationType.description)
+        .setType(types.TEXT)
+
+      fields.newDimension()
+        .setId(groupSummary.dimensions.archivedAt.id)
+        .setName(groupSummary.dimensions.archivedAt.name)
+        .setDescription(groupSummary.dimensions.archivedAt.description)
+        .setType(types.YEAR_MONTH_DAY)
+
+      fields.newDimension()
+        .setId(groupSummary.dimensions.enrollmentOpen.id)
+        .setName(groupSummary.dimensions.enrollmentOpen.name)
+        .setDescription(groupSummary.dimensions.enrollmentOpen.description)
+        .setType(types.BOOLEAN)
+
+      fields.newDimension()
+        .setId(groupSummary.dimensions.enrollmentStrategy.id)
+        .setName(groupSummary.dimensions.enrollmentStrategy.name)
+        .setDescription(groupSummary.dimensions.enrollmentStrategy.description)
+        .setType(types.TEXT)
+
+      let additionalHeaders = groupTagsFromSheet(request.configParams.spreadsheetIdSingle);
+
+
+      for (i = 0; i < additionalHeaders.length; i++) {
+
+        let id = additionalHeaders[i].toLowerCase().replace(/\s/g, '');
+
+        fields.newDimension()
+          .setId(id)
+          .setName(`Tag - ${additionalHeaders[i]}`)
+          .setDescription('Auto generated field based on your Group Tag Groups')
+          .setType(types.TEXT)
+          .setGroup('Group_Tags');
+      }
+
+    } else if (request.configParams.peopleSelectorType == "groupMembers") {
+
+    } else if (request.configParams.peopleSelectorType == "groupAtendance") {
+    }
   }
 
+//console.log({ 'schema': fields.build() })
 
-  return { 'schema': fields.build() };
+  return  { 'schema': fields.build() };
+}
+
+function groupTagsFromSheet(sheetId){
+
+  const moduleDataJson = tabNamesReturn();
+  let headers = moduleDataJson.groups.groupSummaryTab.headers;
+
+  let groupSummaryData = getSpreadsheetDataByName(moduleDataJson.groups.groupSummaryTab.name, sheetId);
+
+  let keys = Object.keys(groupSummaryData[0])
+
+  let tabs = keys.filter( function( el ) {
+    return !headers.includes( el );
+  } );
+  
+  
+  return tabs;
+
 }

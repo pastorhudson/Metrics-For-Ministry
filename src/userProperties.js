@@ -207,6 +207,14 @@ function getModuleUserObject() {
 
 }
 
+function test1232(){
+    const moduleDataJson = tabNamesReturn();
+
+    console.log(getSpreadsheetDataByName(moduleDataJson.groups.groupSummaryTab, '1wTfDm4eCDnO_HSxFgQm1MLVtExm7EwiweQMkhvFSI9g'))
+
+
+}
+
 
 function tabNamesReturn() {
     return tabNames = {
@@ -665,7 +673,76 @@ function tabNamesReturn() {
                 }
             }
         },
-        "groups": {},
+        "groups": {
+            "groupSummaryTab": {
+                "name": "Group Summary",
+                "headers": [
+                    "Group ID", // Primary Key
+                    "Group Name",
+                    "Membership Count",
+                    "Type ID",
+                    "Type Name",
+                    "Group Location Type",
+                    "Created At",
+                    "Archived At",
+                    "Enrollment Open",
+                    "Enrollment Strategy"
+                    // additional tag headers are dynamically added.
+                ],
+
+                "dimensions": {
+                    "groupId": {
+                        "id": "groupId",
+                        "name": "Group ID",
+                        "description": "Unique ID generated from PCO"
+                    },
+                    "groupName": {
+                        "id": "groupName",
+                        "name": "Group Name",
+                        "description": "The name you have configured for this group"
+                    },
+                    "membershipCount": {
+                        "id": "membershipCount",
+                        "name": "Membership Count",
+                        "description": "Total number of people who are enrolled in this group."
+                    },
+                    "typeId": {
+                        "id": "typeId",
+                        "name": "Type ID",
+                        "description": "Unique ID for the type of group this is in PCO"
+                    },
+                    "typeName": {
+                        "id": "typeName",
+                        "name": "Type Name",
+                        "description": "The type name as configured in PCO."
+                    },
+                    "groupLocationType": {
+                        "id": "groupLocationType",
+                        "name": "Group Location Type",
+                        "description": "This is Physical/Virtual based on what's configured in PCO."
+                    },
+                    "archivedAt": {
+                        "id": "archivedAt",
+                        "name": "Archived At",
+                        "description": "The date when this group was archived, or null. Use this as a filter to remove non-active groups."
+                    },
+                    "enrollmentOpen": {
+                        "id": "enrollmentOpen",
+                        "name": "Enrollment Open",
+                        "description": "True if enrollment is currently open for the group."
+                    },
+                    "enrollmentStrategy": {
+                        "id": "enrollmentStrategy",
+                        "name": "Enrollment Strategy",
+                        "description": "How someone can get access to this group."
+                    }
+                    // dynamically adds tag information as dimensions.
+                },
+                "metrics": {
+
+                }
+            },
+        },
         "calendar": {},
         "services": {},
     }

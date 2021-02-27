@@ -50,7 +50,8 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
     } else if(currentVersion == "v1.2.1") {
         try {
             
-            addCheckinsSheet();    
+            addCheckinsSheet();
+            syncCheckins();    
             currentVersion = "v1.2.1"
             setUserProperty('currentVersion', currentVersion);
             return updateScripts(currentVersion, oldVersion, true);
@@ -62,6 +63,8 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
         try {
 
             addTriggers();
+            addGroupsSheet();
+            syncGroups();
             // most recent version - v1.3.0
             console.log("Updated to the current version");
 
@@ -108,5 +111,12 @@ function addCheckinsSheet() {
     let modules = getModuleUserObject();
     let tabs = tabNamesReturn();
     if (modules.check_ins) { createSheet(tabs.check_ins.checkinsTab) };
+
+}
+
+function addGroupsSheet() {
+    let modules = getModuleUserObject();
+    let tabs = tabNamesReturn();
+    if (modules.groups) { createSheet(tabs.groups.groupSummaryTab) };
 
 }

@@ -7,7 +7,6 @@
  */
 function getData(request) {
 
-  console.log(request);
   let module = request.configParams.pcoConnectorType;
   let data;
 
@@ -50,6 +49,19 @@ function getData(request) {
         .throwException();
 
     }
+  } else if (module == 'groups') {
+
+    //try {
+      // API request that can be malformed.
+      data = getPcoPeopleData(request);
+    // } catch (e) {
+    //   DataStudioApp.createCommunityConnector()
+    //     .newUserError()
+    //     .setDebugText('Error fetching data from API. Exception details: ' + e)
+    //     .setText('There was an error communicating with the service. Try again later, or file an issue if this error persists.')
+    //     .throwException();
+
+    // }
   }
 
   return data;
@@ -77,40 +89,36 @@ to do the above we would need to also call this function within the `getSchesdsm
 
 
 
-function getPcoPeopleData(request) {
+ function getPcoPeopleData(request) {
   var data = [];
   let requestedData;
-
-  console.log(request)
-
 
   const timezone = SpreadsheetApp.openById(request.configParams.spreadsheetIdSingle).getSpreadsheetTimeZone();
 
 
-   //getUserProperty('time_zone')
+  //getUserProperty('time_zone')
 
   console.log(timezone);
 
   const moduleDataJson = tabNamesReturn();
 
   var schemaData = getSchema(request).schema;
-  //console.log(request)
 
-if(request.fields != undefined){
-  // Prepare the schema for the fields requested.
-  var dataSchema = request.fields.map(function (field) {
-    for (var i = 0; i < schemaData.length; i++) {
-      if (schemaData[i].name == field.name) {
-        return schemaData[i];
+  if (request.fields != undefined) {
+    // Prepare the schema for the fields requested.
+    var dataSchema = request.fields.map(function (field) {
+      for (var i = 0; i < schemaData.length; i++) {
+        if (schemaData[i].name == field.name) {
+          return schemaData[i];
+        }
       }
+    });
+  } else {
+    return {
+      schema: '',
+      rows: ''
     }
-  });
-} else {
-  return {
-    schema: '',
-    rows: ''
   }
-}
 
   let module = request.configParams.pcoConnectorType
 
@@ -168,7 +176,7 @@ if(request.fields != undefined){
 
       requestedData = tempArray;
 
-    } else if (requestType == "listDataSummary"){
+    } else if (requestType == "listDataSummary") {
       let listData = getSpreadsheetDataByName(moduleDataJson.people.listTab.name, request.configParams.spreadsheetIdSingle);
       let tempArray = [];
 
@@ -181,9 +189,8 @@ if(request.fields != undefined){
           "categoryName": list["Category Name"],
           "syncThisList": list["Sync This List"],
           "totalPeople": +list["Total People"]
-          
+
         }
-        console.log(tempList)
         tempArray.push(tempList);
         //console.log(tempPerson)
       }
@@ -238,7 +245,7 @@ if(request.fields != undefined){
       for (const headcount of headcountData) {
 
         // checking if there is anything in the archived at length
-        let archivedAt = (headcount["Archived At"].length == 0) ? null : Utilities.formatDate(new Date(headcount["Archived At"]), timezone, "yyyyMMddhhmmss") ;
+        let archivedAt = (headcount["Archived At"].length == 0) ? null : Utilities.formatDate(new Date(headcount["Archived At"]), timezone, "yyyyMMddhhmmss");
 
         let tempPerson = {
           "eventId": +headcount["Event ID"],
@@ -256,7 +263,6 @@ if(request.fields != undefined){
         }
         tempArray.push(tempPerson);
 
-        console.log(tempPerson)
       }
 
       requestedData = tempArray;
@@ -268,7 +274,7 @@ if(request.fields != undefined){
 
       for (const checkin of checkinData) {
 
-        let archivedAt = (checkin["Archived At"].length == 0) ? null : Utilities.formatDate(new Date(checkin["Archived At"]), timezone, "yyyyMMddhhmmss") ;
+        let archivedAt = (checkin["Archived At"].length == 0) ? null : Utilities.formatDate(new Date(checkin["Archived At"]), timezone, "yyyyMMddhhmmss");
 
 
         let tempPerson = {
@@ -294,7 +300,59 @@ if(request.fields != undefined){
 
       requestedData = tempArray;
     }
+  } else if (module == 'groups') {
+    let requestType = request.configParams.groupsSelectorType;
+    let tempArray = [];
+
+
+    if (requestType == "groupSummary") {
+      let groupSummaryData = getSpreadsheetDataByName(moduleDataJson.groups.groupSummaryTab.name, request.configParams.spreadsheetIdSingle);
+
+
+
+      console.log('this is a group sumary data attempt')
+
+      for (const group of groupSummaryData) {
+
+        // checking if there is anything in the archived at length
+        let archivedAt = (group["Archived At"].length == 0) ? null : Utilities.formatDate(new Date(group["Archived At"]), timezone, "yyyyMMdd");
+        
+        let tempGroup = {
+          "groupId": +group["Group ID"],
+          "groupName": group["Group Name"],
+          "membershipCount": +group["Membership Count"],
+          "typeId": group["Type ID"],
+          "typeName": group["Type Name"],
+          "groupLocationType": group["Group Location Type"],
+          "archivedAt": archivedAt,
+          "enrollmentOpen": group["Enrollment Open"],
+          "enrollmentStrategy": group["Enrollment Strategy"]
+        }
+
+        let additionalHeaders = groupTagsFromSheet(request.configParams.spreadsheetIdSingle);
+
+        for (i = 0; i < additionalHeaders.length ; i++){
+          let id = additionalHeaders[i].toLowerCase().replace(/\s/g, '');
+
+          tempGroup[id] = group[additionalHeaders[i]]
+        }
+
+
+        tempArray.push(tempGroup);
+
+      }
+
+      //requestedData = tempArray;
+    } else if (requestType == "groupMembers") {
+
+    } else if (requestType == "groupAtendance") {
+
+    }
+
+    requestedData = tempArray;
   }
+
+
 
 
 
@@ -339,9 +397,6 @@ if(request.fields != undefined){
     schema: dataSchema,
     rows: data
   }
-
-  console.log(returnData)
-
 
   return returnData;
 }

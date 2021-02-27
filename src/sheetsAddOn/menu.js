@@ -27,11 +27,14 @@ function onOpen(e) {
     .addSubMenu(ui.createMenu('Debugging Info')
               .addItem('Remove Triggers', 'removeAllTriggers')
               .addItem('Add Default Triggers', 'addTriggers')
-              .addItem('Document Properties', 'setActiveSpreadsheetIdDocumentProperty')
-              .addItem('read Doc props', 'getDocumentProperties')
+              .addItem('Reset Current Version', 'setVersionNull')
               )
     //.addItem('Setup Properties', 'newUserUserProperties')
     .addToUi();
+}
+
+function setVersionNull(){
+  setUserProperty('currentVersion', '');
 }
 
 

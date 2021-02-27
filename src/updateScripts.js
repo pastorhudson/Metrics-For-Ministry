@@ -1,6 +1,6 @@
 function updateScripts(currentVersion = null, oldVersion, updating = false) {
     var scriptProperties = PropertiesService.getScriptProperties();
-    const mostRecentVersion = scriptProperties.getProperty('dev_mostRecentVersion');
+    const mostRecentVersion = scriptProperties.getProperty('mostRecentVersion');
     currentVersion = getUserProperty('currentVersion');
 
     //console.log(currentVersion);
@@ -50,16 +50,17 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
     } else if(currentVersion == "v1.2.1") {
         try {
             
+            // update to 1.2.2
             addCheckinsSheet();
             syncCheckins();    
-            currentVersion = "v1.2.1"
+            currentVersion = "v1.2.2"
             setUserProperty('currentVersion', currentVersion);
             return updateScripts(currentVersion, oldVersion, true);
 
         } catch (error){
             console.log(`Failed to update current version. error: ${error}`)
         }
-    } else if(currentVersion == "v1.2.1") {
+    } else if(currentVersion == "v1.2.2") {
         try {
 
             addTriggers();

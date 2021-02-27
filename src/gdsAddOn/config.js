@@ -21,7 +21,7 @@ function getConfig(request, step) {
     isSecondStep = (configParams.haveAccess == null) ? true : false;
 
     if(!isSecondStep){
-      isThirdStep = (configParams.pcoConnectorType == "people" || configParams.pcoConnectorType == "checkins") ? true : false;
+      isThirdStep = (configParams.pcoConnectorType == "people" || configParams.pcoConnectorType == "checkins" || configParams.pcoConnectorType == "groups") ? true : false;
     } else {
       config.setIsSteppedConfig(true);
     }
@@ -113,6 +113,18 @@ function getConfig(request, step) {
         .setAllowOverride(false)
         .addOption(config.newOptionBuilder().setLabel('Headcounts').setValue('headcountData'))
         .addOption(config.newOptionBuilder().setLabel('Checkins').setValue('checkinsData'))
+
+    } else if (configParams.pcoConnectorType == "groups") {
+      console.log('groups!!')
+      config
+        .newSelectSingle()
+        .setId('groupsSelectorType')
+        .setName('Select Data Type')
+        .setHelpText('Summary Group data or detailed attendance data')
+        .setAllowOverride(false)
+        .addOption(config.newOptionBuilder().setLabel('Group Summary').setValue('groupSummary'))
+        //.addOption(config.newOptionBuilder().setLabel('Group Members').setValue('groupMembers'))
+        //.addOption(config.newOptionBuilder().setLabel('Group Attendance').setValue('groupAtendance'))
 
     }
 

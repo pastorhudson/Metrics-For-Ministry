@@ -17,7 +17,8 @@
 
         google.script.run
             .withSuccessHandler(() => {
-                console.log('Document Setup is Complete')
+                console.log('Document Setup is Complete');
+                google.script.run.sheetsUiError("Document is setup","Now go back and click Update Sheets. Before this, If you want to sync Lists navigate to the Lists tab and check the lists you want to sync.")
             })
             .initialConfiguration();
     })
@@ -157,11 +158,18 @@
 
         google.script.run
             .withSuccessHandler(function (url) {
+                try{
                 window.open(url, '_blank');
                 window.top.close();
+                } catch(error){
+                    google.script.run.sheetsUiError('Error to Authorize', "Looks like we could not open a new tab to authorize with PCO. You may have hit a Google Bug. Try to use incognito mode on your browser to set this up. This bug only happens on the intiial signin.")
+
+                }
+
             })
             .withFailureHandler(function (err) {
                 console.error(err.message);
+                google.script.run.sheetsUiError('Error to Authorize', "Looks like we could not open a new tab to authorize with PCO. You may have hit a Google Bug. Try to use incognito mode on your browser to set this up. This bug only happens on the intiial signin.")
             })
 
             //passing selected modules to out OAuth Function

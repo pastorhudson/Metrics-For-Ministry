@@ -112,6 +112,15 @@ async function syncCheckins(onlyUpdated = false) {
     pushToSheet(tabs.check_ins.checkinsTab, await getCheckIns(onlyUpdated, tabs.check_ins.checkinsTab));
 }
 
+async function syncGroups(onlyUpdated = false) {
+    const tabs = tabNamesReturn();
+
+    let groupTab = tabs.groups.groupSummaryTab;
+
+    let additionalHeaders = await getGroups_tagGroups(true);
+    pushToSheet(groupTab, await getGroups(onlyUpdated, groupTab), additionalHeaders);
+}
+
 async function updateSpreadsheet(onlyUpdated) {
     let syncStatus = getUserProperty('syncStatus')
 
@@ -127,29 +136,20 @@ async function updateSpreadsheet(onlyUpdated) {
 
                 //pushToSheet(tabs.people.campusTab.name, await getCampuses());
                 syncPercentComplete(0)
-                syncPercentComplete(10)
-
-                //let peopleSync = pushToSheet(tabs.people.personTab, await personDataCall());
-
                 let peopleSync = pushToSheet(tabs.people.personTab, await personDataCall(onlyUpdated, tabs.people.personTab));
-
-
                 syncStateText.push(`PCO People: ${peopleSync}`)
-
-                syncPercentComplete(30);
-
+                syncPercentComplete(15)
                 let peopleListSync = pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople(onlyUpdated, tabs.people.listPeopleTab));
                 syncStateText.push(`PCO People Lists: ${peopleListSync}`)
 
-                syncPercentComplete(60);
                 await updateListTab();
-
-                syncPercentComplete(70);
+                syncPercentComplete(30);
 
                 //dataValidation(tabs.people.listTab.name);
             }
             if (modules.check_ins) {
                 let headcountsSync = pushToSheet(tabs.check_ins.headcountsTab, await getHeadcountsJoinedData(onlyUpdated, tabs.check_ins.headcountsTab));
+                syncPercentComplete(40);
                 
                 syncStateText.push(`PCO Check in Headcounts: ${headcountsSync}`);
 
@@ -157,18 +157,24 @@ async function updateSpreadsheet(onlyUpdated) {
 
                 syncStateText.push(`PCO Check in Headcounts: ${checkinsSync}`);
                 
-                syncPercentComplete(80);
+                syncPercentComplete(50);
 
             }
             if (modules.giving) {
                 let donations = pushToSheet(tabs.giving.donationsTab, await getGivingDonations(onlyUpdated, tabs.giving.donationsTab));
                 syncStateText.push(`PCO Giving Donations: ${donations}`)
 
-                syncPercentComplete(90);
+                syncPercentComplete(80);
 
             }
             if (modules.groups) {
+                let groupTab = tabs.groups.groupSummaryTab;
+                let additionalHeaders = await getGroups_tagGroups(true);
+                
+                let groups = pushToSheet(groupTab, await getGroups(false, groupTab), additionalHeaders);
+                syncStateText.push(`PCO Groups: ${groups}`)
 
+                syncPercentComplete(100);
             }
             if (modules.calendar) {
 

@@ -36,8 +36,12 @@ function promiseApiWithTimeout(url, offset, includeURL, updatedAt, retries = 5, 
     return promise = new Promise((resolve, reject) => {
         let fetchCallResponse = fetchCall(`${url}?per_page=100&offset=${offset}${includeURL}${updatedAt}`);
         let responseCode = fetchCallResponse.getResponseCode();
+
         let listCallContent = JSON.parse(fetchCallResponse.getContentText());
         let headers = fetchCallResponse.getAllHeaders();
+
+        //console.log(responseCode)
+        //console.log(listCallContent)
 
         //console.log(`Starting Promise. Offset: ${offset}. Timeout: ${timeout} -------- Response Code: ${responseCode}. Rate Request Count: ${headers["x-pco-api-request-rate-count"]}. Request Rate Limit: ${headers["x-pco-api-request-rate-limit"]}. Request Rate Period: ${headers["x-pco-api-request-rate-period"]}`)
 
@@ -50,7 +54,8 @@ function promiseApiWithTimeout(url, offset, includeURL, updatedAt, retries = 5, 
             return resolve(promiseApiWithTimeout(url, offset, includeURL, updatedAt, retries - 1, retryPeriod * 1000))
         }
         else {
-            reject("rejected homie");
+            console.error('Failed to get the information.')
+            console.error({responseCode,listCallContent })
         }
 
     });
@@ -58,6 +63,7 @@ function promiseApiWithTimeout(url, offset, includeURL, updatedAt, retries = 5, 
 }
 
 async function pcoApiCall(url, onlyUpdated, include, includeURL) {
+
     
     var service = getOAuthService();
     if (service.hasAccess()) {
@@ -75,28 +81,49 @@ async function pcoApiCall(url, onlyUpdated, include, includeURL) {
 
         let fetchedData = await promiseApiWithTimeout(url, offset, includeURL, updatedAt)
 
-        let totalCount = fetchedData.meta.total_count;
-
-        data.push(...fetchedData.data)
-
-        if(include){
-            included.push(...fetchedData.included)
-        }
-
-        for (let i = 100; i < totalCount; i += 100) {
-            const response = await promiseApiWithTimeout(url, i, includeURL, updatedAt);
-            data.push(...response.data);
+        if(!Array.isArray(fetchedData.data)){
+            data.push(fetchedData.data)
 
             if(include){
-                included.push(...response.included)
+                if(!Array.isArray(fetchedData.included)){
+                    included.push(fetchedData.included)
+                } else {
+                    included.push(...fetchedData.included)
+                }  
             }
-            
-            //const final = response.data;
-            //const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
-            // console.log(report)
-            //console.log(response.included)
+        } else {
+            let totalCount = fetchedData.meta.total_count;
+
+            data.push(...fetchedData.data)
+    
+            if(include){
+                if(!Array.isArray(fetchedData.included)){
+                    included.push(fetchedData.included)
+                } else {
+                    included.push(...fetchedData.included)
+                }  
+            }
+    
+            for (let i = 100; i < totalCount; i += 100) {
+                const response = await promiseApiWithTimeout(url, i, includeURL, updatedAt);
+                data.push(...response.data);
+    
+                if(include){
+                    if(!Array.isArray(response.included)){
+                        included.push(response.included)
+                    } else {
+                        included.push(...response.included)
+                    }  
+                }
+                
+                //const final = response.data;
+                //const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
+                // console.log(report)
+                //console.log(response.included)
+            }
+            //console.log(`the data is: ${data.length} long.`);
         }
-        //console.log(`the data is: ${data.length} long.`);
+        
 
         if(include){
             return {
@@ -110,7 +137,6 @@ async function pcoApiCall(url, onlyUpdated, include, includeURL) {
 
     }
 }
-
 
 
 function compareWithSpreadsheet(apiCallData, idAttribute, tabInfo){

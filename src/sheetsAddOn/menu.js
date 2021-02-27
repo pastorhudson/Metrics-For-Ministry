@@ -26,6 +26,8 @@ function onOpen(e) {
     .addSubMenu(ui.createMenu('Debugging Info')
               .addItem('Remove Triggers', 'removeAllTriggers')
               .addItem('Add Default Triggers', 'addTriggers')
+              .addItem('Document Properties', 'setActiveSpreadsheetIdDocumentProperty')
+              .addItem('read Doc props', 'getDocumentProperties')
               )
     //.addItem('Setup Properties', 'newUserUserProperties')
     .addToUi();

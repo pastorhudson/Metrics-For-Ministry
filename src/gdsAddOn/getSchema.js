@@ -14,7 +14,7 @@ function validateConfig(config) {
 }
 
 function getSchema(request) {
-  
+
   console.log(request);
 
 
@@ -30,6 +30,7 @@ function getSchema(request) {
     const peopleInfo = moduleDataJson.people.peopleInfo;
     const peopleDataJson = moduleDataJson.people.personTab;
     const listDataJson = moduleDataJson.people.listPeopleTab;
+    const listSummaryData = moduleDataJson.people.listTab;
 
     if (request.configParams.peopleSelectorType == "peopleData") {
       fields.newDimension()
@@ -105,18 +106,57 @@ function getSchema(request) {
         .setType(types.TEXT);
 
 
-      // fields.newDimension()
-      //   .setId(listDataJson.dimensions.categoryID.id)
-      //   .setName(listDataJson.dimensions.categoryID.name)
-      //   .setDescription(listDataJson.dimensions.categoryID.description)
-      //   .setType(types.NUMBER);
-
       fields.newDimension()
         .setId(listDataJson.dimensions.categoryName.id)
         .setName(listDataJson.dimensions.categoryName.name)
         .setDescription(listDataJson.dimensions.categoryName.description)
         .setType(types.TEXT)
 
+
+    } else if (request.configParams.peopleSelectorType == "listDataSummary") {
+      fields.newDimension()
+        .setId(listSummaryData.dimensions.listID.id)
+        .setName(listSummaryData.dimensions.listID.name)
+        .setDescription(listSummaryData.dimensions.listID.description)
+        .setType(types.NUMBER);
+
+      fields.newDimension()
+        .setId(listSummaryData.dimensions.listName.id)
+        .setName(listSummaryData.dimensions.listName.name)
+        .setDescription(listSummaryData.dimensions.listName.description)
+        .setType(types.TEXT);
+
+      fields.newDimension()
+        .setId(listSummaryData.dimensions.listDescription.id)
+        .setName(listSummaryData.dimensions.listDescription.name)
+        .setDescription(listSummaryData.dimensions.listDescription.description)
+        .setType(types.TEXT);
+
+      fields.newDimension()
+        .setId(peopleInfo.dimensions.campusName.id)
+        .setName(peopleInfo.dimensions.campusName.name)
+        .setDescription(peopleInfo.dimensions.campusName.description)
+        .setType(types.TEXT)
+
+      fields.newDimension()
+        .setId(listSummaryData.dimensions.categoryName.id)
+        .setName(listSummaryData.dimensions.categoryName.name)
+        .setDescription(listSummaryData.dimensions.categoryName.description)
+        .setType(types.TEXT)
+
+      fields.newDimension()
+        .setId(listSummaryData.dimensions.syncThisList.id)
+        .setName(listSummaryData.dimensions.syncThisList.name)
+        .setDescription(listSummaryData.dimensions.syncThisList.description)
+        .setType(types.BOOLEAN)
+
+      fields.newDimension()
+        .setId(listSummaryData.dimensions.totalPeople.id)
+        .setName(listSummaryData.dimensions.totalPeople.name)
+        .setDescription(listSummaryData.dimensions.totalPeople.description)
+        .setType(types.NUMBER)
+        
+        return { 'schema': fields.build() };
 
     }
 
@@ -126,11 +166,6 @@ function getSchema(request) {
       .setDescription(peopleInfo.dimensions.personID.description)
       .setType(types.NUMBER)
 
-    // fields.newDimension()
-    //   .setId(peopleInfo.dimensions.campusID.id)
-    //   .setName(peopleInfo.dimensions.campusID.name)
-    //   .setDescription(peopleInfo.dimensions.campusID.description)
-    //   .setType(types.NUMBER)
 
     fields.newDimension()
       .setId(peopleInfo.dimensions.campusName.id)
@@ -253,68 +288,10 @@ function getSchema(request) {
   } else if (connectorType == 'checkins') {
 
     const headcountsInfo = moduleDataJson.check_ins.headcountsTab;
+    const checkinInfo = moduleDataJson.check_ins.checkinsTab;
+    const genericCheckinData = moduleDataJson.check_ins.universal;
 
     if (request.configParams.checkinsSelectorType == "headcountData") {
-
-      fields.newDimension()
-        .setId(headcountsInfo.dimensions.eventId.id)
-        .setName(headcountsInfo.dimensions.eventId.name)
-        .setDescription(headcountsInfo.dimensions.eventId.description)
-        .setType(types.NUMBER)
-
-      fields.newDimension()
-        .setId(headcountsInfo.dimensions.eventTimeID.id)
-        .setName(headcountsInfo.dimensions.eventTimeID.name)
-        .setDescription(headcountsInfo.dimensions.eventTimeID.description)
-        .setType(types.NUMBER)
-
-      fields.newDimension()
-        .setId(headcountsInfo.dimensions.eventName.id)
-        .setName(headcountsInfo.dimensions.eventName.name)
-        .setDescription(headcountsInfo.dimensions.eventName.description)
-        .setType(types.TEXT)
-
-      fields.newDimension()
-        .setId(headcountsInfo.dimensions.archivedAt.id)
-        .setName(headcountsInfo.dimensions.archivedAt.name)
-        .setDescription(headcountsInfo.dimensions.archivedAt.description)
-        .setType(types.YEAR_MONTH_DAY_SECOND)
-
-      fields.newDimension()
-        .setId(headcountsInfo.dimensions.eventFrequency.id)
-        .setName(headcountsInfo.dimensions.eventFrequency.name)
-        .setDescription(headcountsInfo.dimensions.eventFrequency.description)
-        .setType(types.TEXT)
-
-      fields.newDimension()
-        .setId(headcountsInfo.dimensions.eventTimeName.id)
-        .setName(headcountsInfo.dimensions.eventTimeName.name)
-        .setDescription(headcountsInfo.dimensions.eventTimeName.description)
-        .setType(types.TEXT)
-
-      fields.newDimension()
-        .setId(headcountsInfo.dimensions.eventDate.id)
-        .setName(headcountsInfo.dimensions.eventDate.name)
-        .setDescription(headcountsInfo.dimensions.eventDate.description)
-        .setType(types.YEAR_MONTH_DAY)
-
-      fields.newDimension()
-        .setId(headcountsInfo.dimensions.eventTime.id)
-        .setName(headcountsInfo.dimensions.eventTime.name)
-        .setDescription(headcountsInfo.dimensions.eventTime.description)
-        .setType(types.TEXT)
-
-      fields.newDimension()
-        .setId(headcountsInfo.dimensions.starts.id)
-        .setName(headcountsInfo.dimensions.starts.name)
-        .setDescription(headcountsInfo.dimensions.starts.description)
-        .setType(types.YEAR_MONTH_DAY_SECOND)
-
-      fields.newDimension()
-        .setId(headcountsInfo.dimensions.eventYearMonth.id)
-        .setName(headcountsInfo.dimensions.eventYearMonth.name)
-        .setDescription(headcountsInfo.dimensions.eventYearMonth.description)
-        .setType(types.YEAR_MONTH)
 
       fields.newDimension()
         .setId(headcountsInfo.dimensions.countType.id)
@@ -329,10 +306,101 @@ function getSchema(request) {
         .setType(types.NUMBER)
 
 
-    } else if (request.configParams.checkinsSelectorType == "peopleCheckinsData") {
+    } else if (request.configParams.checkinsSelectorType == "checkinsData") {
+
+      fields.newDimension()
+        .setId(checkinInfo.dimensions.checkinID.id)
+        .setName(checkinInfo.dimensions.checkinID.name)
+        .setDescription(checkinInfo.dimensions.checkinID.description)
+        .setType(types.NUMBER)
+
+      fields.newDimension()
+        .setId(checkinInfo.dimensions.personID.id)
+        .setName(checkinInfo.dimensions.personID.name)
+        .setDescription(checkinInfo.dimensions.personID.description)
+        .setType(types.NUMBER)
+
+      fields.newDimension()
+        .setId(checkinInfo.dimensions.locationID.id)
+        .setName(checkinInfo.dimensions.locationID.name)
+        .setDescription(checkinInfo.dimensions.locationID.description)
+        .setType(types.NUMBER)
+
+      fields.newDimension()
+        .setId(checkinInfo.dimensions.locationName.id)
+        .setName(checkinInfo.dimensions.locationName.name)
+        .setDescription(checkinInfo.dimensions.locationName.description)
+        .setType(types.TEXT)
+
+      fields.newDimension()
+        .setId(checkinInfo.metrics.count.id)
+        .setName(checkinInfo.metrics.count.name)
+        .setDescription(checkinInfo.metrics.count.description)
+        .setType(types.NUMBER)
 
 
     }
+
+
+    fields.newDimension()
+      .setId(genericCheckinData.dimensions.eventId.id)
+      .setName(genericCheckinData.dimensions.eventId.name)
+      .setDescription(genericCheckinData.dimensions.eventId.description)
+      .setType(types.NUMBER)
+
+    fields.newDimension()
+      .setId(genericCheckinData.dimensions.eventTimeID.id)
+      .setName(genericCheckinData.dimensions.eventTimeID.name)
+      .setDescription(genericCheckinData.dimensions.eventTimeID.description)
+      .setType(types.NUMBER)
+
+    fields.newDimension()
+      .setId(genericCheckinData.dimensions.eventName.id)
+      .setName(genericCheckinData.dimensions.eventName.name)
+      .setDescription(genericCheckinData.dimensions.eventName.description)
+      .setType(types.TEXT)
+
+    fields.newDimension()
+      .setId(genericCheckinData.dimensions.archivedAt.id)
+      .setName(genericCheckinData.dimensions.archivedAt.name)
+      .setDescription(genericCheckinData.dimensions.archivedAt.description)
+      .setType(types.YEAR_MONTH_DAY_SECOND)
+
+    fields.newDimension()
+      .setId(genericCheckinData.dimensions.eventFrequency.id)
+      .setName(genericCheckinData.dimensions.eventFrequency.name)
+      .setDescription(genericCheckinData.dimensions.eventFrequency.description)
+      .setType(types.TEXT)
+
+    fields.newDimension()
+      .setId(genericCheckinData.dimensions.eventTimeName.id)
+      .setName(genericCheckinData.dimensions.eventTimeName.name)
+      .setDescription(genericCheckinData.dimensions.eventTimeName.description)
+      .setType(types.TEXT)
+
+    fields.newDimension()
+      .setId(genericCheckinData.dimensions.eventDate.id)
+      .setName(genericCheckinData.dimensions.eventDate.name)
+      .setDescription(genericCheckinData.dimensions.eventDate.description)
+      .setType(types.YEAR_MONTH_DAY)
+
+    fields.newDimension()
+      .setId(genericCheckinData.dimensions.eventTime.id)
+      .setName(genericCheckinData.dimensions.eventTime.name)
+      .setDescription(genericCheckinData.dimensions.eventTime.description)
+      .setType(types.TEXT)
+
+    fields.newDimension()
+      .setId(genericCheckinData.dimensions.starts.id)
+      .setName(genericCheckinData.dimensions.starts.name)
+      .setDescription(genericCheckinData.dimensions.starts.description)
+      .setType(types.YEAR_MONTH_DAY_SECOND)
+
+    fields.newDimension()
+      .setId(genericCheckinData.dimensions.eventYearMonth.id)
+      .setName(genericCheckinData.dimensions.eventYearMonth.name)
+      .setDescription(genericCheckinData.dimensions.eventYearMonth.description)
+      .setType(types.YEAR_MONTH)
   }
 
 

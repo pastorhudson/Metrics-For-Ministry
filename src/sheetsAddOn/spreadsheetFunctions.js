@@ -20,6 +20,7 @@ function setUpDocument() {
     }
     if (modules.check_ins) {
         createSheet(tabs.check_ins.headcountsTab);
+        createSheet(tabs.check_ins.checkinsTab);
     }
     if (modules.giving) {
         createSheet(tabs.giving.donationsTab);

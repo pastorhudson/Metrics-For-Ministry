@@ -15,44 +15,11 @@ function dailySyncAdd() {
     //creating a trigger to run at noon
     ScriptApp.newTrigger("triggerSyncDaily")
         .timeBased()
-        .atHour(23)
+        .atHour(3)
         .nearMinute(45)
         .everyDays(1)
         .create();
 }
-
-// function testTrigger() {
-//     //creating a trigger to run at noon
-//     ScriptApp.newTrigger("triggerSyncDailyTest")
-//         .timeBased()
-//         .everyHours(1)
-//         .create();
-// }
-
-// function triggerSyncDailyTest() {
-//     //let isSignedIn = getUserProperty('isSignedIn');
-//     var service = getOAuthService();
-
-//     if (service.hasAccess()) {
-//         let updatedOnlySync = getFullSyncStatus();
-//         console.log(updatedOnlySync);
-
-//         updateSpreadsheet(updatedOnlySync)
-//     } else {
-//         Logger.log("No sync right now");
-//     }
-
-// }
-
-// function weeklySyncAdd() {
-//     //creating a trigger to run at noon
-//     ScriptApp.newTrigger("resetFullSyncStatus")
-//         .timeBased()
-//         .atHour(23)
-//         .nearMinute(0)
-//         .everyDays(5)
-//         .create();
-// }
 
 function resetFullSyncStatus() {
     setUserProperty('syncUpdatedOnly', 'false')
@@ -141,7 +108,8 @@ async function syncGiving(onlyUpdated = false) {
 
 async function syncCheckins(onlyUpdated = false) {
     const tabs = tabNamesReturn();
-    pushToSheet(tabs.check_ins.headcountsTab, await getCheckInsData(onlyUpdated, tabs.check_ins.headcountsTab));
+    pushToSheet(tabs.check_ins.headcountsTab, await getHeadcountsJoinedData(onlyUpdated, tabs.check_ins.headcountsTab));
+    pushToSheet(tabs.check_ins.checkinsTab, await getCheckIns(onlyUpdated, tabs.check_ins.checkinsTab));
 }
 
 async function updateSpreadsheet(onlyUpdated) {
@@ -181,8 +149,14 @@ async function updateSpreadsheet(onlyUpdated) {
                 //dataValidation(tabs.people.listTab.name);
             }
             if (modules.check_ins) {
-                let headcountsSync = pushToSheet(tabs.check_ins.headcountsTab, await getCheckInsData(onlyUpdated, tabs.check_ins.headcountsTab));
-                syncStateText.push(`PCO Check in Headcounts: ${headcountsSync}`)
+                let headcountsSync = pushToSheet(tabs.check_ins.headcountsTab, await getHeadcountsJoinedData(onlyUpdated, tabs.check_ins.headcountsTab));
+                
+                syncStateText.push(`PCO Check in Headcounts: ${headcountsSync}`);
+
+                let checkinsSync = pushToSheet(tabs.check_ins.checkinsTab, await getCheckIns(onlyUpdated, tabs.check_ins.checkinsTab));
+
+                syncStateText.push(`PCO Check in Headcounts: ${checkinsSync}`);
+                
                 syncPercentComplete(80);
 
             }

@@ -35,16 +35,13 @@ async function getListCategories() {
     for (const element of apiCall) {
 
         const {attributes, id} = element;
-        //let attributes = element.attributes;
         let subElement = {
             id: id,
             name: attributes.name
         }
-        // subElement.id = id;
-        // subElement.name = attributes.name;
+
         categoryArray.push(subElement);
     }
-
 
     return categoryArray;
 }
@@ -178,17 +175,15 @@ function getAge(birthday) {
         var age = today.getFullYear() - birthday.getFullYear() - thisYear;
         return age;
     } else {
-        return ''
+        // return -1 if they don't have an age for easier filtering.
+        return -1
     }
  
 }
 
-function test(){
-    const tabs = tabNamesReturn();
-    getListsWithPeople(true, tabs.people.listPeopleTab)
-
-    setUserProperty('syncStatus', "ready");
-}
+function uniq(a) {
+    return Array.from(new Set(a));
+ }
 
 
 async function personDataCall(onlyUpdated, tab) {
@@ -199,34 +194,63 @@ async function personDataCall(onlyUpdated, tab) {
      * @description - 
      */
 
-    const personData = await pcoApiCall("https://api.planningcenteronline.com/people/v2/people", onlyUpdated, false, '');
-    const campusArray = await getCampuses();
+    const apiCall = await pcoApiCall("https://api.planningcenteronline.com/people/v2/people", false, true, '&include=households,primary_campus');
+
+    const CAMPUSES = apiCall.included.filter((e) => { if (e.type == "Campus" && apiCall.included.findIndex(t => (e.id === t.id)) == apiCall.included.indexOf(e)) { return e } })
+    console.log(CAMPUSES)
+    const HOUSEHOLDS = apiCall.included.filter((e) => { if (e.type == "Household" && apiCall.included.findIndex(t => (e.id === t.id)) == apiCall.included.indexOf(e)) { return e } })
+
+    //const campusArray = await getCampuses();
+
+    
 
     let newPeopleArray = [];
 
-    if(personData.length > 0 ){
-        for (const element of personData) {
+    if(apiCall.data.length > 0 ){
+        for (const element of apiCall.data) {
             let attributes = element.attributes;
-            let elementPerson = {}
-            elementPerson['Person ID'] = element.id;
-            elementPerson['Birthday'] = attributes.birthdate;
-            elementPerson['Age'] = getAge(attributes.birthdate);
-            elementPerson['Is Child'] = attributes.child;
-            elementPerson['Gender'] = attributes.gender;
-            elementPerson['Grade'] = attributes.grade;
-            elementPerson['Membership'] = attributes.membership;
-            elementPerson['Status'] = attributes.status;
-    
-            if (element.relationships.primary_campus.data != null) {
-                let campusNumber = element.relationships.primary_campus.data.id;
-                let campus = campusArray.find(o => o.id === campusNumber);
-                elementPerson['Campus Name'] = campus.name;
-    
-            } else {
-                elementPerson['Campus Name'] = "undefined";
+            let relationships = element.relationships;
+
+            console.log(relationships);
+
+            let person = {
+                'Person ID': element.id,
+                "Birthday": attributes.birthdate,
+                "Age": getAge(attributes.birthdate),
+                "Is Child": attributes.child,
+                "Gender": attributes.gender,
+                "Grade": attributes.grade,
+                "Membership": attributes.membership,
+                "Status" : attributes.status
             }
+
+            let campusName = undefined;
     
-            newPeopleArray.push(elementPerson);
+            if (relationships.primary_campus.data != null) {
+                let campus = CAMPUSES.find((e) => e.id == relationships.primary_campus.data.id);
+                console.log(campus);
+                campusName = campus.attributes.name;
+            }
+
+            Object.assign(person, {"Campus Name": campusName})
+
+            // let householdID = undefined;
+            // let householdInfo = relationships.households.data
+
+            // if(householdInfo != null){
+            //     let tempArray = []
+                
+            //     for(let i = 0; i < householdInfo.length ; i++){
+            //         let household = HOUSEHOLDS.find((home) => home.id == relationships.households.data[i].id);
+            //         tempArray.push(household.attributes.name)
+            //     }
+                
+            //     householdID = tempArray;
+            // }
+
+            // Object.assign(person, {"Household ID": householdID.join(", ")})
+    
+            newPeopleArray.push(person);
         }
     
     }

@@ -224,17 +224,3 @@ function pcoUpdateCall(data, type) {
 }
 
 
-// function authorizeURL(url) {
-//   const makeService = getOAuthService();
-//   const personData = UrlFetchApp.fetch(url, {
-//     headers: {
-//       Authorization: 'Bearer ' + makeService.getAccessToken()
-//     }
-//   }
-//   );
-
-//   const content = personData.getContentText();
-//   const json = JSON.parse(content);
-//   return json;
-// }
-

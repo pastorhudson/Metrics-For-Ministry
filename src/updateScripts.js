@@ -1,11 +1,13 @@
 function updateScripts(currentVersion = null, oldVersion, updating = false) {
     var scriptProperties = PropertiesService.getScriptProperties();
-    const mostRecentVersion = scriptProperties.getProperty('mostRecentVersion');
+    const mostRecentVersion = scriptProperties.getProperty('dev_mostRecentVersion');
     currentVersion = getUserProperty('currentVersion');
 
     //console.log(currentVersion);
 
     //version = currentVersion;
+
+    let updateText = ''
 
     if (!updating) { oldVersion = currentVersion; }
 
@@ -40,18 +42,41 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
 
     } else if(currentVersion == "v1.2.0") {
 
-        // most recent version - v1.2.1
-        console.log("Updated to the current version");
 
-        currentVersion = mostRecentVersion;
-
+        currentVersion = "v1.2.1"
         setUserProperty('currentVersion', currentVersion);
+        return updateScripts(currentVersion, oldVersion, true);
 
-        return {
-            'oldVersion': oldVersion,
-            "newVersion": mostRecentVersion
+    } else if(currentVersion == "v1.2.1") {
+        try {
+            
+            addCheckinsSheet();    
+            currentVersion = "v1.2.1"
+            setUserProperty('currentVersion', currentVersion);
+            return updateScripts(currentVersion, oldVersion, true);
 
+        } catch (error){
+            console.log(`Failed to update current version. error: ${error}`)
         }
+    } else if(currentVersion == "v1.2.1") {
+        try {
+
+            addTriggers();
+            // most recent version - v1.3.0
+            console.log("Updated to the current version");
+
+            currentVersion = mostRecentVersion;
+    
+            setUserProperty('currentVersion', currentVersion);
+    
+            return {
+                'oldVersion': oldVersion,
+                "newVersion": mostRecentVersion
+            }
+        } catch (error){
+            console.log(`Failed to update current version. error: ${error}`)
+        }
+
     } else {
         currentVersion = "v1.0.9"
         setUserProperty('currentVersion', currentVersion);
@@ -79,4 +104,9 @@ function updateSheetNames() {
 }
 
 
+function addCheckinsSheet() {
+    let modules = getModuleUserObject();
+    let tabs = tabNamesReturn();
+    if (modules.check_ins) { createSheet(tabs.check_ins.checkinsTab) };
 
+}

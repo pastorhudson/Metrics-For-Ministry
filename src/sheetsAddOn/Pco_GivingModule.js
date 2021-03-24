@@ -16,7 +16,6 @@ async function getGivingFunds() {
         fundElement.color = attributes.color;
         fundArray.push(fundElement);
     }
-    console.log(fundArray)
     return fundArray;
 }
 
@@ -37,7 +36,6 @@ async function getGivingLabels() {
         labelElement.name = attributes.slug;
         labelArray.push(labelElement);
     }
-    console.log(labelArray)
 
     return labelArray;
 }
@@ -49,9 +47,6 @@ async function getGivingPaymentSources() {
 
     const paymentSourceApiCall = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/payment_sources", false, false, '');
     let paymentSourceArray = [];
-
-    //console.log(labelApiCall)
-
     for (const paymentSource of paymentSourceApiCall) {
         let attributes = paymentSource.attributes;
         let sourceElement = {}
@@ -59,7 +54,6 @@ async function getGivingPaymentSources() {
         sourceElement.name = attributes.name;
         paymentSourceArray.push(sourceElement);
     }
-    console.log(paymentSourceArray)
 
     return paymentSourceArray;
 }
@@ -74,11 +68,12 @@ async function getGivingDonations(onlyUpdated, tab) {
 
     const timezone = getUserProperty('time_zone')
 
+    const funds = getGivingFunds();
+    const labels = getGivingLabels();
+    const paymentSources = getGivingPaymentSources();
 
     const donationData = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/donations", onlyUpdated,  true, "&include=designations");
-    const funds = await getGivingFunds();
-    const labels = await getGivingLabels();
-    const paymentSources = await getGivingPaymentSources();
+
 
     let donationArray = [];
 
@@ -183,16 +178,5 @@ async function getGivingDonations(onlyUpdated, tab) {
             return donationArray
         }
 
-    //console.log(donationArray[100]);
-    //console.log(donationArray)
-    //return donationArray;
 
-}
-
-
-function test(){
-    const tabs = tabNamesReturn();
-    getGivingDonations(true, tabs.giving.donationsTab)
-
-   // setUserProperty('syncStatus', "ready");
 }

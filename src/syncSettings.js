@@ -22,7 +22,8 @@ function dailySyncAdd() {
 }
 
 function resetFullSyncStatus() {
-    setUserProperty('syncUpdatedOnly', 'false')
+    setUserProperty('syncUpdatedOnly', 'false');
+    setUserProperty('syncStatus', 'ready')
 }
 
 function getFullSyncStatus() {
@@ -31,11 +32,12 @@ function getFullSyncStatus() {
     return syncStatus;
 }
 
-function triggerSync(){
+function triggerSync() {
     removeAllTriggers();
 }
 
 async function triggerSyncDaily() {
+    console.time('fullSync')
     //let isSignedIn = getUserProperty('isSignedIn');
     var service = getOAuthService();
     let syncCount = +getUserProperty('syncCount');
@@ -47,7 +49,7 @@ async function triggerSyncDaily() {
         await updateScripts();
         userData();
 
-        if(syncCount == 5){
+        if (syncCount == 5) {
             await resetFullSyncStatus();
             setUserProperty('syncCount', '0')
         }
@@ -57,11 +59,12 @@ async function triggerSyncDaily() {
         await updateSpreadsheet(updatedOnlySync);
         syncCount++;
         setUserProperty('syncCount', syncCount)
-        
+
     } else {
         console.log('Trigger Sync Daily: The user does not have access.');
     }
 
+    console.timeEnd('fullSync')
 }
 
 
@@ -76,51 +79,74 @@ function setLastSyncTime() {
 
 async function updateSpreadsheetFromSidebar() {
 
-    if(isAuthValid()){
+    if (isAuthValid()) {
         await updateScripts();
         let updatedOnlySync = getFullSyncStatus();
         userData();
 
         const updateResponse = await updateSpreadsheet(updatedOnlySync);
 
-        if(updateResponse != 'success'){
-            sheetsUiError('An Error occured while trying to sync',updateResponse.text)
+        if (updateResponse != 'success') {
+            sheetsUiError('An Error occured while trying to sync', updateResponse.text)
         }
 
-        
+
     } else {
-        sheetsUiError("Not Signed In","It appears that you're not signed in. Try to Authorize again. If the issue persists email hello@savvytoolbelt.com for help.")
+        sheetsUiError("Not Signed In", "It appears that you're not signed in. Try to Authorize again. If the issue persists email hello@savvytoolbelt.com for help.")
     }
 
 }
 
 async function syncPeople(onlyUpdated = false) {
+    let syncStateText = []
     const tabs = tabNamesReturn();
-    pushToSheet(tabs.people.personTab, await personDataCall(onlyUpdated, tabs.people.personTab));
-    pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople(onlyUpdated, tabs.people.listPeopleTab));
+    let people = await pushToSheet(tabs.people.personTab, await personDataCall(onlyUpdated, tabs.people.personTab))
+    syncStateText.push(`PCO People: ${people}`);
+    let lists = await pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople(onlyUpdated, tabs.people.listPeopleTab))
+    syncStateText.push(`PCO People Lists: ${lists}`);
     await updateListTab();
+    return syncStateText;
 }
 
 async function syncGiving(onlyUpdated = false) {
     const tabs = tabNamesReturn();
-    pushToSheet(tabs.giving.donationsTab, await getGivingDonations(onlyUpdated, tabs.giving.donationsTab));
+    let syncStateText = []
+    let giving = pushToSheet(tabs.giving.donationsTab, await getGivingDonations(onlyUpdated, tabs.giving.donationsTab))
+    syncStateText.push(`PCO Giving Donations: ${giving}`);
+
+    return syncStateText;
 }
 
 async function syncCheckins(onlyUpdated = false) {
+    let syncStateText = []
     const tabs = tabNamesReturn();
-    pushToSheet(tabs.check_ins.headcountsTab, await getHeadcountsJoinedData(onlyUpdated, tabs.check_ins.headcountsTab));
-    pushToSheet(tabs.check_ins.checkinsTab, await getCheckIns(onlyUpdated, tabs.check_ins.checkinsTab));
+
+    let headcounts = await pushToSheet(tabs.check_ins.headcountsTab, await getHeadcountsJoinedData(onlyUpdated, tabs.check_ins.headcountsTab))
+    syncStateText.push(`PCO Check in Headcounts: ${headcounts}`);
+
+    let checkins = await pushToSheet(tabs.check_ins.checkinsTab, await getCheckIns(onlyUpdated, tabs.check_ins.checkinsTab))
+    syncStateText.push(`PCO Check in Headcounts: ${checkins} -- Time: ${syncTimer}`);
+
+    return syncStateText;
 }
 
 async function syncGroups(onlyUpdated = false) {
-    const tabs = tabNamesReturn();
 
-    let groupTab = tabs.groups.groupSummaryTab;
+    let syncStateText = []
 
-    let additionalHeaders = await getGroups_tagGroups(true);
-    pushToSheet(groupTab, await getGroups(onlyUpdated, groupTab), additionalHeaders);
+    const tabs = tabNamesReturn()
+    let groupTab = tabs.groups.groupSummaryTab
+    let additionalHeaders = await getGroups_tagGroups(true)
+    let groups = await pushToSheet(groupTab, await getGroups(onlyUpdated, groupTab), additionalHeaders)
+
+    syncStateText.push(`PCO Groups: ${groups}`)
+
+    return syncStateText;
+
 }
 
+// todo - Look at grouping the Groups requests together to speed them up.
+// todo - clean up the groups sync in the update function.
 async function updateSpreadsheet(onlyUpdated) {
     let syncStatus = getUserProperty('syncStatus')
 
@@ -133,55 +159,43 @@ async function updateSpreadsheet(onlyUpdated) {
             let modules = getModuleUserObject();
 
             if (modules.people) {
+                await syncPeople(onlyUpdated)
+                    .then(text => {
+                        syncStateText.concat(text)
+                        // TODO - Need to make this work with the promises
+                        syncPercentComplete(30);
 
-                //pushToSheet(tabs.people.campusTab.name, await getCampuses());
-                syncPercentComplete(0)
-                let peopleSync = pushToSheet(tabs.people.personTab, await personDataCall(onlyUpdated, tabs.people.personTab));
-                syncStateText.push(`PCO People: ${peopleSync}`)
-                syncPercentComplete(15)
-                let peopleListSync = pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople(onlyUpdated, tabs.people.listPeopleTab));
-                syncStateText.push(`PCO People Lists: ${peopleListSync}`)
-
-                await updateListTab();
-                syncPercentComplete(30);
-
-                //dataValidation(tabs.people.listTab.name);
-            }
-            if (modules.check_ins) {
-                let headcountsSync = pushToSheet(tabs.check_ins.headcountsTab, await getHeadcountsJoinedData(onlyUpdated, tabs.check_ins.headcountsTab));
-                syncPercentComplete(40);
-                
-                syncStateText.push(`PCO Check in Headcounts: ${headcountsSync}`);
-
-                let checkinsSync = pushToSheet(tabs.check_ins.checkinsTab, await getCheckIns(onlyUpdated, tabs.check_ins.checkinsTab));
-
-                syncStateText.push(`PCO Check in Headcounts: ${checkinsSync}`);
-                
-                syncPercentComplete(50);
-
+                    })
             }
             if (modules.giving) {
-                let donations = pushToSheet(tabs.giving.donationsTab, await getGivingDonations(onlyUpdated, tabs.giving.donationsTab));
-                syncStateText.push(`PCO Giving Donations: ${donations}`)
+                await syncGiving(onlyUpdated)
+                    .then(text => {
+                        // TODO - Need to make this work with the promises
+                        syncStateText.concat(text)
+                    })
 
-                syncPercentComplete(80);
+
+            }
+            if (modules.check_ins) {
+                await syncCheckins(onlyUpdated)
+                    .then(text => {
+                        // TODO - Need to make this work with the promises
+                        syncStateText.concat(text)
+                    })
 
             }
             if (modules.groups) {
-                let groupTab = tabs.groups.groupSummaryTab;
-                let additionalHeaders = await getGroups_tagGroups(true);
-                
-                let groups = pushToSheet(groupTab, await getGroups(false, groupTab), additionalHeaders);
-                syncStateText.push(`PCO Groups: ${groups}`)
-
-                syncPercentComplete(100);
+                await syncGroups(onlyUpdated)
+                    .then(text => {
+                        // TODO - Need to make this work with the promises
+                        syncStateText.concat(text)
+                    })
             }
-            if (modules.calendar) {
 
+            if (modules.calendar || modules.services) {
+                // these are currently unsupported
             }
-            if (modules.services) {
 
-            }
 
             syncPercentComplete(100);
             setUserProperty('syncStatus', "ready");
@@ -190,19 +204,19 @@ async function updateSpreadsheet(onlyUpdated) {
             setUserProperty('syncUpdatedOnly', 'true')
 
             return 'success'
-            
+
         } catch (error) {
             setUserProperty('syncStatus', "ready");
-            
+
             // need to look into throwing an error here if the sync fails.
             console.log(error)
             console.log(syncStateText);
 
             return {
                 'error': error,
-                'text' : syncStateText
+                'text': syncStateText
             }
-            
+
         }
 
 

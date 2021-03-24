@@ -16,10 +16,8 @@ async function getOrgData(){
 async function pcoApiOrgCall(url) {
     var service = getOAuthService();
     if (service.hasAccess()) {
-
-
         let fetchedData = await promiseApiWithTimeout(url)
-        return fetchedData.data;
+        return fetchedData.body.data;
 
     }
 

@@ -295,11 +295,8 @@ async function updateListTab() {
     } else {
         pushToSheet(tabs.people.listTab, listApiCall);
     }
-
     
     dataValidation(tabs.people.listTab.name)
-
-
 
     return listArray;
 }

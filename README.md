@@ -24,6 +24,17 @@ Total : 42 files,  4287 codes, 526 comments, 1219 blanks, all 6032 lines
 | src/gdsAddOn | 4 | 787 | 100 | 278 | 1,165 |
 | src/sheetsAddOn | 14 | 1,924 | 249 | 642 | 2,815 |
 
+
+### Change Log notes
+- v 1.4.0
+Breaking changes
+- Updated the list tab to now only include the ID and Person ID. If additional data from the list is needed it'll need to be linked in GDS
+
+Improvements
+- Updated the API calls to now sync on average 40% faster
+- Fixed the PCO List People call to now only require the lists in which have been selected
+- Updated the people call to also loop over the list array for people. This adds time to the sync but is more future proof.
+
 ### Current Stats
 
 Syncing personDataCall

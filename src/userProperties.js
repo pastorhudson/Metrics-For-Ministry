@@ -333,13 +333,13 @@ function tabNamesReturn() {
                 "name": "List Data",
                 "headers": [
                     "List ID",
-                    "List Description",
-                    "List Name",
-                    "Total People",
-                    //"Campus ID",
-                    "Campus Name",
-                    //"Category ID",
-                    "Category Name",
+                    // "List Description",
+                    // "List Name",
+                    // "Total People",
+                    // //"Campus ID",
+                    // "Campus Name",
+                    // //"Category ID",
+                    // "Category Name",
                     "Person ID"
                 ],
                 "dimensions": {

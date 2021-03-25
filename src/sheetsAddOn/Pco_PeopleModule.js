@@ -34,7 +34,7 @@ async function getListCategories() {
 
     for (const element of apiCall) {
 
-        const {attributes, id} = element;
+        const { attributes, id } = element;
         let subElement = {
             id: id,
             name: attributes.name
@@ -51,7 +51,6 @@ async function getLists() {
     const CAMPUSES = listApiCall.included.filter((e) => { if (e.type == "Campus" && listApiCall.included.findIndex(t => (e.id === t.id)) == listApiCall.included.indexOf(e)) { return e } })
     const CATEGORIES = listApiCall.included.filter((e) => { if (e.type == "ListCategory" && listApiCall.included.findIndex(t => (e.id === t.id)) == listApiCall.included.indexOf(e)) { return e } })
 
-
     let listArrayListData = [];
 
     for (const list of listApiCall.data) {
@@ -65,16 +64,14 @@ async function getLists() {
 
         let campusName = () => {
             if(relationships.campus.data != null){
-                let campusData = CAMPUSES.find(campus => campus.id == relationships.campus.data.id)
-                return campusData.attributes.name
+                return CAMPUSES.find(campus => campus.id == relationships.campus.data.id).attributes.name
             }
             return null
         }
 
         let categoryName = () => {
             if(relationships.category.data != null){
-                let categoryData = CATEGORIES.find(category => category.id == relationships.category.data.id)
-                return categoryData.attributes.name
+                return CATEGORIES.find(category => category.id == relationships.category.data.id).attributes.name
             }
             return null
         }
@@ -89,8 +86,10 @@ async function getLists() {
         }
 
         listArrayListData.push(subList);
+        
     }
 
+    //console.log(listArrayListData)
 
     return listArrayListData;
 
@@ -101,81 +100,67 @@ async function getLists() {
 
 // TODO - Need to redo this function to only query the lists. Right now it queries ALL lists and then only uses what's needed.
 // Current test time - syncing: 31860ms
+
+// Should this list of list IDs be stored in the user properties to be read from, or just read from the spreadsheet?
+// The API response alone takes 35 seconds.
+
+// Need to loop over this
+// https://api.planningcenteronline.com/people/v2/lists/1613461/people?fields[Person]=id
+
+/**
+
+Steps for new List Function:
+
+DONE - 1. Need to pull the lists that are currently on the spreadsheet
+DONE - 2. Identify which lists need to be updated based on the value from 'sync now'. Start a for loop based on these list IDs. Do not need to call the API again for campus / category as it already exists on the sheet.
+3. Push the URL `https://api.planningcenteronline.com/people/v2/lists/{id}` with the includes true = '/people?fields[Person]=id into the API call function. Most likely do not need to create a new function here
+4. Wait on that loop to finish. This will include JUST the people ID
+5. Map that ID to an array of IDs for that specific list.
+6. Run a for loop here that pushes this data into an array that'll be later pushed into the spreadsheet.
+
+
+
+**/
+
+
 async function getListsWithPeople(onlyUpdated, tab) {
 
+    // returning the eitire list so we can use the attributes on the list.
+    const syncTheseLists = () => {
+        const tabs = tabNamesReturn();
+        return getSpreadsheetDataByName(tabs.people.listTab.name)
+            .filter(list => list["Sync This List"] == true )
+            //.map(list => list['List ID'])
+    }
     
-    let listApiCall = await pcoApiCall("https://api.planningcenteronline.com/people/v2/lists", onlyUpdated , true, "&include=campus,category,people");
-    const CAMPUSES = listApiCall.included.filter((e) => { if (e.type == "Campus" && listApiCall.included.findIndex(t => (e.id === t.id)) == listApiCall.included.indexOf(e)) { return e } })
-    const CATEGORIES = listApiCall.included.filter((e) => { if (e.type == "ListCategory" && listApiCall.included.findIndex(t => (e.id === t.id)) == listApiCall.included.indexOf(e)) { return e } })
+    let listPeopleArray = [];
 
-    //let campuses = await getCampuses();
-    //let categories = await getListCategories();
+    for(list of syncTheseLists()){
+        let listId= list["List ID"]
+       listApiCall = await pcoApiCall(`https://api.planningcenteronline.com/people/v2/lists/${listId}/people`, false , true, "&fields[Person]=id");
 
-    let listArrayListData = [];
+        console.log(listApiCall.data.length)
 
-    for (const list of listApiCall.data) {
-
-        let relationships = list.relationships;
-        let people = relationships.people.data
-        let description = list.attributes.description.replaceAll("'", '"')
-        let listName = list.attributes.name;
-
-        if(listName == null || listName == undefined){
-            listName = description;
-        }
-
-        // this is where to add a looped call to get the people of each list.
-
-        for (const person of people) {
-            let subList = new ListPeople(
-                list.id,
-                description,
-                listName,
-                list.attributes.total_people,
-                person.id);
-            subList.relationships = relationships;
-            subList.campus = CAMPUSES;
-            subList.category = CATEGORIES;
-            delete subList['Campus ID'];
-            delete subList['Category ID'];
-            
-            subList["Person ID"] = person.id;
-            listArrayListData.push(subList);
-        }
-
+        listApiCall.data.forEach(person => {
+            let personArray = {
+                'Person ID': person.id,
+                'List ID' : list['List ID']
+            }
+            listPeopleArray.push(personArray)
+        })
     }
 
-    let updateListData = await updateListTab();
-    let syncTheseLists = [];
-    let syncThesePeople = [];
+    console.log(listPeopleArray.length)
+    console.log(listPeopleArray[0])
 
+    return listPeopleArray
 
-    for (list2 of updateListData) {
-        if (list2._syncThisList == true) {
-            syncTheseLists.push(list2['List ID']);
-        }
-    }
-
-
-    for (i = 0; i < listArrayListData.length; i++) {
-        let value = syncTheseLists.indexOf(listArrayListData[i]['List ID']);
-        if (value != -1) {
-            syncThesePeople.push(listArrayListData[i])
-        }
-    }
-
-    // parsing the data from the sheet if we are requesting only updated info.
-    if(onlyUpdated){
-        return compareWithSpreadsheet(syncThesePeople, "Person ID", tab)
-    } else {
-        return syncThesePeople
-    }
 
 }
 
 
 function getAge(birthday) {
-    if(birthday != null){
+    if (birthday != null) {
         birthday = new Date(birthday)
         var today = new Date();
         var thisYear = 0;
@@ -190,12 +175,12 @@ function getAge(birthday) {
         // return -1 if they don't have an age for easier filtering.
         return -1
     }
- 
+
 }
 
 function uniq(a) {
     return Array.from(new Set(a));
- }
+}
 
 
 async function personDataCall(onlyUpdated, tab) {
@@ -213,11 +198,11 @@ async function personDataCall(onlyUpdated, tab) {
 
     //const campusArray = await getCampuses();
 
-    
+
 
     let newPeopleArray = [];
 
-    if(apiCall.data.length > 0 ){
+    if (apiCall.data.length > 0) {
         for (const element of apiCall.data) {
             let attributes = element.attributes;
             let relationships = element.relationships;
@@ -231,42 +216,42 @@ async function personDataCall(onlyUpdated, tab) {
                 "Gender": attributes.gender,
                 "Grade": attributes.grade,
                 "Membership": attributes.membership,
-                "Status" : attributes.status
+                "Status": attributes.status
             }
 
             let campusName = undefined;
-    
+
             if (relationships.primary_campus.data != null) {
                 let campus = CAMPUSES.find((e) => e.id == relationships.primary_campus.data.id);
                 campusName = campus.attributes.name;
             }
 
-            Object.assign(person, {"Campus Name": campusName})
+            Object.assign(person, { "Campus Name": campusName })
 
             // let householdID = undefined;
             // let householdInfo = relationships.households.data
 
             // if(householdInfo != null){
             //     let tempArray = []
-                
+
             //     for(let i = 0; i < householdInfo.length ; i++){
             //         let household = HOUSEHOLDS.find((home) => home.id == relationships.households.data[i].id);
             //         tempArray.push(household.attributes.name)
             //     }
-                
+
             //     householdID = tempArray;
             // }
 
             // Object.assign(person, {"Household ID": householdID.join(", ")})
-    
+
             newPeopleArray.push(person);
         }
-    
+
     }
 
 
     // parsing the data from the sheet if we are requesting only updated info.
-    if(onlyUpdated){
+    if (onlyUpdated) {
         return compareWithSpreadsheet(newPeopleArray, "Person ID", tab)
     } else {
         return newPeopleArray

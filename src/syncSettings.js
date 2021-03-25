@@ -101,9 +101,10 @@ async function syncPeople(onlyUpdated = false) {
     console.time('peopleTimer')
     let syncStateText = []
     const tabs = tabNamesReturn();
+
     let people = await pushToSheet(tabs.people.personTab, await personDataCall(onlyUpdated, tabs.people.personTab))
     syncStateText.push(`PCO People: ${people}`);
-    let lists = await pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople(onlyUpdated, tabs.people.listPeopleTab))
+    let lists = await pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople(false, tabs.people.listPeopleTab))
     syncStateText.push(`PCO People Lists: ${lists}`);
     await updateListTab();
 

@@ -55,27 +55,38 @@ async function getLists() {
     let listArrayListData = [];
 
     for (const list of listApiCall.data) {
-        let relationships = list.relationships;
-        let description = list.attributes.description.replaceAll("'", '"')
+        let {attributes, relationships, id} = list
 
-        let listName = list.attributes.name;
+        let {name, total_people, description} = attributes
 
-        if(listName == null){
-            listName = description;
+        description = description.replaceAll("'", '"')
+
+        if (name == null) { name = description }
+
+        let campusName = () => {
+            if(relationships.campus.data != null){
+                let campusData = CAMPUSES.find(campus => campus.id == relationships.campus.data.id)
+                return campusData.attributes.name
+            }
+            return null
         }
 
+        let categoryName = () => {
+            if(relationships.category.data != null){
+                let categoryData = CATEGORIES.find(category => category.id == relationships.category.data.id)
+                return categoryData.attributes.name
+            }
+            return null
+        }
 
-        let subList = new List(
-            list.id,
-            description,
-            listName,
-            list.attributes.total_people);
-        subList.relationships = relationships;
-        //subList.listSync = null;
-        subList.campus = CAMPUSES;
-        subList.category = CATEGORIES;
-        delete subList['Campus ID'];
-        delete subList['Category ID'];
+        let subList = {
+            'List ID': id,
+            'List Description': description,
+            'List Name': name,
+            'Total People': total_people,
+            'Campus Name' : campusName(),
+            'Category Name': categoryName()
+        }
 
         listArrayListData.push(subList);
     }

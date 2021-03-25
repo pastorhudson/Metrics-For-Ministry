@@ -107,7 +107,7 @@ async function pcoApiCall(url, onlyUpdated, include, includeURL) {
         }
 
         let fetchedData = await promiseApiWithTimeout(url, 0, includeURL, updatedAt)
-        if (fetchedData.body.data.length == 0) { console.log('Noting to sync'); return [] }
+        if (fetchedData.body.data.length == 0) { console.log('Nothing to sync'); return [] }
 
         let firstFetchBody = fetchedData.body
         let totalCount = (firstFetchBody.meta.total_count == null) ? 0 : firstFetchBody.meta.total_count;
@@ -118,11 +118,6 @@ async function pcoApiCall(url, onlyUpdated, include, includeURL) {
         if (include) { included = included.concat(firstFetchBody.included) }
 
         if (Array.isArray(firstFetchBody.data)) {
-
-            // console.log({
-            //     rateLimit: fetchedData.rateLimit,
-            //     ratePeriod: fetchedData.ratePeriod
-            // })
 
             let callPerChunk = fetchedData.rateLimit - 10
             let numberOfPromiseArrays = Math.ceil((totalCount / 100) / callPerChunk)
@@ -285,7 +280,6 @@ function buildRetryRequestArray(urlArray) {
 
 async function fetchAllDataLoop(requestArray, include, data = [], included = [], retryPeriod = 0) {
 
-
     await Utilities.sleep(retryPeriod)
 
     let fetchAllArray = await UrlFetchApp.fetchAll(requestArray)
@@ -302,7 +296,6 @@ async function fetchAllDataLoop(requestArray, include, data = [], included = [],
 
             data = data.concat(responseContent.data)
             if (include) { included = included.concat(responseContent.included) }
-
         }
 
         if (responseCode != 200) {
@@ -336,5 +329,128 @@ async function fetchAllDataLoop(requestArray, include, data = [], included = [],
 
 
 }
+
+/*
+***************************************************
+***************************************************
+*
+* Groups Sync API
+*
+***************************************************
+***************************************************
+*/
+
+// does not support the includes
+async function groups_pcoApiCall(urlArray) {
+    const service = getOAuthService();
+    if (service.hasAccess()) {
+        let data = [];
+        const groupsRequestArray = []
+
+        urlArray.forEach(url => {
+            groupsRequestArray.push({
+                url: `${url}?per_page=100&offset=0`,
+                headers: {
+                    Authorization: 'Bearer ' + service.getAccessToken()
+                },
+                muteHttpExceptions: true
+            }
+            )
+        })
+
+        let fetchedData = await promiseApiWithTimeout(groupsRequestArray[0].url, 0, '', '')
+        // if (fetchedData.body.data.length == 0) { console.log('Nothing to sync'); return [] }
+
+        let firstFetchBody = fetchedData.body
+
+        // the total count array will be inaccurate here.
+        let totalCount = urlArray.length
+
+        // pushing the first group of data to the arrays.
+        data = data.concat(firstFetchBody)
+
+        if (Array.isArray(firstFetchBody.data)) {
+
+            let callPerChunk = fetchedData.rateLimit - 10
+            let numberOfPromiseArrays = Math.ceil((totalCount / 100) / callPerChunk)
+
+
+            for (let promiseLoop = 0; promiseLoop < numberOfPromiseArrays; promiseLoop++) {
+
+                if (promiseLoop > 0) { await Utilities.sleep(fetchedData.ratePeriod * 1000) }
+
+                let loopStart;
+                let loopEnd;
+
+                if (promiseLoop > 0) {
+                    loopStart = (promiseLoop * (callPerChunk * 100))
+                    loopEnd = loopStart + (callPerChunk * 100)
+                } else {
+                    loopStart = 100;
+                    loopEnd = loopStart + ((callPerChunk * 100) - 100)
+                }
+
+                if (loopEnd > totalCount) { loopEnd = totalCount }
+
+                const fetchedDataLoop = await groups_fetchAllDataLoop(groupsRequestArray);
+
+                data = data.concat(fetchedDataLoop)
+            }
+        }
+        console.log(`the data is: ${data.length} long. Total count is ${totalCount}`);
+
+        return data;
+
+
+    }
+}
+
+async function groups_fetchAllDataLoop(groupsRequestArray, data = [], retryPeriod = 0) {
+
+    await Utilities.sleep(retryPeriod)
+
+    let fetchAllArray = await UrlFetchApp.fetchAll(groupsRequestArray)
+    let retryCount = 0
+    let failedFetches = []
+
+    for (response of fetchAllArray) {
+        let responseCode = response.getResponseCode()
+        let responseContent = JSON.parse(response.getContentText())
+        let index = fetchAllArray.indexOf(response);
+
+        if (responseCode == 200) {
+            //console.log({ responseCode })
+            // let groupID = groupIdArray[index]
+
+            data = data.concat(responseContent)
+        }
+
+        if (responseCode != 200) {
+
+            // pushing the URL of the failed sync
+            failedFetches.push(requestArray[index].url)
+
+
+            if (retryCount == 0) {
+                let headers = response.getAllHeaders();
+                retryPeriod = parseInt(headers["Retry-After"])
+                retryCount++
+            }
+        }
+    }
+
+    // need to validate that this does properly create a loop for groups
+    if (failedFetches.length != 0) {
+        // call the function 
+        let failedRequestArray = buildRetryRequestArray(failedFetches)
+        console.log(`Total Failed requests -- ${failedRequestArray.length}. Retrying after -- ${retryPeriod} Seconds`)
+        return fetchAllDataLoop(failedRequestArray, data, retryPeriod * 1000)
+    }
+
+    return data
+
+
+}
+
 
 

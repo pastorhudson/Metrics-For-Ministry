@@ -85,3 +85,11 @@ await on People / Giving and ordered the others to the bottom
 turned all values into a seperate promise function
 - fullSync: 143089ms
 
+Optimized the group sync function
+- fullSync: 118591ms
+- Can't rely on this because the giving sync didn't run.
+
+Fixed bug where Giving did not properly run
+- fullSync: 165533ms
+- fullSync: 148049ms
+- 

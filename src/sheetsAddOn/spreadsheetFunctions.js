@@ -151,7 +151,7 @@ function updateHeaders(tabInfo,additionalHeaders) {
 
 function pushToSheet(tabInfo, data, additionalHeaders) {
 
-    console.log(additionalHeaders)
+    //console.log(additionalHeaders)
 
     try{
         const ss = getDefaultSpreadsheetId().getSheetByName(tabInfo.name);

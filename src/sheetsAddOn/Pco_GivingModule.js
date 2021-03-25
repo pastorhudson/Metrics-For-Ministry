@@ -55,6 +55,8 @@ async function getGivingPaymentSources() {
         paymentSourceArray.push(sourceElement);
     }
 
+    console.log(paymentSourceArray)
+
     return paymentSourceArray;
 }
 
@@ -68,9 +70,9 @@ async function getGivingDonations(onlyUpdated, tab) {
 
     const timezone = getUserProperty('time_zone')
 
-    const funds = getGivingFunds();
-    const labels = getGivingLabels();
-    const paymentSources = getGivingPaymentSources();
+    const funds = await getGivingFunds();
+    const labels = await getGivingLabels();
+    const paymentSources = await getGivingPaymentSources();
 
     const donationData = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/donations", onlyUpdated,  true, "&include=designations");
 
@@ -169,7 +171,7 @@ async function getGivingDonations(onlyUpdated, tab) {
 
     }
 
-    console.log(donationArray[0])
+    console.log(`The Giving data is ${donationArray.length} long`)
 
         // parsing the data from the sheet if we are requesting only updated info.
         if(onlyUpdated){

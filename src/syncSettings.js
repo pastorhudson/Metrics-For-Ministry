@@ -98,6 +98,7 @@ async function updateSpreadsheetFromSidebar() {
 }
 
 async function syncPeople(onlyUpdated = false) {
+    console.time('peopleTimer')
     let syncStateText = []
     const tabs = tabNamesReturn();
     let people = await pushToSheet(tabs.people.personTab, await personDataCall(onlyUpdated, tabs.people.personTab))
@@ -105,6 +106,8 @@ async function syncPeople(onlyUpdated = false) {
     let lists = await pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople(onlyUpdated, tabs.people.listPeopleTab))
     syncStateText.push(`PCO People Lists: ${lists}`);
     await updateListTab();
+
+    console.timeEnd('peopleTimer')
     return syncStateText;
 }
 
@@ -125,7 +128,7 @@ async function syncCheckins(onlyUpdated = false) {
     syncStateText.push(`PCO Check in Headcounts: ${headcounts}`);
 
     let checkins = await pushToSheet(tabs.check_ins.checkinsTab, await getCheckIns(onlyUpdated, tabs.check_ins.checkinsTab))
-    syncStateText.push(`PCO Check in Headcounts: ${checkins} -- Time: ${syncTimer}`);
+    syncStateText.push(`PCO Check in Headcounts: ${checkins}`);
 
     return syncStateText;
 }

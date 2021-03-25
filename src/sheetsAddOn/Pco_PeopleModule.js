@@ -48,8 +48,9 @@ async function getListCategories() {
 
 async function getLists() {
     let listApiCall = await pcoApiCall("https://api.planningcenteronline.com/people/v2/lists", false, true, "&include=campus,category");
-    let campuses = await getCampuses();
-    let categories = await getListCategories();
+    const CAMPUSES = listApiCall.included.filter((e) => { if (e.type == "Campus" && listApiCall.included.findIndex(t => (e.id === t.id)) == listApiCall.included.indexOf(e)) { return e } })
+    const CATEGORIES = listApiCall.included.filter((e) => { if (e.type == "ListCategory" && listApiCall.included.findIndex(t => (e.id === t.id)) == listApiCall.included.indexOf(e)) { return e } })
+
 
     let listArrayListData = [];
 
@@ -71,8 +72,8 @@ async function getLists() {
             list.attributes.total_people);
         subList.relationships = relationships;
         //subList.listSync = null;
-        subList.campus = campuses;
-        subList.category = categories;
+        subList.campus = CAMPUSES;
+        subList.category = CATEGORIES;
         delete subList['Campus ID'];
         delete subList['Category ID'];
 
@@ -86,12 +87,18 @@ async function getLists() {
 
 
 // we use the includes only for the relationship data. The other data is ignored
+
+// TODO - Need to redo this function to only query the lists. Right now it queries ALL lists and then only uses what's needed.
+// Current test time - syncing: 31860ms
 async function getListsWithPeople(onlyUpdated, tab) {
 
     
     let listApiCall = await pcoApiCall("https://api.planningcenteronline.com/people/v2/lists", onlyUpdated , true, "&include=campus,category,people");
-    let campuses = await getCampuses();
-    let categories = await getListCategories();
+    const CAMPUSES = listApiCall.included.filter((e) => { if (e.type == "Campus" && listApiCall.included.findIndex(t => (e.id === t.id)) == listApiCall.included.indexOf(e)) { return e } })
+    const CATEGORIES = listApiCall.included.filter((e) => { if (e.type == "ListCategory" && listApiCall.included.findIndex(t => (e.id === t.id)) == listApiCall.included.indexOf(e)) { return e } })
+
+    //let campuses = await getCampuses();
+    //let categories = await getListCategories();
 
     let listArrayListData = [];
 
@@ -116,8 +123,8 @@ async function getListsWithPeople(onlyUpdated, tab) {
                 list.attributes.total_people,
                 person.id);
             subList.relationships = relationships;
-            subList.campus = campuses;
-            subList.category = categories;
+            subList.campus = CAMPUSES;
+            subList.category = CATEGORIES;
             delete subList['Campus ID'];
             delete subList['Category ID'];
             
@@ -146,16 +153,12 @@ async function getListsWithPeople(onlyUpdated, tab) {
         }
     }
 
-    //console.log(syncThesePeople);
-
     // parsing the data from the sheet if we are requesting only updated info.
     if(onlyUpdated){
         return compareWithSpreadsheet(syncThesePeople, "Person ID", tab)
     } else {
         return syncThesePeople
     }
-
-    //return syncThesePeople;
 
 }
 

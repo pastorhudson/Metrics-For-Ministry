@@ -39,6 +39,12 @@ async function getGroups(onlyUpdated, tab) {
     const GROUP_TYPES = apiCall.included.filter((e) => { if (e.type == "GroupType" && apiCall.included.findIndex(t => (e.id === t.id)) == apiCall.included.indexOf(e)) { return e } })
     const TAG_GROUPS = await getGroups_tagGroups();
 
+    let groupTagURLs = [];
+
+    GROUPS.forEach(group => groupTagURLs.push(`https://api.planningcenteronline.com/groups/v2/groups/${group.id}/tags`))
+
+
+    const groupTagsAPICall = await groups_pcoApiCall(groupTagURLs) 
     
     // if the tag groups don't match what we have stored, then we need to regenerate the groups.
 
@@ -62,35 +68,16 @@ async function getGroups(onlyUpdated, tab) {
             "Enrollment Open": attributes.enrollment_open,
             "Enrollment Strategy" : attributes.enrollment_strategy
 
-            // removed description as this shouldn't be needed for analysis and it's quite long.
-            //"Type Description": groupType.attributes.description,
         }
-
-        
-        //console.log(groupTags)
 
         let tagObject = {}
 
-        // for (tag of groupTags){
+        // need to refactor this code to grab an Array of URLs then push them out and remove this await.
+        // let groupTags = await pcoApiCall(`https://api.planningcenteronline.com/groups/v2/groups/${group.id}/tags`, false, false, '')
 
-        //     // need to loop through this for each group and find the value.
-        //     let tag_attributes = tag.attributes;
-        //     let tag_relationships = tag.relationships;
-        //     //console.log(tag_relationships.tag_group.data.id)
+        let groupTags = groupTagsAPICall.find(e => e.meta.parent.id == group.id).data
 
-        //     let tag_group = TAG_GROUPS.find((tg) => tg["Tag ID"] == tag_relationships.tag_group.data.id);
-
-        //     let tagGroupName = tag_group["Tag Group Name"];
-        //     tagObject[tagGroupName] = tag_attributes.name
-
-        // }
-        let groupTags = await pcoApiCall(`https://api.planningcenteronline.com/groups/v2/groups/${group.id}/tags`, false, false, '');
         for (tagGroup of TAG_GROUPS){
-
-            // need to loop through this for each group and find the value.
-            // let tag_attributes = tag.attributes;
-            // let tag_relationships = tag.relationships;
-            //console.log(tag_relationships.tag_group.data.id)
 
             let tags = groupTags.filter((tag) => tag.relationships.tag_group.data.id == tagGroup["Tag ID"]);
 
@@ -103,33 +90,6 @@ async function getGroups(onlyUpdated, tab) {
         }
 
         Object.assign(tempGroup, tagObject)
-
-
-        // let groupLocationInfo;
-
-        // if(relationships.location.data != null){
-        //     let single_group_api_call = await pcoApiCall(`https://api.planningcenteronline.com/groups/v2/groups/${group.id}/location`, false, false, '')
-
-        //     console.log(single_group_api_call)
-
-        //     groupLocationInfo = {
-        //         "Group Location": 'Physical',
-        //     }
-        // } else if (attributes.virtual_location_url != null){
-        //     console.log('looks like a virtual group, boss')
-
-        //     groupLocationInfo = {
-        //         "Group Location": 'Physical',
-        //     }
-            
-        // } else {
-        //     groupLocationInfo = {
-        //         "Group Location": 'No Location',
-        //     }
-        // }
-
-        // Object.assign(tempGroup, groupLocationInfo)
-
         dataArray.push(tempGroup)
     }
 

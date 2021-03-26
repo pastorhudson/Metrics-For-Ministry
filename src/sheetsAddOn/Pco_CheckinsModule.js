@@ -69,6 +69,9 @@ async function getHeadcountsJoinedData(onlyUpdated, tab) {
     onlyUpdated = false;
 
     const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/event_times", onlyUpdated, true, "&include=event,headcounts");
+
+
+    // this can be improved to use the includes instead.
     const headcountsData = await getHeadcounts();
     const eventsData = await getEvents();
 
@@ -147,112 +150,117 @@ async function getCheckIns(onlyUpdated, tab) {
 
     for (checkInTime of CHECK_IN_TIMES) {
 
-        // checkins to check_in_times is a one to one relationship
-        let checkin = CHECK_INS.find((e) => checkInTime.relationships.check_in.data.id == e.id)
+        let { relationships } = checkInTime;
 
-        let relationships = checkin.relationships;
-        //let attributes = checkin.attributes;
+        let { check_in, event_time, location } = relationships
 
-        let personID = (relationships.person.data != null) ? relationships.person.data.id : undefined;
+        let subElement = {}
 
+        const checkIn = (check_in) => {
 
-        let subElement = {
-            "Checkin ID": checkin.id,
-            "Person ID": personID,
+            // checkins to check_in_times is a one to one relationship
+            let checkin = CHECK_INS.find((e) => check_in.data.id == e.id)
+
+            let { relationships } = checkin
+
+            let { event } = relationships
+            //let attributes = checkin.attributes;
+            let personID = (relationships.person.data != null) ? relationships.person.data.id : undefined;
+            let checkinElement = {
+                "Checkin ID": checkin.id,
+                "Person ID": personID,
+            }
+
+            Object.assign(subElement, checkinElement)
+
+            // checkins to events is a one to one relationship. Not accounting for multiple returned.
+            //  using the checkin data and NOT check_in_times because event data is not stored in the check_in_times.
+
+            const eventData = (event) => {
+                let subEvent;
+                if (event.data != null) {
+                    let eventData = EVENTS.find(e => e.id == event.data.id)
+                    //console.log(eventData, EVENTS)
+                    let { attributes, id } = eventData
+                    let { name, archived_at, frequency } = attributes
+
+                    subEvent = {
+                        "Event ID": id,
+                        "Event Name": name,
+                        "Archived At": archived_at,
+                        "Event Frequency": frequency
+                    }
+                } else {
+                    subEvent = {
+                        "Event Name": null,
+                        "Archived At": null,
+                        "Event Frequency": null
+                    }
+                }
+
+                return subEvent
+            }
+
+            Object.assign(subElement, eventData(event))
+
         }
 
+        const eventTime = (event_time) => {
+            let { data } = event_time
+            if (data != null) {
 
-        // checkins to events is a one to one relationship. Not accounting for multiple returned.
-        //  using the checkin data and NOT check_in_times because event data is not stored in the check_in_times.
-        if (relationships.event.data != null) {
-            let eventData = EVENTS.find((event) => event.id == relationships.event.data.id);
+                let eventTimeData = EVENT_TIMES.find(e => e.id == data.id);
 
-            // console.log(eventData)
+                let { attributes: { name, starts_at }, id } = eventTimeData;
 
-            subEvent = {
-                "Event ID": eventData.id,
-                "Event Name": eventData.attributes.name,
-                "Archived At": eventData.attributes.archived_at,
-                "Event Frequency": eventData.attributes.frequency
+                let eventTimeName = (name == null || name == "") ? Utilities.formatDate(new Date(starts_at), timezone, "HH:mm a") : name;
+                let starts = Utilities.formatDate(new Date(starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+                // console.log(eventTimeData)
+
+                subEventTime = {
+                    "Event Time ID": id,
+                    "Event Time Name": eventTimeName,
+                    "Starts": starts,
+                }
+
+                Object.assign(subElement, subEventTime)
             }
 
-            Object.assign(subElement, subEvent)
-        } else {
-            subEvent = {
-                "Event Name": null,
-                "Archived At": null,
-                "Event Frequency": null
-            }
-
-            Object.assign(subElement, subEvent)
         }
 
-        // one to one relationship from event_Time to check_in_times.
-        if (checkInTime.relationships.event_time.data != null) {
+        const locationData = (location) => {
+            // one to one relationship from event_Time to location.
 
-            let eventTimeData = EVENT_TIMES.find((event_time) => event_time.id == checkInTime.relationships.event_time.data.id);
-            let eventTimeName = (eventTimeData.attributes.name == null || eventTimeData.attributes.name == "") ? Utilities.formatDate(new Date(eventTimeData.attributes.starts_at), timezone, "HH:mm a") : eventTimeData.attributes.name;
-            let starts = Utilities.formatDate(new Date(eventTimeData.attributes.starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'");
+            let {data} = location
 
-            // console.log(eventTimeData)
+            if (data != null) {
+                let locationData = LOCATIONS.find((location) => location.id == data.id);
 
-            subEventTime = {
-                "Event Time ID": eventTimeData.id,
-                "Event Time Name": eventTimeName,
-                "Starts": starts,
+                let {id, attributes: {name}} = locationData
+
+                subLocation = {
+                    "Location ID": id,
+                    "Location Name": name,
+                }
+
+            } else {
+                subLocation = {
+                    "Location ID": null,
+                    "Location Name": null,
+                }
             }
-
-            Object.assign(subElement, subEventTime)
-        }
-
-        // one to one relationship from event_Time to location.
-        if (checkInTime.relationships.location.data != null) {
-            let locationData = LOCATIONS.find((location) => location.id == checkInTime.relationships.location.data.id);
-
-            subLocation = {
-                "Location ID": locationData.id,
-                "Location Name": locationData.attributes.name,
-            }
-
             Object.assign(subElement, subLocation);
 
 
-            /**
-             * DO NOT DELETE
-             */
-
-            // // current location parents are not included on the includes.
-            // if (locationData.relationships.parent.data != null) {
-            //     //let locationParent = LOCATIONS.find((parent) => parent.id == locationData.relationships.parent.data.id);
-
-            //     // console.log(locationParent)
-            //     subLocationParent = {
-            //         "Location Parent ID": "parent ID",
-            //         "Location Parent Name": "parent name",
-            //     }
-
-            //     Object.assign(subElement, subLocationParent);
-            // } else {
-            //     subLocationParent = {
-            //         "Location Parent ID": null,
-            //         "Location Parent Name": null,
-            //     }
-
-            //     Object.assign(subElement, subLocationParent);
-            // }
-        } else {
-            subLocation = {
-                "Location ID": null,
-                "Location Name": null,
-                // "Location Parent ID": null,
-                // "Location Parent Name": null,
-            }
-
-            Object.assign(subElement, subLocation);
         }
 
+        checkIn(check_in)
+        eventTime(event_time)
+        locationData(location)
         dataArray.push(subElement)
     }
+
 
     if (onlyUpdated) {
         return compareWithSpreadsheet(dataArray, "Checkin ID", tab)

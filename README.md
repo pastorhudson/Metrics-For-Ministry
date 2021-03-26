@@ -110,3 +110,14 @@ Full sync, optimized lists calls, no lists enabled
 - fullSync: 127652ms
 - fullSync: 124405ms
 - 
+
+
+Optimized the checkins functions, full sync
+- fullSync: 162104ms
+
+Optimized the giving function, full sync, no lists
+- fullSync: 120444ms
+- fullSync: 102969ms
+
+Optimized the includes to remove dups, improved other functions.
+- fullSync: 108163ms

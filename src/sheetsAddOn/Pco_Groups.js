@@ -2,24 +2,18 @@ async function getGroups_tagGroups(onlyNames){
     const apiCall = await pcoApiCall('https://api.planningcenteronline.com/groups/v2/tag_groups', false, false, '')
 
     let dataArray = []
-    let tagGroupNames = [];
-    const tagger = apiCall;
-
-    for (tagGroup of tagger){
-        let attributes = tagGroup.attributes;
+    apiCall.forEach(tagGroup => {
+        const {attributes: {name}, id} = tagGroup
 
         let tempTagGroup = {
-            "Tag ID": tagGroup.id,
-            "Tag Group Name" : attributes.name
+            "Tag ID": id,
+            "Tag Group Name" : name
         }
 
-        tagGroupNames.push(attributes.name)
-
         dataArray.push(tempTagGroup)
+    })
 
-    }
-    
-    if(onlyNames){return tagGroupNames}
+    if(onlyNames){return dataArray.map(name => name["Tag Group Name"])}
     return dataArray
 }
 
@@ -36,7 +30,10 @@ async function getGroups(onlyUpdated, tab) {
     const apiCall = await pcoApiCall("https://api.planningcenteronline.com/groups/v2/groups", onlyUpdated, true, "&include=group_type&where[archive_status]=include");
     let dataArray = []
     const GROUPS = apiCall.data;
+
     const GROUP_TYPES = apiCall.included.filter((e) => { if (e.type == "GroupType" && apiCall.included.findIndex(t => (e.id === t.id)) == apiCall.included.indexOf(e)) { return e } })
+
+    //console.log(GROUP_TYPES.length)
     const TAG_GROUPS = await getGroups_tagGroups();
 
     let groupTagURLs = [];
@@ -51,22 +48,23 @@ async function getGroups(onlyUpdated, tab) {
 
     for (group of GROUPS) {
 
-        let attributes = group.attributes;
-        let relationships = group.relationships;
-
-        let groupType = GROUP_TYPES.find((e) => e.id == relationships.group_type.data.id);
+        const {attributes, relationships, id} = group
+        const {group_type} = relationships
+        const {name, memberships_count, location_type_preference, created_at, archived_at, enrollment_open, enrollment_strategy} = attributes
+        const groupType = GROUP_TYPES.find((e) => e.id == group_type.data.id);
+        const {id: typeID, attributes: {name: typeName}} = groupType
 
         let tempGroup = {
-            "Group ID": group.id,
-            "Group Name": attributes.name,
-            "Membership Count": attributes.memberships_count,
-            "Type ID": groupType.id,
-            "Type Name": groupType.attributes.name,
-            "Group Location Type": attributes.location_type_preference,
-            "Created At": Utilities.formatDate(new Date(attributes.created_at), timezone, "yyyy-MM-dd"),
-            "Archived At": (attributes.archived_at != null) ? Utilities.formatDate(new Date(attributes.archived_at), timezone, "yyyy-MM-dd"): null,
-            "Enrollment Open": attributes.enrollment_open,
-            "Enrollment Strategy" : attributes.enrollment_strategy
+            "Group ID": id,
+            "Group Name": name,
+            "Membership Count": memberships_count,
+            "Type ID": typeID,
+            "Type Name": typeName,
+            "Group Location Type": location_type_preference,
+            "Created At": Utilities.formatDate(new Date(created_at), timezone, "yyyy-MM-dd"),
+            "Archived At": (archived_at != null) ? Utilities.formatDate(new Date(archived_at), timezone, "yyyy-MM-dd"): null,
+            "Enrollment Open": enrollment_open,
+            "Enrollment Strategy" : enrollment_strategy
 
         }
 

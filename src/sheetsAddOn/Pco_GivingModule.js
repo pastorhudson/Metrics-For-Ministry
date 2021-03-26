@@ -29,9 +29,6 @@ async function getGivingLabels() {
 
 }
 
-
-
-
 async function getGivingPaymentSources() {
     /**
     * @return {paymentSourceArray} - filtered array of payment source Data.
@@ -39,15 +36,11 @@ async function getGivingPaymentSources() {
 
     const paymentSourceApiCall = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/payment_sources", false, false, '');
     let paymentSourceArray = [];
-    for (const paymentSource of paymentSourceApiCall) {
-        let attributes = paymentSource.attributes;
-        let sourceElement = {}
-        sourceElement.id = paymentSource.id;
-        sourceElement.name = attributes.name;
-        paymentSourceArray.push(sourceElement);
-    }
 
-    console.log(paymentSourceArray)
+    paymentSourceApiCall.forEach(paymentSource => {
+        const {id, attributes: {name}} = paymentSource
+        paymentSourceArray.push({id, name});
+    })
 
     return paymentSourceArray;
 }
@@ -67,16 +60,17 @@ async function getGivingDonations(onlyUpdated, tab) {
 
     const donationData = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/donations", onlyUpdated, true, "&include=designations,labels");
 
-    const includedArray = Array.from(new Set(donationData.included.map(a => a.id)))
-        .map(id => donationData.included.find(a => a.id === id))
+    // const includedArray = Array.from(new Set(donationData.included.map(a => a.id)))
+    //     .map(id => donationData.included.find(a => a.id === id))
 
-    const API_LABELS = includedArray.filter((e) => e.type == "Label")
+
+    const API_LABELS = donationData.included.filter((e) => e.type == "Label")
         .map(label => {
             let { attributes: { slug }, id } = label
             return { id, slug }
         })
 
-    const DESIGNATIONS = includedArray.filter((e) => e.type == "Designation")
+    const DESIGNATIONS = donationData.included.filter((e) => e.type == "Designation")
         .map(designation => {
             let { attributes: { amount_cents }, relationships: { fund }, id } = designation
             return { id, amount_cents, fund_id: fund.data.id }
@@ -90,8 +84,6 @@ async function getGivingDonations(onlyUpdated, tab) {
         const { amount_cents, fee_cents, amount_currency, received_at, refunded, payment_method_sub, payment_method, payment_status, payment_brand } = attributes
         let fee = fee_cents / 100;
         let amount = amount_cents / 100
-        //let currency = amount_currency;
-
         const { designations, person, payment_source, labels } = relationships
 
         designations.data.forEach(designation => {

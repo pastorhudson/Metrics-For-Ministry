@@ -158,9 +158,11 @@ async function pcoApiCall(url, onlyUpdated, include, includeURL) {
 
         console.log(`the data is: ${data.length} long. Total count is ${totalCount}`);
 
-
         console.timeEnd('syncing')
         if (include) {
+            included = Array.from(new Set(included.map(a => a.id)))
+                .map(id => included.find(a => a.id === id))
+
             return {
                 "data": data,
                 "included": included

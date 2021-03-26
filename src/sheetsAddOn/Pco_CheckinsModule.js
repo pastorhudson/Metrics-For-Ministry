@@ -7,26 +7,24 @@ async function getHeadcounts() {
 
     const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/headcounts", false, true, "&include=attendance_type");
     let dataArray = [];
-    let data = apiCall.data;
-    let included = apiCall.included;
 
-    for (const headcount of data) {
-        let attributes = headcount.attributes;
-        let relationships = headcount.relationships;
+    const { data, included } = apiCall
 
-        let attendanceTypeData = included.find(type => type.id === relationships.attendance_type.data.id);
+    data.forEach(headcount => {
+        const { attributes: { total }, relationships: { attendance_type, event_time }, id } = headcount
 
-        let elementHeadcount = {}
-        elementHeadcount.id = headcount.id; // foreign key
-        elementHeadcount.attendanceTypeID = relationships.attendance_type.data.id; //
-        elementHeadcount.eventTimeID = relationships.event_time.data.id; // primary key
-        elementHeadcount.attendanceTypeName = attendanceTypeData.attributes.name;
-        elementHeadcount.totalCount = attributes.total;
+        let elementHeadcount = {
+            id,
+            attendanceTypeID: attendance_type.data.id,
+            eventTimeID: event_time.data.id,
+            attendanceTypeName: included.find(type => type.id === attendance_type.data.id).attributes.name,
+            totalCount: total
+        }
         dataArray.push(elementHeadcount);
-    }
 
-    //console.log(dataArray[0])
+    })
 
+    console.log(dataArray)
     return dataArray;
 }
 
@@ -39,21 +37,10 @@ async function getEvents() {
     const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/events", false, false, '');
     let dataArray = [];
 
-
-    for (const event of apiCall) {
-        let attributes = event.attributes;
-        let relationships = event.relationships;
-
-        let elementEvent = {}
-        elementEvent.id = event.id; // primary key
-        elementEvent.archived_at = attributes.archived_at;
-        elementEvent.frequency = attributes.frequency;
-        elementEvent.name = attributes.name;
-
-
-        dataArray.push(elementEvent);
-    }
-
+    apiCall.forEach(event => {
+        const { attributes: { archived_at, frequency, name }, id } = event
+        dataArray.push({ id, archived_at, frequency, name });
+    });
 
     return dataArray;
 }

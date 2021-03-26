@@ -66,64 +66,70 @@ async function getHeadcountsJoinedData(onlyUpdated, tab) {
      * @return {dataArray} - filtered array of the event data
      */
 
-    onlyUpdated = false;
+    // headcounts now supports the updatedAt parameter.
+    //onlyUpdated = false;
 
     const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/event_times", onlyUpdated, true, "&include=event,headcounts");
 
-
-    // this can be improved to use the includes instead.
-    const headcountsData = await getHeadcounts();
-    const eventsData = await getEvents();
+    const EVENTS = apiCall.included.filter((e) => { if (e.type == "Event") { return e } });
+    const HEADCOUNT_API = apiCall.included.filter((e) => { if (e.type == "Headcount") { return e } });
 
     let dataArray = [];
 
-    for (const eventTime of apiCall.data) {
-        let attributes = eventTime.attributes;
-        let relationships = eventTime.relationships;
-        let headcounts = relationships.headcounts.data;
-        let eventID = relationships.event.data.id;
-        let event = eventsData.find(event => event.id === eventID);
+    apiCall.data.forEach(eventTime => {
+        const { attributes, relationships, id: EventTimeID } = eventTime
+        const { guest_count, regular_count, volunteer_count, name, starts_at } = attributes
+        const { headcounts, event } = relationships
 
-        let counts = {
-            "guest_count": attributes.guest_count,
-            "regular_count": attributes.regular_count,
-            "volunteer_count": attributes.volunteer_count
+
+        let eventData = EVENTS.find(e => e.id === event.data.id);
+
+        let counts = { guest_count, regular_count, volunteer_count }
+
+        const headcount = (headcounts, headcountObject = {}) => {
+            let { data } = headcounts
+            //let headcountObject = {}
+            if (data.length > 0) {
+                for (const headcount of data) {
+                    let head = HEADCOUNT_API.find(head => head.id === headcount.id)
+                    let { attendanceTypeName, totalCount } = head
+                    headcountObject[attendanceTypeName] = totalCount
+                }
+            }
+            Object.assign(counts, headcountObject)
         }
 
-        if (headcounts != null) {
-            for (const element of headcounts) {
+        const dataPushFunction = () => {
+            // takes the count object and creates an object for each then pushes this to the array.
+            // no input required here.
+            const { id: EventID, attributes: { name: EventName, archived_at, frequency } } = eventData
 
-                let headcountId = element.id // foreign key
-                //elementEventTime.headcountID = headcountId;
-                let head = headcountsData.find(elm => elm.id === headcountId);
-                counts[head.attendanceTypeName] = head.totalCount;
+            for (const count in counts) {
+                let amount = counts[count]
+                if (amount > 0) {
+                    let elementEventTime = {
+                        'EventTime ID': EventTimeID,
+                        'Event ID': EventID,
+                        'Event Name': EventName,
+                        'Archived At': archived_at,
+                        'Event Frequency': frequency,
+                        'Event Time Name': (name == null || name == "") ? Utilities.formatDate(new Date(starts_at), timezone, "HH:mm a") : name,
+                        'Starts': Utilities.formatDate(new Date(starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'"),
+                        'Count Type': count,
+                        'Count': amount
+                    }
+
+                    dataArray.push(elementEventTime);
+
+                }
+
             }
         }
 
-        for (const count in counts) {
-            let amount = counts[count]
-            if (amount > 0) {
-                let elementEventTime = {}
-                elementEventTime['EventTime ID'] = eventTime.id; // primary key
-                elementEventTime['Event ID'] = eventID;
-                elementEventTime['Event Name'] = event.name;
-                elementEventTime['Archived At'] = event.archived_at;
-                elementEventTime['Event Frequency'] = event.frequency;
-                elementEventTime['Event Time Name'] = (attributes.name == null || attributes.name == "") ? Utilities.formatDate(new Date(attributes.starts_at), timezone, "HH:mm a") : attributes.name;
-                //elementEventTime.date = Utilities.formatDate(new Date(attributes.starts_at), timezone, "yyyy-MM-dd");
-                // elementEventTime.time = Utilities.formatDate(new Date(attributes.starts_at), "EST", "HH:mm a");
-                elementEventTime['Starts'] = Utilities.formatDate(new Date(attributes.starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'");
-                elementEventTime['Count Type'] = count;
-                elementEventTime['Count'] = counts[count]
-                dataArray.push(elementEventTime);
+        headcount(headcounts)
+        dataPushFunction()
+    })
 
-            }
-
-        }
-    }
-
-
-    // parsing the data from the sheet if we are requesting only updated info.
     if (onlyUpdated) {
         return compareWithSpreadsheet(dataArray, "EventTime ID", tab)
     } else {
@@ -232,12 +238,12 @@ async function getCheckIns(onlyUpdated, tab) {
         const locationData = (location) => {
             // one to one relationship from event_Time to location.
 
-            let {data} = location
+            let { data } = location
 
             if (data != null) {
                 let locationData = LOCATIONS.find((location) => location.id == data.id);
 
-                let {id, attributes: {name}} = locationData
+                let { id, attributes: { name } } = locationData
 
                 subLocation = {
                     "Location ID": id,

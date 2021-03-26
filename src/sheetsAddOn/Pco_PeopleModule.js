@@ -11,9 +11,9 @@ async function getCampuses() {
     let campusArray = [];
 
     for (const campus of campusApiCall) {
-        let attributes = campus.attributes;
+        let {attributes, id} = campus;
         let elementCampus = {}
-        elementCampus.id = campus.id;
+        elementCampus.id = id;
         elementCampus.name = attributes.name;
         campusArray.push(elementCampus);
     }
@@ -96,33 +96,6 @@ async function getLists() {
 }
 
 
-// we use the includes only for the relationship data. The other data is ignored
-
-// TODO - Need to redo this function to only query the lists. Right now it queries ALL lists and then only uses what's needed.
-// Current test time - syncing: 31860ms
-
-// Should this list of list IDs be stored in the user properties to be read from, or just read from the spreadsheet?
-// The API response alone takes 35 seconds.
-
-// Need to loop over this
-// https://api.planningcenteronline.com/people/v2/lists/1613461/people?fields[Person]=id
-
-/**
-
-Steps for new List Function:
-
-DONE - 1. Need to pull the lists that are currently on the spreadsheet
-DONE - 2. Identify which lists need to be updated based on the value from 'sync now'. Start a for loop based on these list IDs. Do not need to call the API again for campus / category as it already exists on the sheet.
-3. Push the URL `https://api.planningcenteronline.com/people/v2/lists/{id}` with the includes true = '/people?fields[Person]=id into the API call function. Most likely do not need to create a new function here
-4. Wait on that loop to finish. This will include JUST the people ID
-5. Map that ID to an array of IDs for that specific list.
-6. Run a for loop here that pushes this data into an array that'll be later pushed into the spreadsheet.
-
-
-
-**/
-
-
 async function getListsWithPeople(onlyUpdated, tab) {
 
     // returning the eitire list so we can use the attributes on the list.
@@ -132,7 +105,7 @@ async function getListsWithPeople(onlyUpdated, tab) {
             .filter(list => list["Sync This List"] == true )
             //.map(list => list['List ID'])
     }
-    
+
     let listPeopleArray = [];
 
     for(list of syncTheseLists()){
@@ -149,10 +122,6 @@ async function getListsWithPeople(onlyUpdated, tab) {
             listPeopleArray.push(personArray)
         })
     }
-
-    console.log(listPeopleArray.length)
-    console.log(listPeopleArray[0])
-
     return listPeopleArray
 
 
@@ -194,36 +163,32 @@ async function personDataCall(onlyUpdated, tab) {
     const apiCall = await pcoApiCall("https://api.planningcenteronline.com/people/v2/people", onlyUpdated, true, '&include=households,primary_campus');
 
     const CAMPUSES = apiCall.included.filter((e) => { if (e.type == "Campus" && apiCall.included.findIndex(t => (e.id === t.id)) == apiCall.included.indexOf(e)) { return e } })
-    const HOUSEHOLDS = apiCall.included.filter((e) => { if (e.type == "Household" && apiCall.included.findIndex(t => (e.id === t.id)) == apiCall.included.indexOf(e)) { return e } })
-
-    //const campusArray = await getCampuses();
-
 
 
     let newPeopleArray = [];
 
     if (apiCall.data.length > 0) {
         for (const element of apiCall.data) {
-            let attributes = element.attributes;
-            let relationships = element.relationships;
+
+            let {attributes, relationships, id} = element
+            let {birthdate, child, gender, grade, membership, status} = attributes
 
 
             let person = {
                 'Person ID': element.id,
-                "Birthday": attributes.birthdate,
-                "Age": getAge(attributes.birthdate),
-                "Is Child": attributes.child,
-                "Gender": attributes.gender,
-                "Grade": attributes.grade,
-                "Membership": attributes.membership,
-                "Status": attributes.status
+                "Birthday": birthdate,
+                "Age": getAge(birthdate),
+                "Is Child": child,
+                "Gender": gender,
+                "Grade": grade,
+                "Membership": membership,
+                "Status": status
             }
 
             let campusName = undefined;
 
             if (relationships.primary_campus.data != null) {
-                let campus = CAMPUSES.find((e) => e.id == relationships.primary_campus.data.id);
-                campusName = campus.attributes.name;
+                campusName = CAMPUSES.find((e) => e.id == relationships.primary_campus.data.id).attributes.name
             }
 
             Object.assign(person, { "Campus Name": campusName })

@@ -104,3 +104,9 @@ Fixed bug where Giving did not properly run
 - fullSync: 165533ms
 - fullSync: 148049ms
 - 
+
+
+Full sync, optimized lists calls, no lists enabled
+- fullSync: 127652ms
+- fullSync: 124405ms
+- 

@@ -145,6 +145,8 @@ function updateHeaders(tabInfo, additionalHeaders) {
     let ss = spreadsheet.getSheetByName(name);
     ss.getRange(1, 1, 1, headers[0].length).setValues(headers);
 
+    return headers
+
     // ss.setFrozenRows(1);
 }
 
@@ -167,15 +169,31 @@ function pushToSheet(tabInfo, data, additionalHeaders) {
 
         let output = [];
         if (ss.getLastRow() > 0 && ss.getLastColumn() > 0) {
+
+            // clearing the content of the spreadsheet
             ss.getRange(2, 1, ss.getLastRow(), ss.getLastColumn()).clearContent();
         }
 
-        updateHeaders(tabInfo, additionalHeaders);
+        const headers = updateHeaders(tabInfo, additionalHeaders)[0];
 
 
         if (data.length != 0) {
             //looping over the length of our data and turning it into an array that Google Sheets will accept.
+
+            // don't love this solution but this will map the array to be in the order of the header
+            data = data.map(element => {
+                let object = {}
+                headers.forEach(header => {
+                    object[header] = element[header]                    
+                })
+                return object
+            })
+
+
             for (i = 0; i < data.length; i++) {
+
+                // reorder data
+
                 output.push(Object.values(data[i]));
             }
 

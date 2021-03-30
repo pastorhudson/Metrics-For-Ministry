@@ -97,64 +97,46 @@ async function updateSpreadsheetFromSidebar() {
 
 }
 
+async function syncModule(tabInfo, getDataFunction, onlyUpdated, additionalHeaders){
+
+    const apiCall = await getDataFunction(onlyUpdated, tabInfo)
+
+    let {data, status} = apiCall
+
+    // updating the data with
+    if(tabInfo.name === 'Lists') {data = await updateListTab(data)}
+    let sheet_status = pushToSheet(tabInfo, data, additionalHeaders)
+    const {message: api_status, sync_total, type} = status
+
+    let object = {
+        api_status,
+        sheet_status,
+        type,
+        total_length: sync_total
+    }
+
+    return object
+}
+
 async function syncPeople(onlyUpdated = true) {
     let syncStateText = []
     const tabs = tabNamesReturn();
 
     const syncPeopleData = async (onlyUpdated,tabs) => {
-        let personData = await personDataCall(onlyUpdated, tabs.people.personTab)
-        let sheet_status = pushToSheet(tabs.people.personTab, personData.data)
-
-        const {status: {message: api_status, sync_total, type}} = personData
-
-        let object = {
-            api_status,
-            sheet_status,
-            type,
-            total_length: sync_total
-        }
-
+        let object = await syncModule(tabs.people.personTab, personDataCall, onlyUpdated)
         syncStateText.push({people: object});
-
     }
 
-
     const syncPeopleLists = async (onlyUpdated,tabs) => {
-        let apiCall = await getListsWithPeople(onlyUpdated, tabs.people.listPeopleTab)
-        let sheet_status = pushToSheet(tabs.people.listPeopleTab, apiCall.data)
-
-        const {status: {message: api_status, sync_total, type}} = apiCall
-
-        let object = {
-            api_status,
-            sheet_status,
-            type,
-            total_length: sync_total
-        }
-
+        let object = await syncModule(tabs.people.listPeopleTab, getListsWithPeople, onlyUpdated)
         syncStateText.push({listPeople: object});
     }
 
+    // need to have this properly use the getListsFunSheet function.
     const syncLists = async (onlyUpdated = false, tabs) => {
-
-        // setting only updated to false to return the entire data array
-
-        const apiCall = await getLists(onlyUpdated, tabs.people.listTab)
-        let sheet_status = pushToSheet(tabs.people.listTab, await updateListTab(apiCall.data))
+        let object = await syncModule(tabs.people.listTab, getLists, onlyUpdated)
         dataValidation(tabs.people.listTab.name)
-
-        const {status: {message: api_status, sync_total, type}} = apiCall
-
-        let object = {
-            api_status,
-            sheet_status,
-            type,
-            total_length: sync_total
-        }
-
         syncStateText.push({lists: object});
-
-
     }
 
 
@@ -170,21 +152,37 @@ async function syncPeople(onlyUpdated = true) {
 async function syncGiving(onlyUpdated = false) {
     const tabs = tabNamesReturn();
     let syncStateText = []
-    let giving = pushToSheet(tabs.giving.donationsTab, await getGivingDonations(onlyUpdated, tabs.giving.donationsTab))
-    syncStateText.push(`PCO Giving Donations: ${giving}`);
 
+
+    const syncDonations = async (onlyUpdated,tabs) => {
+        let object = await syncModule(tabs.giving.donationsTab, getGivingDonations, onlyUpdated)
+        syncStateText.push({donations: object});
+    }
+
+    await syncDonations(onlyUpdated, tabs)
+
+    console.log(syncStateText)
     return syncStateText;
 }
 
 async function syncCheckins(onlyUpdated = false) {
     let syncStateText = []
-    const tabs = tabNamesReturn();
+    const tabs = tabNamesReturn()
 
-    let headcounts = await pushToSheet(tabs.check_ins.headcountsTab, await getHeadcountsJoinedData(onlyUpdated, tabs.check_ins.headcountsTab))
-    syncStateText.push(`PCO Check in Headcounts: ${headcounts}`);
+    const syncHeadcounts = async (onlyUpdated,tabs) => {
+        let object = await syncModule(tabs.check_ins.headcountsTab, getHeadcountsJoinedData, onlyUpdated)
+        syncStateText.push({headcounts: object});
+    }
 
-    let checkins = await pushToSheet(tabs.check_ins.checkinsTab, await getCheckIns(onlyUpdated, tabs.check_ins.checkinsTab))
-    syncStateText.push(`PCO Check in Headcounts: ${checkins}`);
+    const syncCheckins = async (onlyUpdated,tabs) => {
+        let object = await syncModule(tabs.check_ins.checkinsTab, getCheckIns, onlyUpdated)
+        syncStateText.push({checkins: object});
+    }
+
+    await syncHeadcounts(onlyUpdated,tabs)
+    await syncCheckins(onlyUpdated,tabs)
+    
+    console.log(syncStateText)
 
     return syncStateText;
 }
@@ -192,13 +190,21 @@ async function syncCheckins(onlyUpdated = false) {
 async function syncGroups(onlyUpdated = false) {
 
     let syncStateText = []
-
     const tabs = tabNamesReturn()
-    let groupTab = tabs.groups.groupSummaryTab
-    let additionalHeaders = await getGroups_tagGroups(true)
-    let groups = await pushToSheet(groupTab, await getGroups(onlyUpdated, groupTab), additionalHeaders)
 
-    syncStateText.push(`PCO Groups: ${groups}`)
+    const syncGroups = async (onlyUpdated,tabs) => {
+        let additionalHeaders = await getGroups_tagGroups(true)
+        let object = await syncModule(tabs.groups.groupSummaryTab, getGroups, onlyUpdated, additionalHeaders)
+        syncStateText.push({groups: object});
+    }
+    // let groupTab = tabs.groups.groupSummaryTab
+    // let additionalHeaders = await getGroups_tagGroups(true)
+    // let groups = await pushToSheet(groupTab, await getGroups(onlyUpdated, groupTab), additionalHeaders)
+
+    // syncStateText.push(`PCO Groups: ${groups}`)
+    await syncGroups(onlyUpdated, tabs)
+
+    console.log(syncStateText)
 
     return syncStateText;
 

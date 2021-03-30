@@ -284,6 +284,7 @@ function tabNamesReturn() {
                 "name": "Lists",
                 "headers": [
                     "List ID",
+                    "Updated At",
                     "List Description",
                     "List Name",
                     "Total People",

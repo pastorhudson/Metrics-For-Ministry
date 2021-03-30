@@ -54,12 +54,14 @@ async function getGivingDonations(onlyUpdated, tab) {
      */
 
     const timezone = getUserProperty('time_zone')
-
-    const FUNDS = await getGivingFunds();
-    const PAYMENT_SOURCES = await getGivingPaymentSources();
-
     const donationData = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/donations", onlyUpdated, true, "&include=designations,labels");
 
+    if(donationData.length == 0) {
+        console.log('Giving --- Nothing to Sync')
+        return 'Nothing to sync'
+    }
+    const FUNDS = await getGivingFunds();
+    const PAYMENT_SOURCES = await getGivingPaymentSources();
     // const includedArray = Array.from(new Set(donationData.included.map(a => a.id)))
     //     .map(id => donationData.included.find(a => a.id === id))
 

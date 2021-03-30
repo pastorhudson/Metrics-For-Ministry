@@ -28,6 +28,12 @@ async function getGroups(onlyUpdated, tab) {
     onlyUpdated = false;
 
     const apiCall = await pcoApiCall("https://api.planningcenteronline.com/groups/v2/groups", onlyUpdated, true, "&include=group_type&where[archive_status]=include");
+
+    if(apiCall.length == 0) {
+        console.log('Groups --- Nothing to Sync')
+        return 'Nothing to sync'
+    }
+
     let dataArray = []
     const GROUPS = apiCall.data;
 

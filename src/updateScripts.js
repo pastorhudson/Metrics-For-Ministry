@@ -66,7 +66,31 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
             addTriggers();
             addGroupsSheet();
             syncGroups();
-            // most recent version - v1.3.0
+
+            currentVersion = 'v1.3.0';
+    
+            setUserProperty('currentVersion', currentVersion);
+            return updateScripts(currentVersion, oldVersion, true);
+
+        } catch (error){
+            console.log(`Failed to update current version. error: ${error}`)
+        }
+
+    } else if(currentVersion == "v1.3.0") {
+        try {
+
+            const fixDataValidationForLists = () => {
+
+                // tested this and works.
+                const tabs = tabNamesReturn();
+                clearDataValidation(tabs.people.listTab.name)
+            }
+            
+
+            fixDataValidationForLists()
+
+            // v1.4.0
+
             console.log("Updated to the current version");
 
             currentVersion = mostRecentVersion;

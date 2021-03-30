@@ -117,7 +117,8 @@ async function pcoApiCall(url, onlyUpdated, include, includeURL) {
         data = data.concat(firstFetchBody.data)
         if (include) { included = included.concat(firstFetchBody.included) }
 
-        if (Array.isArray(firstFetchBody.data)) {
+        // if (Array.isArray(firstFetchBody.data)) {
+        if (firstFetchBody.data.length != totalCount) {
 
             let callPerChunk = fetchedData.rateLimit - 10
             let numberOfPromiseArrays = Math.ceil((totalCount / 100) / callPerChunk)
@@ -177,32 +178,21 @@ async function pcoApiCall(url, onlyUpdated, include, includeURL) {
 
 
 function compareWithSpreadsheet(apiCallData, idAttribute, tabInfo) {
-    let spreadsheetData = getSpreadsheetDataByName(tabInfo.name);
 
-    // removing the existing instance of that person/value
-    for (const element of apiCallData) {
+    const spreadsheetData = getSpreadsheetDataByName(tabInfo.name)
+    let dataArray = [...spreadsheetData]
 
-        // see if a person exists
-        // spreadsheetData.forEach(function(e) {if(e['Person ID'] == person['Person ID']){console.log(e)}});
-
-        spreadsheetData.forEach(function (e) {
-            if (e[idAttribute] == element[idAttribute]) {
-                let index = spreadsheetData.indexOf(e);
-                spreadsheetData.splice(index, 1)
-                // console.log('spliced the data, yo')
+    apiCallData.forEach(api => {
+        dataArray.find((element, index) => {
+            if (element[idAttribute] === api[idAttribute]) {
+                dataArray.splice(index, 1, api)
+            } else {
+                dataArray.push(api)
             }
 
         })
 
-        // verify the person does not exist anymore.
-        // spreadsheetData.forEach(function(e) {if(e['Person ID'] == person['Person ID']){console.log(e)}});
-
-    }
-    //console.log(apiCallData);
-
-    let dataArray = [];
-    dataArray.push(...apiCallData);
-    dataArray.push(...spreadsheetData);
+    })
 
     return dataArray
 }

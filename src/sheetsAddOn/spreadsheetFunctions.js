@@ -135,12 +135,12 @@ function createSheet(tabInfo) {
         .setWarningOnly(true)
 }
 
-function updateHeaders(tabInfo,additionalHeaders) {
+function updateHeaders(tabInfo, additionalHeaders) {
     const spreadsheet = getDefaultSpreadsheetId();
     let name = tabInfo.name
     let headers = [tabInfo.headers]
 
-    if(additionalHeaders != null){headers = [[...tabInfo.headers, ...additionalHeaders]]}
+    if (additionalHeaders != null) { headers = [[...tabInfo.headers, ...additionalHeaders]] }
 
     let ss = spreadsheet.getSheetByName(name);
     ss.getRange(1, 1, 1, headers[0].length).setValues(headers);
@@ -153,32 +153,32 @@ function pushToSheet(tabInfo, data, additionalHeaders) {
 
     //console.log(additionalHeaders)
 
-    try{
+    try {
         const ss = getDefaultSpreadsheetId().getSheetByName(tabInfo.name);
 
         var protections = ss.getProtections(SpreadsheetApp.ProtectionType.RANGE);
-    
+
         for (var i = 0; i < protections.length; i++) {
             var protection = protections[i];
             if (protection.canEdit()) {
                 protection.remove();
             }
         }
-    
+
         let output = [];
-        if(ss.getLastRow() > 0 && ss.getLastColumn() > 0 ){
+        if (ss.getLastRow() > 0 && ss.getLastColumn() > 0) {
             ss.getRange(2, 1, ss.getLastRow(), ss.getLastColumn()).clearContent();
         }
-    
+
         updateHeaders(tabInfo, additionalHeaders);
-        
-    
+
+
         if (data.length != 0) {
             //looping over the length of our data and turning it into an array that Google Sheets will accept.
             for (i = 0; i < data.length; i++) {
                 output.push(Object.values(data[i]));
             }
-    
+
             //setting the rows / columns based on the total length of our data once done.
 
             //setting the formatting here causes a bug where it breaks the check boxes.
@@ -189,16 +189,16 @@ function pushToSheet(tabInfo, data, additionalHeaders) {
                 .protect()
                 .setWarningOnly(true)
         }
-    
+
         removeEmptyRows(tabInfo.name);
         removeEmptyColumns(tabInfo.name);
         resizeColumns(tabInfo.name);
         return "sync successful"
-    } catch(err){
+    } catch (err) {
         console.log(err);
         return `sync Failed. Reason - ${err}`
     }
-    
+
 }
 
 function removeEmptyRows(tab) {
@@ -245,6 +245,13 @@ function dataValidation(tab) {
     cell.setDataValidation(rule);
 }
 
+function clearDataValidation(tab) {
+    const spreadsheet = getDefaultSpreadsheetId()
+    const ss = spreadsheet.getSheetByName(tab)
+    ss.getRange(1, 1, ss.getLastRow(), ss.getLastColumn()).setDataValidation(null)
+
+}
+
 
 
 
@@ -263,40 +270,24 @@ function dataValidation(tab) {
  * @description - This function is responsible for taking the user input from the ListTab on the spreadsheet, adding if it should be synced, and updating the list tab. This
  *      information will then feed into the listPeopleTab
  */
-async function updateListTab() {
+async function updateListTab(listApiCall) {
     const tabs = tabNamesReturn();
-    let listApiCall = await getLists();
+
     let listSpreadsheetData = getSpreadsheetDataByName(tabs.people.listTab.name);
     let listArray = [];
 
     //console.log(listSpreadsheetData.length)
 
-    if(listSpreadsheetData.length > 0){
-        for (const list of listApiCall) {
-            const syncThisList = listSpreadsheetData.filter(function (spreadsheetList) {
-                if (spreadsheetList["List ID"] == list['List ID']) {
-                    return spreadsheetList
-                }
-            });
-        
-            if (syncThisList.length > 0) {
-                let syncList = syncThisList[0]["Sync This List"]
-                list["listSync"] = syncList;
-            } else {
-                let syncList = false;
-                list["listSync"] = syncList;
+    if (listSpreadsheetData.length > 0) {
 
-            }
-    
-    
+        listApiCall.forEach(list => {
+            const syncThisList = listSpreadsheetData.find(spreadsheetList => spreadsheetList["List ID"] == list['List ID']);
+            list["Sync This List"] = (syncThisList != null) ? syncThisList["Sync This List"] : false;
             listArray.push(list);
-        }
-        pushToSheet(tabs.people.listTab, listArray);
-    } else {
-        pushToSheet(tabs.people.listTab, listApiCall);
+        })
+
+
     }
-    
-    dataValidation(tabs.people.listTab.name)
 
     return listArray;
 }

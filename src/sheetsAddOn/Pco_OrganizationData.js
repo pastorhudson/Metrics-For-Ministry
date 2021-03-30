@@ -1,12 +1,14 @@
 async function getOrgData(){
 
     let orgApiCall = await pcoApiOrgCall("https://api.planningcenteronline.com/people/v2", false, false, '');
+
+    const {attributes: {date_format, name, time_zone}} = orgApiCall
     // console.log(orgApiCall)
 
 
-    setUserProperty('date_format',orgApiCall.attributes.date_format);
-    setUserProperty('org_name',orgApiCall.attributes.name);
-    setUserProperty('time_zone',orgApiCall.attributes.time_zone);
+    setUserProperty('date_format',date_format);
+    setUserProperty('org_name',name);
+    setUserProperty('time_zone',time_zone);
 
 
 

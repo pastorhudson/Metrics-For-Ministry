@@ -97,19 +97,73 @@ async function updateSpreadsheetFromSidebar() {
 
 }
 
-async function syncPeople(onlyUpdated = false) {
-    console.time('peopleTimer')
+async function syncPeople(onlyUpdated = true) {
     let syncStateText = []
     const tabs = tabNamesReturn();
-    let people = pushToSheet(tabs.people.personTab, await personDataCall(onlyUpdated, tabs.people.personTab))
-    syncStateText.push(`PCO People: ${people}`);
 
-    await updateListTab();
+    const syncPeopleData = async (onlyUpdated,tabs) => {
+        let personData = await personDataCall(onlyUpdated, tabs.people.personTab)
+        let sheet_status = pushToSheet(tabs.people.personTab, personData.data)
 
-    let lists = pushToSheet(tabs.people.listPeopleTab, await getListsWithPeople(false, tabs.people.listPeopleTab))
-    syncStateText.push(`PCO People Lists: ${lists}`);
+        const {status: {message: api_status, sync_total, type}} = personData
 
-    console.timeEnd('peopleTimer')
+        let object = {
+            api_status,
+            sheet_status,
+            type,
+            total_length: sync_total
+        }
+
+        syncStateText.push({people: object});
+
+    }
+
+
+    const syncPeopleLists = async (onlyUpdated,tabs) => {
+        let apiCall = await getListsWithPeople(onlyUpdated, tabs.people.listPeopleTab)
+        let sheet_status = pushToSheet(tabs.people.listPeopleTab, apiCall.data)
+
+        const {status: {message: api_status, sync_total, type}} = apiCall
+
+        let object = {
+            api_status,
+            sheet_status,
+            type,
+            total_length: sync_total
+        }
+
+        syncStateText.push({listPeople: object});
+    }
+
+    const syncLists = async (onlyUpdated = false, tabs) => {
+
+        // setting only updated to false to return the entire data array
+
+        const apiCall = await getLists(onlyUpdated, tabs.people.listTab)
+        let sheet_status = pushToSheet(tabs.people.listTab, await updateListTab(apiCall.data))
+        dataValidation(tabs.people.listTab.name)
+
+        const {status: {message: api_status, sync_total, type}} = apiCall
+
+        let object = {
+            api_status,
+            sheet_status,
+            type,
+            total_length: sync_total
+        }
+
+        syncStateText.push({lists: object});
+
+
+    }
+
+
+    await syncPeopleData(onlyUpdated,tabs);
+    await syncLists(undefined, tabs)
+    await syncPeopleLists(onlyUpdated, tabs)
+    
+    console.log(syncStateText)
+
     return syncStateText;
 }
 
@@ -150,8 +204,6 @@ async function syncGroups(onlyUpdated = false) {
 
 }
 
-// todo - Look at grouping the Groups requests together to speed them up.
-// todo - clean up the groups sync in the update function.
 async function updateSpreadsheet(onlyUpdated) {
     let syncStatus = getUserProperty('syncStatus')
 
@@ -166,7 +218,7 @@ async function updateSpreadsheet(onlyUpdated) {
             if (modules.people) {
                 await syncPeople(onlyUpdated)
                     .then(text => {
-                        syncStateText.concat(text)
+                        syncStateText.push(...text)
                         // TODO - Need to make this work with the promises
                         syncPercentComplete(30);
 
@@ -176,7 +228,7 @@ async function updateSpreadsheet(onlyUpdated) {
                 await syncGiving(onlyUpdated)
                     .then(text => {
                         // TODO - Need to make this work with the promises
-                        syncStateText.concat(text)
+                        syncStateText.push(...text)
                     })
 
 
@@ -185,7 +237,7 @@ async function updateSpreadsheet(onlyUpdated) {
                 await syncCheckins(onlyUpdated)
                     .then(text => {
                         // TODO - Need to make this work with the promises
-                        syncStateText.concat(text)
+                        syncStateText.push(...text)
                     })
 
             }
@@ -193,7 +245,7 @@ async function updateSpreadsheet(onlyUpdated) {
                 await syncGroups(onlyUpdated)
                     .then(text => {
                         // TODO - Need to make this work with the promises
-                        syncStateText.concat(text)
+                        syncStateText.push(...text)
                     })
             }
 

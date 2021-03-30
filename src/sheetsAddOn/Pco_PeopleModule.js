@@ -40,12 +40,10 @@ async function getListCategories() {
 
 async function getLists(onlyUpdated = false, tab) {
 
-    console.log(onlyUpdated)
-
     let data = []
     const id_attribute = "List ID"
 
-    
+
 
     try {
         const apiCall = await pcoApiCall("https://api.planningcenteronline.com/people/v2/lists", onlyUpdated, true, "&include=campus,category");
@@ -94,7 +92,7 @@ async function getLists(onlyUpdated = false, tab) {
         }
         
     } catch (error){
-        statusReturn(data, `Error: ${error}`, onlyUpdated, tab, id_attribute)
+        return statusReturn(data, `Error: ${error}`, onlyUpdated, tab, id_attribute)
     }
     
     return statusReturn(data, `Sync Successful`, onlyUpdated, tab, id_attribute)
@@ -132,7 +130,7 @@ async function getListsWithPeople(onlyUpdated, tab) {
             })
         }
     } catch (error) {
-        statusReturn(data, `Error: ${error}`, onlyUpdated, tab, id_attribute)
+       return statusReturn(data, `Error: ${error}`, onlyUpdated, tab, id_attribute)
     }
 
     return statusReturn(data, `Sync Successful`, onlyUpdated, tab, id_attribute)
@@ -225,18 +223,14 @@ async function personDataCall(onlyUpdated, tab) {
 
             }
 
-            status = 'Sync Successful'
         }
     } catch (error) {
-        statusReturn(data, `Error: ${error}`, onlyUpdated, tab, id_attribute)
+        return statusReturn(data, `Error: ${error}`, onlyUpdated, tab, id_attribute)
     }
 
-    // parsing the data from the sheet if we are requesting only updated info.
-    if (onlyUpdated) {
-        return statusReturn(data, `Sync Successful`, onlyUpdated, tab, id_attribute)
-    } else {
-        return statusReturn(data, `Sync Successful`, onlyUpdated, tab, id_attribute)
-    }
+
+    return statusReturn(data, `Sync Successful`, onlyUpdated, tab, id_attribute)
+    
 
 }
 

@@ -53,81 +53,80 @@ async function getHeadcountsJoinedData(onlyUpdated, tab) {
      * @return {dataArray} - filtered array of the event data
      */
 
-    // headcounts now supports the updatedAt parameter.
-    //onlyUpdated = false;
+    let data = [];
+    const id_attribute = "EventTime ID"
 
-    const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/event_times", onlyUpdated, true, "&include=event,headcounts");
+    try {
+        const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/event_times", onlyUpdated, true, "&include=event,headcounts");
 
-    if(apiCall.length == 0) {
-        console.log('Headcounts --- Nothing to Sync')
-        return 'Nothing to sync'
-    }
+        if (apiCall.length == 0) {
+            console.log('Headcounts --- Nothing to Sync')
+        } else {
+            const EVENTS = apiCall.included.filter((e) => { if (e.type == "Event") { return e } });
+            const HEADCOUNT_API = apiCall.included.filter((e) => { if (e.type == "Headcount") { return e } });
 
-    const EVENTS = apiCall.included.filter((e) => { if (e.type == "Event") { return e } });
-    const HEADCOUNT_API = apiCall.included.filter((e) => { if (e.type == "Headcount") { return e } });
-
-    let dataArray = [];
-
-    apiCall.data.forEach(eventTime => {
-        const { attributes, relationships, id: EventTimeID } = eventTime
-        const { guest_count, regular_count, volunteer_count, name, starts_at } = attributes
-        const { headcounts, event } = relationships
+            apiCall.data.forEach(eventTime => {
+                const { attributes, relationships, id: EventTimeID } = eventTime
+                const { guest_count, regular_count, volunteer_count, name, starts_at } = attributes
+                const { headcounts, event } = relationships
 
 
-        let eventData = EVENTS.find(e => e.id === event.data.id);
+                let eventData = EVENTS.find(e => e.id === event.data.id);
 
-        let counts = { guest_count, regular_count, volunteer_count }
+                let counts = { guest_count, regular_count, volunteer_count }
 
-        const headcount = (headcounts, headcountObject = {}) => {
-            let { data } = headcounts
-            //let headcountObject = {}
-            if (data.length > 0) {
-                for (const headcount of data) {
-                    let head = HEADCOUNT_API.find(head => head.id === headcount.id)
-                    let { attendanceTypeName, totalCount } = head
-                    headcountObject[attendanceTypeName] = totalCount
-                }
-            }
-            Object.assign(counts, headcountObject)
-        }
-
-        const dataPushFunction = () => {
-            // takes the count object and creates an object for each then pushes this to the array.
-            // no input required here.
-            const { id: EventID, attributes: { name: EventName, archived_at, frequency } } = eventData
-
-            for (const count in counts) {
-                let amount = counts[count]
-                if (amount > 0) {
-                    let elementEventTime = {
-                        'EventTime ID': EventTimeID,
-                        'Event ID': EventID,
-                        'Event Name': EventName,
-                        'Archived At': archived_at,
-                        'Event Frequency': frequency,
-                        'Event Time Name': (name == null || name == "") ? Utilities.formatDate(new Date(starts_at), timezone, "HH:mm a") : name,
-                        'Starts': Utilities.formatDate(new Date(starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'"),
-                        'Count Type': count,
-                        'Count': amount
+                const headcount = (headcounts, headcountObject = {}) => {
+                    let { data } = headcounts
+                    //let headcountObject = {}
+                    if (data.length > 0) {
+                        for (const headcount of data) {
+                            let head = HEADCOUNT_API.find(head => head.id === headcount.id)
+                            let { attendanceTypeName, totalCount } = head
+                            headcountObject[attendanceTypeName] = totalCount
+                        }
                     }
-
-                    dataArray.push(elementEventTime);
-
+                    Object.assign(counts, headcountObject)
                 }
 
-            }
+                const dataPushFunction = () => {
+                    // takes the count object and creates an object for each then pushes this to the array.
+                    // no input required here.
+                    const { id: EventID, attributes: { name: EventName, archived_at, frequency } } = eventData
+
+                    for (const count in counts) {
+                        let amount = counts[count]
+                        if (amount > 0) {
+                            let elementEventTime = {
+                                'EventTime ID': EventTimeID,
+                                'Event ID': EventID,
+                                'Event Name': EventName,
+                                'Archived At': archived_at,
+                                'Event Frequency': frequency,
+                                'Event Time Name': (name == null || name == "") ? Utilities.formatDate(new Date(starts_at), timezone, "HH:mm a") : name,
+                                'Starts': Utilities.formatDate(new Date(starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'"),
+                                'Count Type': count,
+                                'Count': amount
+                            }
+
+                            data.push(elementEventTime);
+
+                        }
+
+                    }
+                }
+
+                headcount(headcounts)
+                dataPushFunction()
+            })
+
         }
 
-        headcount(headcounts)
-        dataPushFunction()
-    })
 
-    if (onlyUpdated) {
-        return compareWithSpreadsheet(dataArray, "EventTime ID", tab)
-    } else {
-        return dataArray
+    } catch (error) {
+        return statusReturn(data, `Error: ${error}`, onlyUpdated, tab, id_attribute)
     }
 
+    return statusReturn(data, `Sync Successful`, onlyUpdated, tab, id_attribute)
 }
 
 
@@ -136,140 +135,143 @@ async function getCheckIns(onlyUpdated, tab) {
     /**
      * @return {dataArray} - filtered array of the headcount data
      */
+    let data = [];
+    const id_attribute = "Checkin ID"
 
-    const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/check_ins", onlyUpdated, true, "&include=event,locations,person,event_times,check_in_times");
-
-    if(apiCall.length == 0) {
-        console.log('Checkins --- Nothing to Sync')
-        return 'Nothing to sync'
-    }
-
-    let dataArray = []
-    const CHECK_INS = apiCall.data;
-    const LOCATIONS = apiCall.included.filter((e) => { if (e.type == "Location") { return e } });
-    const EVENT_TIMES = apiCall.included.filter((e) => { if (e.type == "EventTime") { return e } });
-    const EVENTS = apiCall.included.filter((e) => { if (e.type == "Event") { return e } });
-    const CHECK_IN_TIMES = apiCall.included.filter((e) => { if (e.type == "CheckInTime") { return e } });
+    try {
+        const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/check_ins", onlyUpdated, true, "&include=event,locations,person,event_times,check_in_times");
 
 
-    for (checkInTime of CHECK_IN_TIMES) {
+        if (apiCall.length == 0) {
+            console.log('Checkins --- Nothing to Sync')
+        } else {
+            const CHECK_INS = apiCall.data;
+            const LOCATIONS = apiCall.included.filter((e) => { if (e.type == "Location") { return e } });
+            const EVENT_TIMES = apiCall.included.filter((e) => { if (e.type == "EventTime") { return e } });
+            const EVENTS = apiCall.included.filter((e) => { if (e.type == "Event") { return e } });
+            const CHECK_IN_TIMES = apiCall.included.filter((e) => { if (e.type == "CheckInTime") { return e } });
 
-        let { relationships } = checkInTime;
 
-        let { check_in, event_time, location } = relationships
+            for (checkInTime of CHECK_IN_TIMES) {
 
-        let subElement = {}
+                let { relationships } = checkInTime;
 
-        const checkIn = (check_in) => {
+                let { check_in, event_time, location } = relationships
 
-            // checkins to check_in_times is a one to one relationship
-            let checkin = CHECK_INS.find((e) => check_in.data.id == e.id)
+                let subElement = {}
 
-            let { relationships } = checkin
+                const checkIn = (check_in) => {
 
-            let { event } = relationships
-            //let attributes = checkin.attributes;
-            let personID = (relationships.person.data != null) ? relationships.person.data.id : undefined;
-            let checkinElement = {
-                "Checkin ID": checkin.id,
-                "Person ID": personID,
-            }
+                    // checkins to check_in_times is a one to one relationship
+                    let checkin = CHECK_INS.find((e) => check_in.data.id == e.id)
 
-            Object.assign(subElement, checkinElement)
+                    let { relationships } = checkin
 
-            // checkins to events is a one to one relationship. Not accounting for multiple returned.
-            //  using the checkin data and NOT check_in_times because event data is not stored in the check_in_times.
-
-            const eventData = (event) => {
-                let subEvent;
-                if (event.data != null) {
-                    let eventData = EVENTS.find(e => e.id == event.data.id)
-                    //console.log(eventData, EVENTS)
-                    let { attributes, id } = eventData
-                    let { name, archived_at, frequency } = attributes
-
-                    subEvent = {
-                        "Event ID": id,
-                        "Event Name": name,
-                        "Archived At": archived_at,
-                        "Event Frequency": frequency
+                    let { event } = relationships
+                    //let attributes = checkin.attributes;
+                    let personID = (relationships.person.data != null) ? relationships.person.data.id : undefined;
+                    let checkinElement = {
+                        "Checkin ID": checkin.id,
+                        "Person ID": personID,
                     }
-                } else {
-                    subEvent = {
-                        "Event Name": null,
-                        "Archived At": null,
-                        "Event Frequency": null
+
+                    Object.assign(subElement, checkinElement)
+
+                    // checkins to events is a one to one relationship. Not accounting for multiple returned.
+                    //  using the checkin data and NOT check_in_times because event data is not stored in the check_in_times.
+
+                    const eventData = (event) => {
+                        let subEvent;
+                        if (event.data != null) {
+                            let eventData = EVENTS.find(e => e.id == event.data.id)
+                            //console.log(eventData, EVENTS)
+                            let { attributes, id } = eventData
+                            let { name, archived_at, frequency } = attributes
+
+                            subEvent = {
+                                "Event ID": id,
+                                "Event Name": name,
+                                "Archived At": archived_at,
+                                "Event Frequency": frequency
+                            }
+                        } else {
+                            subEvent = {
+                                "Event Name": null,
+                                "Archived At": null,
+                                "Event Frequency": null
+                            }
+                        }
+
+                        return subEvent
                     }
+
+                    Object.assign(subElement, eventData(event))
+
                 }
 
-                return subEvent
+                const eventTime = (event_time) => {
+                    let { data } = event_time
+                    if (data != null) {
+
+                        let eventTimeData = EVENT_TIMES.find(e => e.id == data.id);
+
+                        let { attributes: { name, starts_at }, id } = eventTimeData;
+
+                        let eventTimeName = (name == null || name == "") ? Utilities.formatDate(new Date(starts_at), timezone, "HH:mm a") : name;
+                        let starts = Utilities.formatDate(new Date(starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+                        // console.log(eventTimeData)
+
+                        subEventTime = {
+                            "Event Time ID": id,
+                            "Event Time Name": eventTimeName,
+                            "Starts": starts,
+                        }
+
+                        Object.assign(subElement, subEventTime)
+                    }
+
+                }
+
+                const locationData = (location) => {
+                    // one to one relationship from event_Time to location.
+
+                    let { data } = location
+
+                    if (data != null) {
+                        let locationData = LOCATIONS.find((location) => location.id == data.id);
+
+                        let { id, attributes: { name } } = locationData
+
+                        subLocation = {
+                            "Location ID": id,
+                            "Location Name": name,
+                        }
+
+                    } else {
+                        subLocation = {
+                            "Location ID": null,
+                            "Location Name": null,
+                        }
+                    }
+                    Object.assign(subElement, subLocation);
+
+
+                }
+
+                checkIn(check_in)
+                eventTime(event_time)
+                locationData(location)
+                data.push(subElement)
             }
 
-            Object.assign(subElement, eventData(event))
 
         }
 
-        const eventTime = (event_time) => {
-            let { data } = event_time
-            if (data != null) {
-
-                let eventTimeData = EVENT_TIMES.find(e => e.id == data.id);
-
-                let { attributes: { name, starts_at }, id } = eventTimeData;
-
-                let eventTimeName = (name == null || name == "") ? Utilities.formatDate(new Date(starts_at), timezone, "HH:mm a") : name;
-                let starts = Utilities.formatDate(new Date(starts_at), "UTC", "yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-                // console.log(eventTimeData)
-
-                subEventTime = {
-                    "Event Time ID": id,
-                    "Event Time Name": eventTimeName,
-                    "Starts": starts,
-                }
-
-                Object.assign(subElement, subEventTime)
-            }
-
-        }
-
-        const locationData = (location) => {
-            // one to one relationship from event_Time to location.
-
-            let { data } = location
-
-            if (data != null) {
-                let locationData = LOCATIONS.find((location) => location.id == data.id);
-
-                let { id, attributes: { name } } = locationData
-
-                subLocation = {
-                    "Location ID": id,
-                    "Location Name": name,
-                }
-
-            } else {
-                subLocation = {
-                    "Location ID": null,
-                    "Location Name": null,
-                }
-            }
-            Object.assign(subElement, subLocation);
-
-
-        }
-
-        checkIn(check_in)
-        eventTime(event_time)
-        locationData(location)
-        dataArray.push(subElement)
+    } catch (error) {
+        return statusReturn(data, `Error: ${error}`, onlyUpdated, tab, id_attribute)
     }
+    return statusReturn(data, `Sync Successful`, onlyUpdated, tab, id_attribute)
 
-
-    if (onlyUpdated) {
-        return compareWithSpreadsheet(dataArray, "Checkin ID", tab)
-    } else {
-        return dataArray
-    }
 
 }

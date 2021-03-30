@@ -34,6 +34,7 @@ Improvements
 - Updated the API calls to now sync on average 40% faster
 - Fixed the PCO List People call to now only require the lists in which have been selected
 - Updated the people call to also loop over the list array for people. This adds time to the sync but is more future proof.
+- Added the 'updated_at' column in the lists call.
 
 ### Current Stats
 

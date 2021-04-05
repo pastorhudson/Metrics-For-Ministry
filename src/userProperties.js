@@ -64,9 +64,7 @@ function setUserProperty(property, propertyValue) {
 
 function getUserProperty(property) {
 
-    var returnUserProperty = PropertiesService.getUserProperties().getProperty(
-        property
-    );
+    var returnUserProperty = PropertiesService.getUserProperties().getProperty(property);
     return returnUserProperty;
 
 
@@ -131,12 +129,15 @@ function getDefaultSpreadsheetId() {
 
 
 function syncPercentComplete(percent) {
-    if (percent == undefined) {
-        let amount = getUserProperty('syncPercentComplete')
-        return +amount
-    } else {
-        setUserProperty('syncPercentComplete', percent);
+    let percentComplete = +getUserProperty('syncPercentComplete')
 
+    if (percent == undefined) {
+        return +amount
+    } else if (percent != 0) {
+        percentComplete = percent + percentComplete
+        setUserProperty('syncPercentComplete', +percentComplete);
+    } else {
+        setUserProperty('syncPercentComplete', '0');
     }
 
 

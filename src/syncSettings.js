@@ -49,16 +49,19 @@ async function triggerSyncDaily() {
         await updateScripts();
         userData();
 
-        if (syncCount == 5) {
+        if (syncCount >= 5) {
             await resetFullSyncStatus();
             setUserProperty('syncCount', '0')
+        } else {
+            syncCount++;
+            setUserProperty('syncCount', syncCount)
         }
+
         let updatedOnlySync = getFullSyncStatus();
         console.log(updatedOnlySync);
         await getOrgData();
         await updateSpreadsheet(updatedOnlySync);
-        syncCount++;
-        setUserProperty('syncCount', syncCount)
+
 
     } else {
         console.log('Trigger Sync Daily: The user does not have access.');
@@ -87,7 +90,8 @@ async function updateSpreadsheetFromSidebar() {
         const updateResponse = await updateSpreadsheet(updatedOnlySync);
 
         if (updateResponse != 'success') {
-            sheetsUiError('An Error occured while trying to sync', updateResponse.text)
+            console.log(updateResponse.text)
+            sheetsUiError('An Error occured while trying to sync', JSON.stringify(updateResponse.text))
         }
 
 
@@ -97,16 +101,16 @@ async function updateSpreadsheetFromSidebar() {
 
 }
 
-async function syncModule(tabInfo, getDataFunction, onlyUpdated, additionalHeaders){
+async function syncModule(tabInfo, getDataFunction, onlyUpdated, additionalHeaders) {
 
     const apiCall = await getDataFunction(onlyUpdated, tabInfo)
 
-    let {data, status} = apiCall
+    let { data, status } = apiCall
 
     // updating the data with
-    if(tabInfo.name === 'Lists') {data = await updateListTab(data)}
+    if (tabInfo.name === 'Lists') { data = await updateListTab(data) }
     let sheet_status = pushToSheet(tabInfo, data, additionalHeaders)
-    const {message: api_status, sync_total, type} = status
+    const { message: api_status, sync_total, type } = status
 
     let object = {
         api_status,
@@ -119,31 +123,31 @@ async function syncModule(tabInfo, getDataFunction, onlyUpdated, additionalHeade
 }
 
 async function syncPeople(onlyUpdated = true) {
-    let syncStateText = []
+    let syncStateText = {}
     const tabs = tabNamesReturn();
 
-    const syncPeopleData = async (onlyUpdated,tabs) => {
+    const syncPeopleData = async (onlyUpdated, tabs) => {
         let object = await syncModule(tabs.people.personTab, personDataCall, onlyUpdated)
-        syncStateText.push({people: object});
+        Object.assign(syncStateText, { people: object })
     }
 
-    const syncPeopleLists = async (onlyUpdated,tabs) => {
+    const syncPeopleLists = async (onlyUpdated, tabs) => {
         let object = await syncModule(tabs.people.listPeopleTab, getListsWithPeople, onlyUpdated)
-        syncStateText.push({listPeople: object});
+        Object.assign(syncStateText, { listPeople: object })
     }
 
     // need to have this properly use the getListsFunSheet function.
     const syncLists = async (onlyUpdated = false, tabs) => {
         let object = await syncModule(tabs.people.listTab, getLists, onlyUpdated)
         dataValidation(tabs.people.listTab.name)
-        syncStateText.push({lists: object});
+        Object.assign(syncStateText, { lists: object })
     }
 
 
-    await syncPeopleData(onlyUpdated,tabs);
+    await syncPeopleData(onlyUpdated, tabs);
     await syncLists(undefined, tabs)
     await syncPeopleLists(onlyUpdated, tabs)
-    
+
     console.log(syncStateText)
 
     return syncStateText;
@@ -151,12 +155,12 @@ async function syncPeople(onlyUpdated = true) {
 
 async function syncGiving(onlyUpdated = false) {
     const tabs = tabNamesReturn();
-    let syncStateText = []
+    let syncStateText = {}
 
 
-    const syncDonations = async (onlyUpdated,tabs) => {
+    const syncDonations = async (onlyUpdated, tabs) => {
         let object = await syncModule(tabs.giving.donationsTab, getGivingDonations, onlyUpdated)
-        syncStateText.push({donations: object});
+        Object.assign(syncStateText, { donations: object })
     }
 
     await syncDonations(onlyUpdated, tabs)
@@ -166,22 +170,23 @@ async function syncGiving(onlyUpdated = false) {
 }
 
 async function syncCheckins(onlyUpdated = false) {
-    let syncStateText = []
+    let syncStateText = {}
     const tabs = tabNamesReturn()
 
-    const syncHeadcounts = async (onlyUpdated,tabs) => {
+    const syncHeadcounts = async (onlyUpdated, tabs) => {
         let object = await syncModule(tabs.check_ins.headcountsTab, getHeadcountsJoinedData, onlyUpdated)
-        syncStateText.push({headcounts: object});
+        Object.assign(syncStateText, { headcounts: object })
     }
 
-    const syncCheckins = async (onlyUpdated,tabs) => {
+    const syncCheckins = async (onlyUpdated, tabs) => {
         let object = await syncModule(tabs.check_ins.checkinsTab, getCheckIns, onlyUpdated)
-        syncStateText.push({checkins: object});
+        Object.assign(syncStateText, { checkins: object })
+
     }
 
-    await syncHeadcounts(onlyUpdated,tabs)
-    await syncCheckins(onlyUpdated,tabs)
-    
+    await syncHeadcounts(onlyUpdated, tabs)
+    await syncCheckins(onlyUpdated, tabs)
+
     console.log(syncStateText)
 
     return syncStateText;
@@ -189,19 +194,16 @@ async function syncCheckins(onlyUpdated = false) {
 
 async function syncGroups(onlyUpdated = false) {
 
-    let syncStateText = []
+    let syncStateText = {}
     const tabs = tabNamesReturn()
 
-    const syncGroups = async (onlyUpdated,tabs) => {
+    const syncGroups = async (onlyUpdated, tabs) => {
         let additionalHeaders = await getGroups_tagGroups(true)
         let object = await syncModule(tabs.groups.groupSummaryTab, getGroups, onlyUpdated, additionalHeaders)
-        syncStateText.push({groups: object});
-    }
-    // let groupTab = tabs.groups.groupSummaryTab
-    // let additionalHeaders = await getGroups_tagGroups(true)
-    // let groups = await pushToSheet(groupTab, await getGroups(onlyUpdated, groupTab), additionalHeaders)
+        Object.assign(syncStateText, { groups: object })
 
-    // syncStateText.push(`PCO Groups: ${groups}`)
+
+    }
     await syncGroups(onlyUpdated, tabs)
 
     console.log(syncStateText)
@@ -214,7 +216,8 @@ async function updateSpreadsheet(onlyUpdated) {
     let syncStatus = getUserProperty('syncStatus')
 
     if (syncStatus == "ready") {
-        let syncStateText = [];
+        let syncStateText = {};
+        syncPercentComplete(0)
         try {
             setUserProperty('syncStatus', "syncing")
             const tabs = tabNamesReturn();
@@ -224,17 +227,17 @@ async function updateSpreadsheet(onlyUpdated) {
             if (modules.people) {
                 await syncPeople(onlyUpdated)
                     .then(text => {
-                        syncStateText.push(...text)
-                        // TODO - Need to make this work with the promises
-                        syncPercentComplete(30);
-
+                        Object.assign(syncStateText, { people: text })
+                        syncPercentComplete(25)
                     })
+
             }
             if (modules.giving) {
                 await syncGiving(onlyUpdated)
                     .then(text => {
                         // TODO - Need to make this work with the promises
-                        syncStateText.push(...text)
+                        Object.assign(syncStateText, { giving: text })
+                        syncPercentComplete(25)
                     })
 
 
@@ -243,15 +246,16 @@ async function updateSpreadsheet(onlyUpdated) {
                 await syncCheckins(onlyUpdated)
                     .then(text => {
                         // TODO - Need to make this work with the promises
-                        syncStateText.push(...text)
+                        Object.assign(syncStateText, { checkins: text })
+                        syncPercentComplete(25)
                     })
-
             }
             if (modules.groups) {
                 await syncGroups(onlyUpdated)
                     .then(text => {
                         // TODO - Need to make this work with the promises
-                        syncStateText.push(...text)
+                        Object.assign(syncStateText, { groups: text })
+                        syncPercentComplete(25)
                     })
             }
 
@@ -260,11 +264,12 @@ async function updateSpreadsheet(onlyUpdated) {
             }
 
 
-            syncPercentComplete(100);
+            //syncPercentComplete(100);
             setUserProperty('syncStatus', "ready");
             setLastSyncTime();
             console.log(syncStateText);
             setUserProperty('syncUpdatedOnly', 'true')
+            setUserProperty('lastSyncStatus', JSON.stringify(syncStateText))
 
             return 'success'
 
@@ -288,3 +293,18 @@ async function updateSpreadsheet(onlyUpdated) {
     }
 
 }
+
+// { 
+//     "people": { 
+//         "people": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Only Updated", "total_length": 0 }, 
+//         "lists": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Full Sync", "total_length": 5 }, 
+//         "listPeople": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Full Sync", "total_length": 0 } 
+//     }, 
+//         "giving": { 
+//             "donations": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Only Updated", "total_length": 0 } 
+//     }, "checkins": { 
+//         "headcounts": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Only Updated", "total_length": 0 }, 
+//         "checkins": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Only Updated", "total_length": 0 } 
+//     }, "groups": { "groups": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Full Sync", "total_length": 10 } 
+// } 
+// }

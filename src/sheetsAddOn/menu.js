@@ -39,7 +39,7 @@ function setVersionNull(){
 
 
 // Display's the sidebar
-function showSidebar() {
+async function showSidebar() {
   
   setActiveSpreadsheetID();
   userData();
@@ -60,7 +60,8 @@ function showSidebar() {
 
   }
 
-  let updated = updateScripts();
+  let updated = await updateScripts();
+  console.log({updated})
 
   const html = HtmlService.createTemplateFromFile('sheetsAddOn/sidebar');
   const page = html.evaluate();
@@ -68,7 +69,7 @@ function showSidebar() {
   SpreadsheetApp.getUi().showSidebar(page);
 
   // will only show this if the spreadsheet was updated.
-  if(updated != false){
+  if(updated){
     sheetsUiError("Metrics for Ministry was updated!",`Looks like you were running ${updated.oldVersion} and we updated you to ${updated.newVersion}. If you have questions about this change visit www.metricsforministry.com and checkout the changelog!`)
   }
 

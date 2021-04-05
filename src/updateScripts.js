@@ -1,11 +1,9 @@
-function updateScripts(currentVersion = null, oldVersion, updating = false) {
+async function updateScripts(currentVersion = null, oldVersion, updating = false) {
     var scriptProperties = PropertiesService.getScriptProperties();
     const mostRecentVersion = scriptProperties.getProperty('mostRecentVersion');
     currentVersion = getUserProperty('currentVersion');
 
-    //console.log(currentVersion);
-
-    //version = currentVersion;
+    console.log({currentVersion, mostRecentVersion})
 
     let updateText = ''
 
@@ -13,7 +11,7 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
 
     if (currentVersion == mostRecentVersion) {
         console.log(`On most recent version - ${mostRecentVersion}`)
-        return false;
+        return false
     } else if (currentVersion == "v1.0.9") {
         // changes made in the sheet names require these to be automatically updated.
         updateSheetNames();
@@ -79,15 +77,18 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
     } else if(currentVersion == "v1.3.0") {
         try {
 
-            const fixDataValidationForLists = () => {
+            const updateListPeople = async () => {
 
                 // tested this and works.
                 const tabs = tabNamesReturn();
+                createSheet(tabs.people.listPeopleTab);
                 clearDataValidation(tabs.people.listTab.name)
+                await syncModule(tabs.people.listTab, getLists, false)
+                dataValidation(tabs.people.listTab.name)
             }
             
 
-            fixDataValidationForLists()
+            await updateListPeople()
 
             // v1.4.0
 
@@ -97,9 +98,13 @@ function updateScripts(currentVersion = null, oldVersion, updating = false) {
     
             setUserProperty('currentVersion', currentVersion);
     
+            console.log( {
+                'oldVersion': oldVersion,
+                "newVersion": currentVersion
+            })
             return {
                 'oldVersion': oldVersion,
-                "newVersion": mostRecentVersion
+                "newVersion": currentVersion
             }
         } catch (error){
             console.log(`Failed to update current version. error: ${error}`)

@@ -44,6 +44,15 @@
     })
 
 
+
+    function getStatus(){
+        google.script.run
+        .withSuccessHandler((status) => {
+            console.log(JSON.parse(status))
+        })
+        .getUserProperty('lastSyncStatus')
+    }
+
     document.getElementById('syncNowButton').addEventListener('click', () => {
         //syncNow();
 
@@ -73,6 +82,8 @@
                                 } else {
                                     clearInterval(intervalId);
                                     document.getElementById("myBar").style.width = 0 + "%";
+
+                                    
                                 }
                             })
                             .withFailureHandler()
@@ -86,6 +97,7 @@
                             document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
                             document.getElementById('syncNowContent').classList.remove('hidden')
                             document.getElementById('syncNowProgressBar').classList.add('hidden')
+                            getStatus()
                         })
                         .withFailureHandler(() => {
                             clearInterval(intervalId);
@@ -93,6 +105,9 @@
                             document.getElementById('syncNowContent').classList.remove('hidden')
                             document.getElementById('syncNowProgressBar').classList.add('hidden')
                             document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
+
+                            let status = google.script.run.getUserProperty('lastSyncStatus')
+                            console.log(status)
 
                         })
                         .updateSpreadsheetFromSidebar();

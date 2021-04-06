@@ -1,25 +1,19 @@
-async function getGroups_tagGroups(onlyNames){
+async function getGroups_tagGroups(onlyNames) {
     const apiCall = await pcoApiCall('https://api.planningcenteronline.com/groups/v2/tag_groups', false, false, '')
 
     let dataArray = []
-    let tagGroupNames = [];
-    const tagger = apiCall;
-
-    for (tagGroup of tagger){
-        let attributes = tagGroup.attributes;
+    apiCall.forEach(tagGroup => {
+        const { attributes: { name }, id } = tagGroup
 
         let tempTagGroup = {
-            "Tag ID": tagGroup.id,
-            "Tag Group Name" : attributes.name
+            "Tag ID": id,
+            "Tag Group Name": name
         }
 
-        tagGroupNames.push(attributes.name)
-
         dataArray.push(tempTagGroup)
+    })
 
-    }
-    
-    if(onlyNames){return tagGroupNames}
+    if (onlyNames) { return dataArray.map(name => name["Tag Group Name"]) }
     return dataArray
 }
 
@@ -33,112 +27,92 @@ async function getGroups(onlyUpdated, tab) {
     // currently not supported for updated_at syncs.
     onlyUpdated = false;
 
-    const apiCall = await pcoApiCall("https://api.planningcenteronline.com/groups/v2/groups", onlyUpdated, true, "&include=group_type&where[archive_status]=include");
-    let dataArray = []
-    const GROUPS = apiCall.data;
-    const GROUP_TYPES = apiCall.included.filter((e) => { if (e.type == "GroupType" && apiCall.included.findIndex(t => (e.id === t.id)) == apiCall.included.indexOf(e)) { return e } })
-    const TAG_GROUPS = await getGroups_tagGroups();
-
-    
-    // if the tag groups don't match what we have stored, then we need to regenerate the groups.
+    let data = []
+    const id_attribute = "Group ID"
 
 
-    for (group of GROUPS) {
+    try {
 
-        let attributes = group.attributes;
-        let relationships = group.relationships;
+        const apiCall = await pcoApiCall("https://api.planningcenteronline.com/groups/v2/groups", onlyUpdated, true, "&include=group_type&where[archive_status]=include");
 
-        let groupType = GROUP_TYPES.find((e) => e.id == relationships.group_type.data.id);
 
-        let tempGroup = {
-            "Group ID": group.id,
-            "Group Name": attributes.name,
-            "Membership Count": attributes.memberships_count,
-            "Type ID": groupType.id,
-            "Type Name": groupType.attributes.name,
-            "Group Location Type": attributes.location_type_preference,
-            "Created At": Utilities.formatDate(new Date(attributes.created_at), timezone, "yyyy-MM-dd"),
-            "Archived At": (attributes.archived_at != null) ? Utilities.formatDate(new Date(attributes.archived_at), timezone, "yyyy-MM-dd"): null,
-            "Enrollment Open": attributes.enrollment_open,
-            "Enrollment Strategy" : attributes.enrollment_strategy
+        if (apiCall.length == 0) {
+            console.log('Groups --- Nothing to Sync')
+        } else {
+            const GROUPS = apiCall.data;
 
-            // removed description as this shouldn't be needed for analysis and it's quite long.
-            //"Type Description": groupType.attributes.description,
+            const GROUP_TYPES = apiCall.included.filter((e) => { if (e.type == "GroupType" && apiCall.included.findIndex(t => (e.id === t.id)) == apiCall.included.indexOf(e)) { return e } })
+
+            //console.log(GROUP_TYPES.length)
+            const TAG_GROUPS = await getGroups_tagGroups();
+
+            let groupTagURLs = [];
+
+            GROUPS.forEach(group => groupTagURLs.push(`https://api.planningcenteronline.com/groups/v2/groups/${group.id}/tags`))
+
+
+            const groupTagsAPICall = await groups_pcoApiCall(groupTagURLs)
+
+            // if the tag groups don't match what we have stored, then we need to regenerate the groups.
+
+
+            for (group of GROUPS) {
+
+                const { attributes, relationships, id } = group
+                const { group_type } = relationships
+                const { name, memberships_count, location_type_preference, created_at, archived_at, enrollment_open, enrollment_strategy } = attributes
+                const groupType = GROUP_TYPES.find((e) => e.id == group_type.data.id);
+                const { id: typeID, attributes: { name: typeName } } = groupType
+
+                let tempGroup = {
+                    "Group ID": id,
+                    "Group Name": name,
+                    "Membership Count": memberships_count,
+                    "Type ID": typeID,
+                    "Type Name": typeName,
+                    "Group Location Type": location_type_preference,
+                    "Created At": Utilities.formatDate(new Date(created_at), timezone, "yyyy-MM-dd"),
+                    "Archived At": (archived_at != null) ? Utilities.formatDate(new Date(archived_at), timezone, "yyyy-MM-dd") : null,
+                    "Enrollment Open": enrollment_open,
+                    "Enrollment Strategy": enrollment_strategy
+
+                }
+
+                let tagObject = {}
+
+                // need to refactor this code to grab an Array of URLs then push them out and remove this await.
+                // let groupTags = await pcoApiCall(`https://api.planningcenteronline.com/groups/v2/groups/${group.id}/tags`, false, false, '')
+
+                let groupTags = groupTagsAPICall.find(e => e.meta.parent.id == group.id).data
+
+                for (tagGroup of TAG_GROUPS) {
+
+                    let tags = groupTags.filter((tag) => tag.relationships.tag_group.data.id == tagGroup["Tag ID"]);
+
+                    let tagsArray = [];
+                    for (tag of tags) { tagsArray.push(tag.attributes.name) }
+
+                    let tagGroupName = tagGroup["Tag Group Name"];
+                    tagObject[tagGroupName] = tagsArray.join(', ');
+
+                }
+
+                Object.assign(tempGroup, tagObject)
+                data.push(tempGroup)
+            }
+
+
         }
 
-        
-        //console.log(groupTags)
-
-        let tagObject = {}
-
-        // for (tag of groupTags){
-
-        //     // need to loop through this for each group and find the value.
-        //     let tag_attributes = tag.attributes;
-        //     let tag_relationships = tag.relationships;
-        //     //console.log(tag_relationships.tag_group.data.id)
-
-        //     let tag_group = TAG_GROUPS.find((tg) => tg["Tag ID"] == tag_relationships.tag_group.data.id);
-
-        //     let tagGroupName = tag_group["Tag Group Name"];
-        //     tagObject[tagGroupName] = tag_attributes.name
-
-        // }
-        let groupTags = await pcoApiCall(`https://api.planningcenteronline.com/groups/v2/groups/${group.id}/tags`, false, false, '');
-        for (tagGroup of TAG_GROUPS){
-
-            // need to loop through this for each group and find the value.
-            // let tag_attributes = tag.attributes;
-            // let tag_relationships = tag.relationships;
-            //console.log(tag_relationships.tag_group.data.id)
-
-            let tags = groupTags.filter((tag) => tag.relationships.tag_group.data.id == tagGroup["Tag ID"]);
-
-            let tagsArray = [];
-            for (tag of tags){ tagsArray.push(tag.attributes.name)}
-
-            let tagGroupName = tagGroup["Tag Group Name"];
-            tagObject[tagGroupName] = tagsArray.join(', ');
-
-        }
-
-        Object.assign(tempGroup, tagObject)
 
 
-        // let groupLocationInfo;
-
-        // if(relationships.location.data != null){
-        //     let single_group_api_call = await pcoApiCall(`https://api.planningcenteronline.com/groups/v2/groups/${group.id}/location`, false, false, '')
-
-        //     console.log(single_group_api_call)
-
-        //     groupLocationInfo = {
-        //         "Group Location": 'Physical',
-        //     }
-        // } else if (attributes.virtual_location_url != null){
-        //     console.log('looks like a virtual group, boss')
-
-        //     groupLocationInfo = {
-        //         "Group Location": 'Physical',
-        //     }
-            
-        // } else {
-        //     groupLocationInfo = {
-        //         "Group Location": 'No Location',
-        //     }
-        // }
-
-        // Object.assign(tempGroup, groupLocationInfo)
-
-        dataArray.push(tempGroup)
+    } catch (error) {
+        return statusReturn(data, `Error: ${error}`, onlyUpdated, tab, id_attribute)
     }
 
+    return statusReturn(data, `Sync Successful`, onlyUpdated, tab, id_attribute)
 
 
-    if (onlyUpdated) {
-        return compareWithSpreadsheet(dataArray, "Group ID", tab)
-    } else {
-        return dataArray
-    }
+
 
 }

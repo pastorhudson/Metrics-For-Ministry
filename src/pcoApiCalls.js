@@ -8,6 +8,7 @@
  */
 function fetchCall(url) {
     var service = getOAuthService();
+
     let response = UrlFetchApp.fetch(url, {
         headers: {
             Authorization: 'Bearer ' + service.getAccessToken(),
@@ -40,13 +41,15 @@ function promiseApiWithTimeout(url, offset, includeURL, updatedAt, retries = 5, 
         let listCallContent = JSON.parse(fetchCallResponse.getContentText());
         let headers = fetchCallResponse.getAllHeaders();
 
-        //console.log(responseCode)
-        //console.log(listCallContent)
-
         //console.log(`Starting Promise. Offset: ${offset}. Timeout: ${timeout} -------- Response Code: ${responseCode}. Rate Request Count: ${headers["x-pco-api-request-rate-count"]}. Request Rate Limit: ${headers["x-pco-api-request-rate-limit"]}. Request Rate Period: ${headers["x-pco-api-request-rate-period"]}`)
 
         if (responseCode == 200) {
-            resolve(listCallContent);
+            resolve({
+                body: listCallContent,
+                ratePeriod: headers["x-pco-api-request-rate-period"],
+                rateLimit: headers["x-pco-api-request-rate-limit"]
+
+            });
         } else if (retries > 0 && responseCode == 429) {
             let retryPeriod = parseInt(headers["Retry-After"]);
             console.log(`Retry after: ${retryPeriod}`);
@@ -55,7 +58,34 @@ function promiseApiWithTimeout(url, offset, includeURL, updatedAt, retries = 5, 
         }
         else {
             console.error('Failed to get the information.')
-            console.error({responseCode,listCallContent })
+            console.error({ responseCode, listCallContent })
+        }
+
+    });
+
+}
+
+function fetchFailRetry(url, retries = 5, timeout = 0) {
+    Utilities.sleep(timeout)
+
+    return promise = new Promise((resolve, reject) => {
+        let fetchCallResponse = fetchCall(url);
+        let responseCode = fetchCallResponse.getResponseCode();
+
+        let responseContent = JSON.parse(fetchCallResponse.getContentText());
+        let headers = fetchCallResponse.getAllHeaders();
+
+        if (responseCode == 200) {
+            resolve(responseContent);
+        } else if (retries > 0 && responseCode == 429) {
+            let retryPeriod = parseInt(headers["Retry-After"]);
+            console.log(`Retry after: ${retryPeriod}`);
+            console.log(headers);
+            return resolve(fetchFailRetry(url, retries - 1, retryPeriod * 1000))
+        }
+        else {
+            console.error('Failed to get the information.')
+            console.error({ responseCode, listCallContent })
         }
 
     });
@@ -63,69 +93,77 @@ function promiseApiWithTimeout(url, offset, includeURL, updatedAt, retries = 5, 
 }
 
 async function pcoApiCall(url, onlyUpdated, include, includeURL) {
-
-    
+    console.time('syncing')
     var service = getOAuthService();
     if (service.hasAccess()) {
-        let offset = 0;
         let data = [];
         let included = [];
 
         let updatedAt = '';
-        if(onlyUpdated){
+        if (onlyUpdated) {
             let lastSyncTimeISOString = getUserProperty('lastSyncTimeISOString')
             updatedAt = `&where[updated_at][gte]=${lastSyncTimeISOString}`
             console.log(updatedAt)
         }
 
+        let fetchedData = await promiseApiWithTimeout(url, 0, includeURL, updatedAt)
+        if (fetchedData.body.data.length == 0) { console.log('Nothing to sync'); return [] }
 
-        let fetchedData = await promiseApiWithTimeout(url, offset, includeURL, updatedAt)
+        let firstFetchBody = fetchedData.body
+        let totalCount = (firstFetchBody.meta.total_count == null) ? 0 : firstFetchBody.meta.total_count;
 
-        if(!Array.isArray(fetchedData.data)){
-            data.push(fetchedData.data)
 
-            if(include){
-                if(!Array.isArray(fetchedData.included)){
-                    included.push(fetchedData.included)
+        // pushing the first group of data to the arrays.
+        data = data.concat(firstFetchBody.data)
+        if (include) { included = included.concat(firstFetchBody.included) }
+
+        // if (Array.isArray(firstFetchBody.data)) {
+        if (firstFetchBody.data.length != totalCount) {
+
+            let callPerChunk = fetchedData.rateLimit - 10
+            let numberOfPromiseArrays = Math.ceil((totalCount / 100) / callPerChunk)
+
+
+            for (let promiseLoop = 0; promiseLoop < numberOfPromiseArrays; promiseLoop++) {
+
+                // adding a 5 second delay for all loops greater than the first.
+                if (promiseLoop > 0) { await Utilities.sleep(fetchedData.ratePeriod * 1000) }
+                //console.log('starting new promise loop!')
+                let promiseCalls = [];
+
+                let loopStart;
+                let loopEnd;
+
+                if (promiseLoop > 0) {
+                    loopStart = (promiseLoop * (callPerChunk * 100))
+                    loopEnd = loopStart + (callPerChunk * 100)
                 } else {
-                    included.push(...fetchedData.included)
-                }  
-            }
-        } else {
-            let totalCount = fetchedData.meta.total_count;
-
-            data.push(...fetchedData.data)
-    
-            if(include){
-                if(!Array.isArray(fetchedData.included)){
-                    included.push(fetchedData.included)
-                } else {
-                    included.push(...fetchedData.included)
-                }  
-            }
-    
-            for (let i = 100; i < totalCount; i += 100) {
-                const response = await promiseApiWithTimeout(url, i, includeURL, updatedAt);
-                data.push(...response.data);
-    
-                if(include){
-                    if(!Array.isArray(response.included)){
-                        included.push(response.included)
-                    } else {
-                        included.push(...response.included)
-                    }  
+                    loopStart = 100;
+                    loopEnd = loopStart + ((callPerChunk * 100) - 100)
                 }
-                
-                //const final = response.data;
-                //const report = `group - ${i + 100} ; payload Length ${final.length} ; dataArray : ${data.length}`;
-                // console.log(report)
-                //console.log(response.included)
-            }
-            //console.log(`the data is: ${data.length} long.`);
-        }
-        
 
-        if(include){
+                if (loopEnd > totalCount) { loopEnd = totalCount }
+
+                //console.log({ promiseLoop, numberOfPromiseArrays, loopStart, loopEnd })
+
+                const requestArray = buildRequestArray(url, loopStart, loopEnd, includeURL, updatedAt)
+                const fetchedDataLoop = await fetchAllDataLoop(requestArray, include);
+
+                data = data.concat(fetchedDataLoop.data)
+                if (include) { included = included.concat(fetchedDataLoop.included) }
+
+            }
+
+
+        }
+
+        console.log(`the data is: ${data.length} long. Total count is ${totalCount}`);
+
+        console.timeEnd('syncing')
+        if (include) {
+            included = Array.from(new Set(included.map(a => a.id)))
+                .map(id => included.find(a => a.id === id))
+
             return {
                 "data": data,
                 "included": included
@@ -139,33 +177,22 @@ async function pcoApiCall(url, onlyUpdated, include, includeURL) {
 }
 
 
-function compareWithSpreadsheet(apiCallData, idAttribute, tabInfo){
-    let spreadsheetData = getSpreadsheetDataByName(tabInfo.name);
+function compareWithSpreadsheet(apiCallData, idAttribute, tabInfo) {
 
-    // removing the existing instance of that person/value
-    for(const element of apiCallData){
+    const spreadsheetData = getSpreadsheetDataByName(tabInfo.name)
+    let dataArray = [...spreadsheetData]
 
-        // see if a person exists
-        // spreadsheetData.forEach(function(e) {if(e['Person ID'] == person['Person ID']){console.log(e)}});
-
-        spreadsheetData.forEach(function(e) {
-            if(e[idAttribute] == element[idAttribute]){
-                let index = spreadsheetData.indexOf(e);
-                spreadsheetData.splice(index, 1)
-                // console.log('spliced the data, yo')
+    apiCallData.forEach(api => {
+        dataArray.find((element, index) => {
+            if (element[idAttribute] === api[idAttribute]) {
+                dataArray.splice(index, 1, api)
+            } else {
+                dataArray.push(api)
             }
 
         })
 
-        // verify the person does not exist anymore.
-        // spreadsheetData.forEach(function(e) {if(e['Person ID'] == person['Person ID']){console.log(e)}});
-
-    }
-    //console.log(apiCallData);
-
-    let dataArray = [];
-    dataArray.push(...apiCallData);
-    dataArray.push(...spreadsheetData);
+    })
 
     return dataArray
 }
@@ -175,5 +202,247 @@ function getToken() {
     let token = getOAuthService().getAccessToken();
     console.log(token)
 }
+
+function fetchAllTest() {
+
+    let number = 20
+
+    let requestArray = []
+
+    for (i = 0; i < number; i++) {
+
+        let request = {
+            url: `https://api.planningcenteronline.com/people/v2/people?per_page=100&offset=${i * 100}&include=households,primary_campus`,
+            headers: { Authorization: 'Bearer 7d36e9fc2261a6f200d1ec20e0d613632ee1da162504a71afafbdf717738f0bb' },
+            muteHttpExceptions: true
+        }
+
+        requestArray.push(request)
+
+    }
+
+    console.log(UrlFetchApp.fetchAll(requestArray))
+}
+
+function buildRequestArray(url, loopStart, loopEnd, includeURL, updateAt) {
+
+    const service = getOAuthService();
+    let requestArray = [];
+
+    for (let i = loopStart; i < loopEnd; i += 100) {
+
+        // forming the request URL array.
+        let request = {
+            url: `${url}?per_page=100&offset=${i}${includeURL}${updateAt}`,
+            headers: {
+                Authorization: 'Bearer ' + service.getAccessToken()
+            },
+            muteHttpExceptions: true
+        }
+
+        requestArray.push(request);
+    }
+
+
+    return requestArray
+}
+
+function buildRetryRequestArray(urlArray) {
+
+    const service = getOAuthService();
+    let retryRequestArray = [];
+
+    for (url of urlArray) {
+
+        // forming the request URL array.
+        let request = {
+            url,
+            headers: {
+                Authorization: 'Bearer ' + service.getAccessToken()
+            },
+            muteHttpExceptions: true
+        }
+
+        retryRequestArray.push(request);
+    }
+
+
+    return retryRequestArray
+}
+
+async function fetchAllDataLoop(requestArray, include, data = [], included = [], retryPeriod = 0) {
+
+    await Utilities.sleep(retryPeriod)
+
+    let fetchAllArray = await UrlFetchApp.fetchAll(requestArray)
+    let retryCount = 0
+    let failedFetches = []
+
+    for (response of fetchAllArray) {
+        let responseCode = response.getResponseCode()
+        let responseContent = JSON.parse(response.getContentText())
+        let index = fetchAllArray.indexOf(response);
+
+        if (responseCode == 200) {
+            //console.log({ responseCode })
+
+            data = data.concat(responseContent.data)
+            if (include) { included = included.concat(responseContent.included) }
+        }
+
+        if (responseCode != 200) {
+
+            // pushing the URL of the failed sync
+            failedFetches.push(requestArray[index].url)
+
+
+            if (retryCount == 0) {
+                let headers = response.getAllHeaders();
+                retryPeriod = parseInt(headers["Retry-After"])
+                retryCount++
+            }
+        }
+    }
+
+    if (failedFetches.length != 0) {
+        // call the function 
+        let failedRequestArray = buildRetryRequestArray(failedFetches)
+        console.log(`Total Failed requests -- ${failedRequestArray.length}. Retrying after -- ${retryPeriod} Seconds`)
+        return fetchAllDataLoop(failedRequestArray, include, data, included, retryPeriod * 1000)
+    }
+
+
+
+
+    return {
+        data,
+        included
+    }
+
+
+}
+
+/*
+***************************************************
+***************************************************
+*
+* Groups Sync API
+*
+***************************************************
+***************************************************
+*/
+
+// does not support the includes
+async function groups_pcoApiCall(urlArray) {
+    const service = getOAuthService();
+    if (service.hasAccess()) {
+        let data = [];
+        const groupsRequestArray = []
+
+        urlArray.forEach(url => {
+            groupsRequestArray.push({
+                url: `${url}?per_page=100&offset=0`,
+                headers: {
+                    Authorization: 'Bearer ' + service.getAccessToken()
+                },
+                muteHttpExceptions: true
+            }
+            )
+        })
+
+        let fetchedData = await promiseApiWithTimeout(groupsRequestArray[0].url, 0, '', '')
+        // if (fetchedData.body.data.length == 0) { console.log('Nothing to sync'); return [] }
+
+        let firstFetchBody = fetchedData.body
+
+        // the total count array will be inaccurate here.
+        let totalCount = urlArray.length
+
+        // pushing the first group of data to the arrays.
+        data = data.concat(firstFetchBody)
+
+        if (Array.isArray(firstFetchBody.data)) {
+
+            let callPerChunk = fetchedData.rateLimit - 10
+            let numberOfPromiseArrays = Math.ceil((totalCount / 100) / callPerChunk)
+
+
+            for (let promiseLoop = 0; promiseLoop < numberOfPromiseArrays; promiseLoop++) {
+
+                if (promiseLoop > 0) { await Utilities.sleep(fetchedData.ratePeriod * 1000) }
+
+                let loopStart;
+                let loopEnd;
+
+                if (promiseLoop > 0) {
+                    loopStart = (promiseLoop * (callPerChunk * 100))
+                    loopEnd = loopStart + (callPerChunk * 100)
+                } else {
+                    loopStart = 100;
+                    loopEnd = loopStart + ((callPerChunk * 100) - 100)
+                }
+
+                if (loopEnd > totalCount) { loopEnd = totalCount }
+
+                const fetchedDataLoop = await groups_fetchAllDataLoop(groupsRequestArray);
+
+                data = data.concat(fetchedDataLoop)
+            }
+        }
+        console.log(`the data is: ${data.length} long. Total count is ${totalCount}`);
+
+        return data;
+
+
+    }
+}
+
+async function groups_fetchAllDataLoop(groupsRequestArray, data = [], retryPeriod = 0) {
+
+    await Utilities.sleep(retryPeriod)
+
+    let fetchAllArray = await UrlFetchApp.fetchAll(groupsRequestArray)
+    let retryCount = 0
+    let failedFetches = []
+
+    for (response of fetchAllArray) {
+        let responseCode = response.getResponseCode()
+        let responseContent = JSON.parse(response.getContentText())
+        let index = fetchAllArray.indexOf(response);
+
+        if (responseCode == 200) {
+            //console.log({ responseCode })
+            // let groupID = groupIdArray[index]
+
+            data = data.concat(responseContent)
+        }
+
+        if (responseCode != 200) {
+
+            // pushing the URL of the failed sync
+            failedFetches.push(groupsRequestArray[index].url)
+
+
+            if (retryCount == 0) {
+                let headers = response.getAllHeaders();
+                retryPeriod = parseInt(headers["Retry-After"])
+                retryCount++
+            }
+        }
+    }
+
+    // need to validate that this does properly create a loop for groups
+    if (failedFetches.length != 0) {
+        // call the function 
+        let failedRequestArray = buildRetryRequestArray(failedFetches)
+        console.log(`Total Failed requests -- ${failedRequestArray.length}. Retrying after -- ${retryPeriod} Seconds`)
+        return fetchAllDataLoop(failedRequestArray, data, retryPeriod * 1000)
+    }
+
+    return data
+
+
+}
+
 
 

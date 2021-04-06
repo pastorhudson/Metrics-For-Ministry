@@ -6,17 +6,11 @@ async function getGivingFunds() {
     const fundApiCall = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/funds", false, false, '');
     let fundArray = [];
 
-    for (const fund of fundApiCall) {
-        let attributes = fund.attributes;
-        let fundElement = {}
-        fundElement.id = fund.id;
-        fundElement.name = attributes.name;
-        fundElement.ledgerCode = attributes.ledger_code;
-        fundElement.createdAt = attributes.created_at;
-        fundElement.color = attributes.color;
-        fundArray.push(fundElement);
-    }
-    console.log(fundArray)
+    fundApiCall.forEach(fund => {
+        const { id, attributes: { name, created_at, ledger_code, color } } = fund
+        fundArray.push({ id, name, created_at, ledger_code, color });
+    });
+
     return fundArray;
 }
 
@@ -24,22 +18,15 @@ async function getGivingLabels() {
     /**
     * @return {getGivingLabels} - filtered array of label Data.
     */
-
-    const labelApiCall = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/labels", false, false, '');
     let labelArray = [];
 
-    //console.log(labelApiCall)
+    const labelApiCall = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/labels", false, false, '');
 
-    for (const label of labelApiCall) {
-        let attributes = label.attributes;
-        let labelElement = {}
-        labelElement.id = label.id;
-        labelElement.name = attributes.slug;
-        labelArray.push(labelElement);
-    }
-    console.log(labelArray)
+    return labelApiCall.map(label => {
+        let { attributes: { slug }, id } = label
+        return { id, slug }
+    });
 
-    return labelArray;
 }
 
 async function getGivingPaymentSources() {
@@ -50,16 +37,10 @@ async function getGivingPaymentSources() {
     const paymentSourceApiCall = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/payment_sources", false, false, '');
     let paymentSourceArray = [];
 
-    //console.log(labelApiCall)
-
-    for (const paymentSource of paymentSourceApiCall) {
-        let attributes = paymentSource.attributes;
-        let sourceElement = {}
-        sourceElement.id = paymentSource.id;
-        sourceElement.name = attributes.name;
-        paymentSourceArray.push(sourceElement);
-    }
-    console.log(paymentSourceArray)
+    paymentSourceApiCall.forEach(paymentSource => {
+        const { id, attributes: { name } } = paymentSource
+        paymentSourceArray.push({ id, name });
+    })
 
     return paymentSourceArray;
 }
@@ -72,127 +53,104 @@ async function getGivingDonations(onlyUpdated, tab) {
      * @description - 
      */
 
-    const timezone = getUserProperty('time_zone')
+    let data = [];
+    const id_attribute = "Donation ID"
+
+    try {
+        const timezone = getUserProperty('time_zone')
+        const donationData = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/donations", onlyUpdated, true, "&include=designations,labels");
+
+        if (donationData.length == 0) {
+            console.log('Giving --- Nothing to Sync')
+        } else {
+            const FUNDS = await getGivingFunds();
+            const PAYMENT_SOURCES = await getGivingPaymentSources();
 
 
-    const donationData = await pcoApiCall("https://api.planningcenteronline.com/giving/v2/donations", onlyUpdated,  true, "&include=designations");
-    const funds = await getGivingFunds();
-    const labels = await getGivingLabels();
-    const paymentSources = await getGivingPaymentSources();
+            const API_LABELS = donationData.included.filter((e) => e.type == "Label")
+                .map(label => {
+                    let { attributes: { slug }, id } = label
+                    return { id, slug }
+                })
 
-    let donationArray = [];
+            const DESIGNATIONS = donationData.included.filter((e) => e.type == "Designation")
+                .map(designation => {
+                    let { attributes: { amount_cents }, relationships: { fund }, id } = designation
+                    return { id, amount_cents, fund_id: fund.data.id }
+                })
 
-    let designationArray = donationData.included;
+            donationData.data.forEach(donation => {
+                const { attributes, relationships, id: donationID } = donation
 
+                const { amount_cents, fee_cents, amount_currency, received_at, refunded, payment_method_sub, payment_method, payment_status, payment_brand } = attributes
+                let fee = fee_cents / 100;
+                let amount = amount_cents / 100
+                const { designations, person, payment_source, labels } = relationships
 
+                designations.data.forEach(designation => {
 
-    for (const donation of donationData.data) {
-        let attributes = donation.attributes;
-        let relationships = donation.relationships;
-
-        let fee = attributes.fee_cents / 100;
-        let amount = attributes.amount_cents / 100
-        let currency = attributes.amount_currency;
-        let designations = relationships.designations.data;
-
-        for (const designation of designations) {
-
-            let donationElement = {}
-
-            // this will not be unique if the donation is split.
-            donationElement['Donation ID'] = donation.id;
-
-            // this is our primary key to link the databases.
-            donationElement['Person ID'] = (relationships.person.data != null) ? relationships.person.data.id : 'anon';
-
-            // when the donation has been received & last updated. This will be for later so we don't sync the entire database again.
-
-            // Removing update at to not configure people on which date metric to use.
-            //donationElement.updatedAt = attributes.updated_at;
-            donationElement['Recieved At'] = attributes.received_at;
-            donationElement['Date'] = Utilities.formatDate(new Date(attributes.received_at), timezone, "yyyy-MM-dd");
-
-            // true/false if it's been refunded or not.
-            donationElement['Refunded'] = attributes.refunded;
-
-            // basic payment information.
-            donationElement['Payment Method'] = attributes.payment_method;
-
-            // showing credit/debit
-            donationElement['Payment Method Type'] = attributes.payment_method_sub;
-
-            if(relationships.batch.data == null){
-                donationElement['Payment Channel'] = "stripe"
-            } else {
-                donationElement['Payment Channel'] = "batch"
-            }
-            
-
-            // this what we'd expect to update.
-            donationElement['Status'] = attributes.payment_status;
-            donationElement['Card Brand'] = attributes.payment_brand;
-            
-            //donationElement.paymentSourceId = relationships.payment_source.data.id;
-
-            let paymentSource = paymentSources.find(source => source.id === relationships.payment_source.data.id);
-            donationElement['Source'] = paymentSource.name;
+                    // this might need to be looked at
+                    let designationData = DESIGNATIONS.find(e => e.id === designation.id)
+                    let subFee = +(((fee / amount) * designationData.amount_cents) / 100).toFixed(2);
+                    let subAmount = designationData.amount_cents / 100
 
 
-            if (relationships.labels.data != null) {
-                let labelArray = [];
-                for (const labelItem of relationships.labels.data) {
-                    let labelId = labelItem.id;
-                    let label = labels.find(o => o.id === labelId);
-                    labelArray.push(label.name)
-                }
+                    const subFund = FUNDS.find(source => source.id === designationData.fund_id);
 
-                donationElement['Labels'] = labelArray.join(', ');
+                    const { name: fundName, ledger_code } = subFund
 
-            } else {
-                donationElement['Labels'] = undefined;
-            }
+                    let donationElement = {
+                        'Donation ID': donationID,
+                        'Person ID': (person.data != null) ? relationships.person.data.id : 'anon',
+                        'Received At': received_at,
+                        'Date': Utilities.formatDate(new Date(received_at), timezone, "yyyy-MM-dd"),
 
-            let designationId = designation.id;
-            let designationData = designationArray.find(data => data.id === designationId && data.type == "Designation");
+                        // true / false if refunded.
+                        'Refunded': refunded,
 
-            let fundId = designationData.relationships.fund.data.id;
-            let subFund = funds.find(source => source.id === fundId);
+                        // cash / card / check
+                        'Payment Method': payment_method,
 
-            let subFee = +(((fee / amount) * designationData.attributes.amount_cents) / 100).toFixed(2);
-            let subAmount = designationData.attributes.amount_cents / 100
+                        // credit / debit
+                        'Payment Method Type': payment_method_sub,
+                        'Payment Channel': (relationships.batch.data == null) ? "stripe" : "batch",
+                        'Status': payment_status,
+                        'Card Brand': payment_brand,
 
+                        // Required attribute
+                        'Source': PAYMENT_SOURCES.find(source => source.id === payment_source.data.id).name,
+                        'Fund Name': fundName,
+                        'Ledger Code': ledger_code,
+                        'Amount': subAmount,
+                        'Fee': subFee,
+                        'Net Amount': (subAmount + subFee)
+                    }
 
-            donationElement['Fund Name'] = subFund.name;
-            donationElement['Ledger Code'] = subFund.ledgerCode;
-            donationElement['Amount'] = subAmount;
-            donationElement['Fee'] = subFee;
-            donationElement['Net Amount'] = (subAmount + subFee);
+                    const addLabels = (labels) => {
+                        let { data } = labels
+                        let labelArray = [];
+                        data.forEach(label => {
+                            labelArray.push(API_LABELS.find(o => o.id === label.id).slug)
+                        })
+                        Object.assign(donationElement, {
+                            'Labels': (labelArray.length > 0) ? labelArray.join(', ') : undefined
+                        })
+                    }
 
-            donationArray.push(donationElement);
+                    addLabels(labels);
+                    data.push(donationElement);
+                })
+
+            })
+
 
         }
 
+    } catch (error) {
+        return statusReturn(data, `Error: ${error}`, onlyUpdated, tab, id_attribute)
     }
 
-    console.log(donationArray[0])
-
-        // parsing the data from the sheet if we are requesting only updated info.
-        if(onlyUpdated){
-            return compareWithSpreadsheet(donationArray, "Donation ID", tab)
-        } else {
-            return donationArray
-        }
-
-    //console.log(donationArray[100]);
-    //console.log(donationArray)
-    //return donationArray;
-
-}
+    return statusReturn(data, `Sync Successful`, onlyUpdated, tab, id_attribute)
 
 
-function test(){
-    const tabs = tabNamesReturn();
-    getGivingDonations(true, tabs.giving.donationsTab)
-
-   // setUserProperty('syncStatus', "ready");
 }

@@ -97,23 +97,12 @@ function getSchema(request) {
         .setType(types.NUMBER);
 
       fields.newDimension()
-        .setId(listDataJson.dimensions.listDescription.id)
-        .setName(listDataJson.dimensions.listDescription.name)
-        .setDescription(listDataJson.dimensions.listDescription.description)
-        .setType(types.TEXT);
+        .setId(peopleInfo.dimensions.personID.id)
+        .setName(peopleInfo.dimensions.personID.name)
+        .setDescription(peopleInfo.dimensions.personID.description)
+        .setType(types.NUMBER)
 
-      fields.newDimension()
-        .setId(listDataJson.dimensions.listName.id)
-        .setName(listDataJson.dimensions.listName.name)
-        .setDescription(listDataJson.dimensions.listName.description)
-        .setType(types.TEXT);
-
-
-      fields.newDimension()
-        .setId(listDataJson.dimensions.categoryName.id)
-        .setName(listDataJson.dimensions.categoryName.name)
-        .setDescription(listDataJson.dimensions.categoryName.description)
-        .setType(types.TEXT)
+      return { 'schema': fields.build() };
 
 
     } else if (request.configParams.peopleSelectorType == "listDataSummary") {
@@ -486,12 +475,12 @@ function getSchema(request) {
     }
   }
 
-//console.log({ 'schema': fields.build() })
+  //console.log({ 'schema': fields.build() })
 
-  return  { 'schema': fields.build() };
+  return { 'schema': fields.build() };
 }
 
-function groupTagsFromSheet(sheetId){
+function groupTagsFromSheet(sheetId) {
 
   const moduleDataJson = tabNamesReturn();
   let headers = moduleDataJson.groups.groupSummaryTab.headers;
@@ -500,11 +489,11 @@ function groupTagsFromSheet(sheetId){
 
   let keys = Object.keys(groupSummaryData[0])
 
-  let tabs = keys.filter( function( el ) {
-    return !headers.includes( el );
-  } );
-  
-  
+  let tabs = keys.filter(function (el) {
+    return !headers.includes(el);
+  });
+
+
   return tabs;
 
 }

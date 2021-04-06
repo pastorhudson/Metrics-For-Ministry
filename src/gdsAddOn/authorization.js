@@ -102,6 +102,7 @@ function initialConfiguration() {
     getOrgData();
     setUserProperty('syncUpdatedOnly', 'false');
     updateListTab();
+    showSidebar();
   } else {
     sheetsUiError("Not Signed In","It appears that you're not signed in. Try to Authorize again. If the issue persists email hello@savvytoolbelt.com for help.")
   }

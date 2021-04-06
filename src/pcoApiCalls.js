@@ -420,7 +420,7 @@ async function groups_fetchAllDataLoop(groupsRequestArray, data = [], retryPerio
         if (responseCode != 200) {
 
             // pushing the URL of the failed sync
-            failedFetches.push(requestArray[index].url)
+            failedFetches.push(groupsRequestArray[index].url)
 
 
             if (retryCount == 0) {

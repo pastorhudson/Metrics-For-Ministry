@@ -1,13 +1,25 @@
 # Changelog
 
-## [Unreleased](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/HEAD)
+## [v1.4.0](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/v1.4.0) (2021-04-06)
 
-[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.3.0...HEAD)
+[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.3.0...v1.4.0)
+
+**Implemented enhancements:**
+
+- Enhancement: Set the Checkins connector to utilize parent locations. [\#64](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/64)
+- Enhancement: Improve the data calls to use the includes [\#63](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/63)
+- Enhancement: Redo the GetList function. [\#32](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/32)
+
+**Closed issues:**
+
+- Feature: Add a date limit to the PCO Sync [\#31](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/31)
 
 **Merged pull requests:**
 
+- Updated changelog and readme [\#75](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/75) ([coltoneshaw](https://github.com/coltoneshaw))
 -  Fixes \#56. Created the Groups connector [\#74](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/74) ([coltoneshaw](https://github.com/coltoneshaw))
 - V1.3.0 [\#73](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/73) ([coltoneshaw](https://github.com/coltoneshaw))
+- V1.4.0 [\#80](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/80) ([coltoneshaw](https://github.com/coltoneshaw))
 
 ## [v1.3.0](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/v1.3.0) (2021-02-20)
 
@@ -68,7 +80,7 @@
 
 **Closed issues:**
 
-- Feature: enable data syncing to use the `updated\_at` attribute. [\#30](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/30)
+- Feature: enable data syncing to use the `updated_at` attribute. [\#30](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/30)
 
 **Merged pull requests:**
 

@@ -235,12 +235,9 @@ function removeEmptyRows(tab) {
     if (lastRow === 1 && maxRows === 2) {
         // do nothing because everything is okay.
     } else if (lastRow === 1 && maxRows >= 3){
-
         // first row to delete is row 3 (we want to keep 1 as the header, 2 as a buffer)
-        // if max rows are 1000
-        // 1000 - ( 1 + 1 )
         ss.deleteRows(lastRow + 2 , maxRows - (lastRow + 1) );
-
+        ss.getRange(2, 1, 1, ss.getLastColumn()).setFontWeight("normal");
     } else if (maxRows > lastRow) {
         ss.deleteRows(lastRow + 1, maxRows - lastRow);
     }

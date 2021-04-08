@@ -184,7 +184,7 @@ function pushToSheet(tabInfo, data, additionalHeaders) {
             data = data.map(element => {
                 let object = {}
                 headers.forEach(header => {
-                    object[header] = element[header]                    
+                    object[header] = element[header]
                 })
                 return object
             })
@@ -221,10 +221,27 @@ function pushToSheet(tabInfo, data, additionalHeaders) {
 
 function removeEmptyRows(tab) {
     const ss = getDefaultSpreadsheetId().getSheetByName(tab);
-    var maxRows = ss.getMaxRows();
-    var lastRow = ss.getLastRow();
+
+    // returns all the rows in the sheet as a number
+    const maxRows = ss.getMaxRows();
+
+    // returns the last row in the sheet THAT HAS CONTENT
+    const lastRow = ss.getLastRow();
+
     console.log(`max Rows: ${maxRows}. Last Row: ${lastRow}. Sheet: ${tab}`)
-    if (maxRows > lastRow) {
+
+    // need to delete all by the last row with a buffer.
+
+    if (lastRow === 1 && maxRows === 2) {
+        // do nothing because everything is okay.
+    } else if (lastRow === 1 && maxRows >= 3){
+
+        // first row to delete is row 3 (we want to keep 1 as the header, 2 as a buffer)
+        // if max rows are 1000
+        // 1000 - ( 1 + 1 )
+        ss.deleteRows(lastRow + 2 , maxRows - (lastRow + 1) );
+
+    } else if (maxRows > lastRow) {
         ss.deleteRows(lastRow + 1, maxRows - lastRow);
     }
 }
@@ -340,7 +357,7 @@ function getSpreadsheetDataByName(tab, spreadsheetID = null) {
         let headers = getSheetHeaders(tab);
 
         let output = [];
-        let spreadsheetData = ss.getRange(2, 1, lastRow, lastCol).getValues();
+        let spreadsheetData = ss.getRange(2, 1, lastRow - 1, lastCol).getValues();
         //console.log(spreadsheetData)
 
         //doing a loop over each row in your spreadsheet. this runs top to bottom.

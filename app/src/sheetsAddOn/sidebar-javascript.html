@@ -68,7 +68,7 @@
 
                     let percentComplete = 0;
 
-                    var intervalId = setInterval(function () {
+                    const syncCheckInterval = setInterval(() => {
 
                         google.script.run
                             .withSuccessHandler((e) => {
@@ -80,16 +80,16 @@
                                     //gradualWidthIncrease(percentComplete)
 
                                 } else {
-                                    clearInterval(intervalId);
+                                    clearInterval(syncCheckInterval);
                                     document.getElementById("myBar").style.width = 0 + "%";
-
-                                    
                                 }
                             })
-                            .withFailureHandler()
+                            .withFailureHandler(() => {
+                                clearInterval(syncCheckInterval);
+                            })
                             .getUserProperty('syncPercentComplete')
 
-                    }, 7500);
+                    }, 12000);
 
 
                     google.script.run
@@ -98,25 +98,26 @@
                             document.getElementById('syncNowContent').classList.remove('hidden')
                             document.getElementById('syncNowProgressBar').classList.add('hidden')
                             getStatus()
+                            clearInterval(syncCheckInterval)
                         })
                         .withFailureHandler(() => {
-                            clearInterval(intervalId);
-
                             document.getElementById('syncNowContent').classList.remove('hidden')
                             document.getElementById('syncNowProgressBar').classList.add('hidden')
                             document.getElementById('refreshIcon').classList.remove('refreshIcon-spin')
+                            getStatus()
 
-                            let status = google.script.run.getUserProperty('lastSyncStatus')
-                            console.log(status)
+                            console.log('this was a failure. Geese')
 
+                            clearInterval(syncCheckInterval)
                         })
-                        .updateSpreadsheetFromSidebar();
+                        .updateSpreadsheetFromSidebar()
+
 
                     percentComplete = 0;
+                    //clearInterval(syncCheckInterval)
                     document.getElementById("myBar").style.width = percentComplete + "%";
 
                 } else if (status == "notSignedIn") {
-                    // TODO -- add a model popup here saying they're not signed in.
 
                     google.script.run.sheetsUiError("Not Signed In","It appears that you're not signed in. Try to Authorize again. If the issue persists email hello@savvytoolbelt.com for help.")
 

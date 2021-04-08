@@ -308,6 +308,7 @@ async function updateListTab(listApiCall) {
     let listSpreadsheetData = getSpreadsheetDataByName(tabs.people.listTab.name);
     let listArray = [];
 
+
     //console.log(listSpreadsheetData.length)
 
     if (listSpreadsheetData.length > 0) {
@@ -319,6 +320,11 @@ async function updateListTab(listApiCall) {
         })
 
 
+    } else {
+        listApiCall.forEach(list => {
+            list["Sync This List"] = false;
+            listArray.push(list);
+        })
     }
 
     return listArray;
@@ -346,11 +352,12 @@ function getSpreadsheetDataByName(tab, spreadsheetID = null) {
     //const spreadsheet = getDefaultSpreadsheetId();
     let ss = spreadsheet.getSheetByName(tab);
     let lastRow = ss.getLastRow();
+    console.log(lastRow)
     let lastCol = ss.getDataRange().getLastColumn();
 
     //console.log(`last Row: ${lastRow}... last Column: ${lastCol}`)
 
-    if (lastRow > 0) {
+    if (lastRow > 1) {
         let headers = getSheetHeaders(tab);
 
         let output = [];

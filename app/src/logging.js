@@ -15,7 +15,11 @@ function userData() {
         Version: ${currentVersion}
         Last Sync: ${lastSync}
         `
+    
 
     console.log(userReport)
+
+
+    return userReportJSON
 
 }

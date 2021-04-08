@@ -56,9 +56,15 @@ function promiseApiWithTimeout(url, offset, includeURL, updatedAt, retries = 5, 
             console.log(headers);
             return resolve(promiseApiWithTimeout(url, offset, includeURL, updatedAt, retries - 1, retryPeriod * 1000))
         }
-        else {
+        else if(responseCode == 403) {
+            // handle 403 error here.
+            console.error({ responseCode, listCallContent:  listCallContent.errors[0].detail})
+            return reject(`403 -- ${listCallContent.errors[0].detail}`)
+            
+        } else {
             console.error('Failed to get the information.')
-            console.error({ responseCode, listCallContent })
+            console.error({ responseCode, listCallContent:  listCallContent.errors[0].detail })
+            return reject(`${responseCode} -- ${listCallContent.errors[0].detail}`)
         }
 
     });

@@ -116,8 +116,13 @@ async function getListsWithPeople(onlyUpdated, tab) {
             //.map(list => list['List ID'])
         }
 
+        let listsToSync = syncTheseLists()
+
+        console.log(listsToSync)
+
+        if(listsToSync.length === 0 || listsToSync === undefined){ return statusReturn([], `Sync Successful`, onlyUpdated, tab, id_attribute) }
         
-        for (list of syncTheseLists()) {
+        for (list of listsToSync) {
             let listId = list["List ID"]
             listApiCall = await pcoApiCall(`https://api.planningcenteronline.com/people/v2/lists/${listId}/people`, false, true, "&fields[Person]=id");
 

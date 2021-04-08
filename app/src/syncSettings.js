@@ -90,7 +90,7 @@ async function updateSpreadsheetFromSidebar() {
         const updateResponse = await updateSpreadsheet(updatedOnlySync);
 
         if (updateResponse != 'success') {
-            console.log(updateResponse.text)
+            console.log({updateResponse})
             sheetsUiError('An Error occured while trying to sync', JSON.stringify(updateResponse.text))
         }
 
@@ -122,7 +122,15 @@ async function syncModule(tabInfo, getDataFunction, onlyUpdated, additionalHeade
     return object
 }
 
-async function syncPeople(onlyUpdated = true) {
+async function initialListSync(){
+    const tabs = tabNamesReturn();
+
+    await syncModule(tabs.people.listTab, getLists, false)
+    dataValidation(tabs.people.listTab.name)
+
+}
+
+async function syncPeople(onlyUpdated = false) {
     let syncStateText = {}
     const tabs = tabNamesReturn();
 
@@ -153,7 +161,7 @@ async function syncPeople(onlyUpdated = true) {
     return syncStateText;
 }
 
-async function syncGiving(onlyUpdated = false) {
+async function syncGiving(onlyUpdated = true) {
     const tabs = tabNamesReturn();
     let syncStateText = {}
 
@@ -264,7 +272,6 @@ async function updateSpreadsheet(onlyUpdated) {
             }
 
 
-            //syncPercentComplete(100);
             setUserProperty('syncStatus', "ready");
             setLastSyncTime();
             console.log(syncStateText);
@@ -276,9 +283,8 @@ async function updateSpreadsheet(onlyUpdated) {
         } catch (error) {
             setUserProperty('syncStatus', "ready");
 
-            // need to look into throwing an error here if the sync fails.
             console.log(error)
-            console.log(syncStateText);
+            //console.log(syncStateText);
 
             return {
                 'error': error,
@@ -293,18 +299,3 @@ async function updateSpreadsheet(onlyUpdated) {
     }
 
 }
-
-// { 
-//     "people": { 
-//         "people": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Only Updated", "total_length": 0 }, 
-//         "lists": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Full Sync", "total_length": 5 }, 
-//         "listPeople": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Full Sync", "total_length": 0 } 
-//     }, 
-//         "giving": { 
-//             "donations": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Only Updated", "total_length": 0 } 
-//     }, "checkins": { 
-//         "headcounts": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Only Updated", "total_length": 0 }, 
-//         "checkins": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Only Updated", "total_length": 0 } 
-//     }, "groups": { "groups": { "api_status": "Sync Successful", "sheet_status": "sync successful", "type": "Full Sync", "total_length": 10 } 
-// } 
-// }

@@ -19,14 +19,6 @@ function userData() {
 
     console.log(userReport)
 
-    let userReportJSON = {
-        userEmail,
-        organization,
-        totalSheetUsage,
-        modulesEnabled,
-        currentVersion,
-        lastSync
-    }
 
     return userReportJSON
 

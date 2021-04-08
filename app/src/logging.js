@@ -20,6 +20,5 @@ function userData() {
     console.log(userReport)
 
 
-    return userReportJSON
 
 }

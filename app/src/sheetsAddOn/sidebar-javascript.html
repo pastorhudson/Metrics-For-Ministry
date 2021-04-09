@@ -174,7 +174,7 @@
             .withSuccessHandler(function (url) {
                 try{
                 window.open(url, '_blank');
-                window.top.close();
+                // window.top.close();
                 } catch(error){
                     google.script.run.sheetsUiError('Error to Authorize', "Looks like we could not open a new tab to authorize with PCO. You may have hit a Google Bug. Try to use incognito mode on your browser to set this up. This bug only happens on the intiial signin.")
 

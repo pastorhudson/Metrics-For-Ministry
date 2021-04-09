@@ -102,6 +102,7 @@ async function updateScripts(currentVersion = null, oldVersion, updating = false
     } else if (currentVersion == "v1.4.0") {
         try {
             currentVersion = mostRecentVersion;
+            setUserProperty('currentVersion', currentVersion);
             console.log('No updates to be made here.')
             console.log("Updated to the current version");
 

@@ -90,8 +90,16 @@ async function updateSpreadsheetFromSidebar() {
         const updateResponse = await updateSpreadsheet(updatedOnlySync);
 
         if (updateResponse != 'success') {
+
+
             console.log({updateResponse})
-            sheetsUiError('An Error occured while trying to sync', JSON.stringify(updateResponse.text))
+
+            if (updateResponse.error === '403 -- You do not have access to this resource'){
+                sheetsUiError('An Error occured while trying to sync', 'One or more of the modules you selected you do not have access to. Verify your Planning Center Account has access to all the modules enabled under Info > Modules Enabled.')
+            } else {
+                sheetsUiError('An Error occured while trying to sync', JSON.stringify(updateResponse.error))
+            }
+
         }
 
 
@@ -284,8 +292,6 @@ async function updateSpreadsheet(onlyUpdated) {
             setUserProperty('syncStatus', "ready");
 
             console.log(error)
-            //console.log(syncStateText);
-
             return {
                 'error': error,
                 'text': syncStateText

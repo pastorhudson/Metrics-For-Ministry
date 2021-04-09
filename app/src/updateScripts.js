@@ -35,7 +35,7 @@ async function updateScripts(currentVersion = null, oldVersion, updating = false
             setUserProperty('currentVersion', currentVersion);
             return updateScripts(currentVersion, oldVersion, true);
         } catch (error) {
-            console.log(`Failed to update current version. error: ${error}`)
+            return console.log(`Failed to update current version. error: ${error}`)
         }
 
     } else if(currentVersion == "v1.2.0") {
@@ -56,7 +56,7 @@ async function updateScripts(currentVersion = null, oldVersion, updating = false
             return updateScripts(currentVersion, oldVersion, true);
 
         } catch (error){
-            console.log(`Failed to update current version. error: ${error}`)
+            return console.log(`Failed to update current version. error: ${error}`)
         }
     } else if(currentVersion == "v1.2.2") {
         try {
@@ -71,7 +71,7 @@ async function updateScripts(currentVersion = null, oldVersion, updating = false
             return updateScripts(currentVersion, oldVersion, true);
 
         } catch (error){
-            console.log(`Failed to update current version. error: ${error}`)
+            return console.log(`Failed to update current version. error: ${error}`)
         }
 
     } else if(currentVersion == "v1.3.0") {
@@ -90,14 +90,22 @@ async function updateScripts(currentVersion = null, oldVersion, updating = false
 
             await updateListPeople()
 
-            // v1.4.0
-
-            console.log("Updated to the current version");
-
-            currentVersion = mostRecentVersion;
+            currentVersion = 'v1.4.0';
     
             setUserProperty('currentVersion', currentVersion);
+            return updateScripts(currentVersion, oldVersion, true);
     
+        } catch (error){
+            return console.log(`Failed to update current version. error: ${error}`)
+        }
+
+    } else if (currentVersion == "v1.4.0") {
+        try {
+            currentVersion = mostRecentVersion;
+            setUserProperty('currentVersion', currentVersion);
+            console.log('No updates to be made here.')
+            console.log("Updated to the current version");
+
             console.log( {
                 'oldVersion': oldVersion,
                 "newVersion": currentVersion
@@ -106,10 +114,9 @@ async function updateScripts(currentVersion = null, oldVersion, updating = false
                 'oldVersion': oldVersion,
                 "newVersion": currentVersion
             }
-        } catch (error){
-            console.log(`Failed to update current version. error: ${error}`)
+        } catch (error ){
+            return console.log(`Failed to update current version. error: ${error}`)
         }
-
     } else {
         currentVersion = "v1.0.9"
         setUserProperty('currentVersion', currentVersion);

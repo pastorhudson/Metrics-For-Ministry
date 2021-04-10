@@ -1,124 +1,86 @@
-## Summary - v1.3.0
+---
+description: >-
+  Metrics for Ministry is an integration that's designed to bring your Planning
+  Center data into Google Sheets and Google Data Studio.
+---
 
-Date : 2021-02-26 21:42:21
+# Metrics for Ministry
 
-Total : 42 files,  4287 codes, 526 comments, 1219 blanks, all 6032 lines
+ 
 
-### Languages
-| language | files | code | comment | blank | total |
-| :--- | ---: | ---: | ---: | ---: | ---: |
-| JavaScript | 21 | 2,763 | 505 | 937 | 4,205 |
-| HTML | 16 | 1,366 | 20 | 254 | 1,640 |
-| Markdown | 2 | 67 | 0 | 25 | 92 |
-| JSON | 2 | 57 | 0 | 1 | 58 |
-| XML | 1 | 34 | 1 | 2 | 37 |
+![](.gitbook/assets/savvy-128x128.png)
 
-### Directories
-| path | files | code | comment | blank | total |
-| :--- | ---: | ---: | ---: | ---: | ---: |
-| . | 42 | 4,287 | 526 | 1,219 | 6,032 |
-| helperData | 1 | 175 | 0 | 52 | 227 |
-| src | 38 | 4,044 | 526 | 1,141 | 5,711 |
-| src/assets | 11 | 260 | 3 | 10 | 273 |
-| src/classes | 1 | 54 | 10 | 11 | 75 |
-| src/gdsAddOn | 4 | 787 | 100 | 278 | 1,165 |
-| src/sheetsAddOn | 14 | 1,924 | 249 | 642 | 2,815 |
+This integration is built and maintained by Savvy Tool Belt and is not connected with Planning Center Online in any way.
 
+## Purpose
 
-### Change Log notes
-- v 1.4.0
-Breaking changes
-- Updated the list tab to now only include the ID and Person ID. If additional data from the list is needed it'll need to be linked in GDS
+Tracking numbers is hard, and it's even harder when you have to manually update CSV files, download information, and create your own metrics. The goal of the PCO to Google integration is to remove the additional work involved in understanding the health of your church along with created an automated and sharable solution.
 
-Improvements
-- Updated the API calls to now sync on average 40% faster
-- Fixed the PCO List People call to now only require the lists in which have been selected
-- Updated the people call to also loop over the list array for people. This adds time to the sync but is more future proof.
-- Added the 'updated_at' column in the lists call.
+## **Requirements**
 
-### Current Stats
+* You are required to be a Planning Center Admin for the modules that you're attempting to connect to.
+* You must have a Google Account \(You can get this free\).
+* This is **not** designed for extremely large churches. Google has a data cap at the moment. If you fall in this category and want to utilize Metrics for Ministry email us at [hello@savvytoolbelt.com](mailto:hello@savvytoolbelt.com)
 
-Syncing personDataCall
-- Pre-improvement = 42 seconds.
-- without the await between syncs - syncing: 50011ms - 50 seconds
+## Planning Center Modules
 
-18 second waits, 80 second chunks
-- syncing: 49460ms
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left">Module</th>
+      <th style="text-align:left">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align:left"><b>People</b>
+      </td>
+      <td style="text-align:left">
+        <p>The PCO People module is supported in two ways:</p>
+        <ol>
+          <li>List Data - You can download people who are a part of a specific list
+            within PCO.</li>
+          <li>People Data - This downloads basic profile information from your PCO database</li>
+        </ol>
+        <p>The PCO People module is required for this integration.</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:left"><b>Giving</b>
+      </td>
+      <td style="text-align:left">PCO Giving is supported at the transaction level. This means that it will
+        download each transaction into Google Sheets line by line. This includes
+        Funds, Labels, Payment Sources, and more.</td>
+    </tr>
+    <tr>
+      <td style="text-align:left"><b>Check-ins</b>
+      </td>
+      <td style="text-align:left">
+        <p>Supported with two connectors:</p>
+        <ol>
+          <li>Headcounts - Information from PCO&apos;s Headcount feature.</li>
+          <li>Check-Ins - Pulls individual check-in data.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:left"><b>Groups</b>
+      </td>
+      <td style="text-align:left">
+        <p>Supported by pulling Group Summary information.</p>
+        <p>Future releases will include Attendance and Membership connectors..</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:left"><b>Calendar</b>
+      </td>
+      <td style="text-align:left">Not supported at this time.</td>
+    </tr>
+    <tr>
+      <td style="text-align:left"><b>Services</b>
+      </td>
+      <td style="text-align:left">Not supported at this time.</td>
+    </tr>
+  </tbody>
+</table>
 
-modified to chunks of 50 with 5 second waits
-- syncing: 50484ms
-
-Modified to chunked retry with an await timer
-- syncing: 28730ms
-
-Modified chunk to 99 per sync
-- syncing: 22736ms
-
-Modified to 40 per chunk
-- syncing: 25015ms
-
-Modified to 10 per chunk, no time out
-- syncing: 25079ms
-
-Set the rate limit to match what comes back in the request
-- syncing: 25038ms
-- This is most likely the best way since it's dynamically updated.
-
-Same as above, ratePeriod / 2
-- syncing: 37741ms
-
-Same as above, rate period / 4
-- syncing: 27397ms
-
-
-
-## adjusting sync stats
-Initial stats with the await changes.
-- fullSync: 181823ms
-
-reduced the rateCount by 10
-- fullSync: 150091ms
-
-turned the People module into two promises
-- fullSync: 147895ms
-- This actually hit an error
-
-Turned the people module into it's own function
-- fullSync: 103473ms
-
-Turned People / Checkins / Giving into async functions
-- fullSync: 109983ms
-- fullSync: 150282ms
-- Lots of clashing it appears since everything is trying to access the API at the same time.
-
-await on People / Giving and ordered the others to the bottom
-- fullSync: 143190ms
-
-turned all values into a seperate promise function
-- fullSync: 143089ms
-
-Optimized the group sync function
-- fullSync: 118591ms
-- Can't rely on this because the giving sync didn't run.
-
-Fixed bug where Giving did not properly run
-- fullSync: 165533ms
-- fullSync: 148049ms
-- 
-
-
-Full sync, optimized lists calls, no lists enabled
-- fullSync: 127652ms
-- fullSync: 124405ms
-- 
-
-
-Optimized the checkins functions, full sync
-- fullSync: 162104ms
-
-Optimized the giving function, full sync, no lists
-- fullSync: 120444ms
-- fullSync: 102969ms
-
-Optimized the includes to remove dups, improved other functions.
-- fullSync: 108163ms

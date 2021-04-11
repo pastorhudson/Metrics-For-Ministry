@@ -18,7 +18,7 @@ function onOpen(e) {
   ui.createMenu('Metrics for Ministry')
     .addItem('Sidebar', 'showSidebar')
     .addItem('Log Out', 'reset')
-    .addItem('Force Full Sync', 'resetFullSyncStatus')
+    .addItem('Full sync on next sync', 'resetFullSyncStatus')
     .addSubMenu(ui.createMenu('Sync Specific Modules')
               .addItem('Giving', 'syncGiving')
               .addItem('Check-ins', 'syncCheckins')

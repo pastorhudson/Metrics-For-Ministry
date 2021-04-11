@@ -1,15 +1,31 @@
 # Changelog
 
-## [Unreleased](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/HEAD)
+## [v1.4.2](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/v1.4.2) (2021-04-11)
 
-[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.4.0...HEAD)
+[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.4.1...v1.4.2)
 
 **Fixed bugs:**
 
-- With changes in v1.4.1 it does not properly run the sheets setup [\#92](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/92)
-- Failures in syncing do not properly stop the checkStatus interval [\#87](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/87)
+- Stuck in actively syncing [\#98](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/98)
+
+**Closed issues:**
+
+- Update Groups documentation [\#81](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/81)
+
+**Merged pull requests:**
+
+- Fixes \#98. Created a sync counter to reset if an issue occurs. Improved sync logging [\#99](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/99) ([coltoneshaw](https://github.com/coltoneshaw))
+
+## [v1.4.1](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/v1.4.1) (2021-04-09)
+
+[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.4.0...v1.4.1)
+
+**Fixed bugs:**
+
 - "Out of Memory Error" - Failed at syncing Giving - Anne Yates [\#86](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/86)
 - "Out of Memory Error" - Failed syncing people profiles - Adam - First church [\#85](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/85)
+- With changes in v1.4.1 it does not properly run the sheets setup [\#92](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/92)
+- Failures in syncing do not properly stop the checkStatus interval [\#87](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/87)
 - 'Error: Exception: The coordinates of the range are outside the dimensions of the sheet.' [\#83](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/83)
 - V1.4.1 [\#95](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/95) ([coltoneshaw](https://github.com/coltoneshaw))
 - V1.4.1 [\#93](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/93) ([coltoneshaw](https://github.com/coltoneshaw))

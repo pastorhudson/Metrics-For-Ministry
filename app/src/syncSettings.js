@@ -36,9 +36,51 @@ function triggerSync() {
     removeAllTriggers();
 }
 
+function getCurrentMillis() {
+    const start = new Date();
+    let startTime = +Number(start.getTime()).toFixed(0)
+    return startTime
+}
+
+function testmysync() {
+    syncStartTime('set')
+}
+
+function getStartTime() {
+    const syncStartTime = +getUserProperty('syncStartTime')
+    console.log(syncStartTime)
+}
+
+
+function syncStartTime(method) {
+    // checks the time start of the last sync. If it's greater than 30 minutes it'll rest the sync counter
+
+    // this is not designed to be a sync status checker because it would limit users to one sync every 30 minutes. 
+
+    if (method === 'set') {
+        // Utilities.formatDate(new Date(person["Birthday"]), timezone, "yyyy-MM-dd"),
+        setUserProperty('syncStartTime', getCurrentMillis())
+    } else if (method === 'check') {
+        const syncStartTime = +getUserProperty('syncStartTime')
+        const currentTime = getCurrentMillis()
+        // 30 minutes in milliseconds
+        const thirtyMinutes = 1800000
+        if ((syncStartTime + thirtyMinutes) < currentTime) {
+            setUserProperty('syncStatus', 'ready')
+            console.info('Reset sync status. Outside of 30 minute window.')
+        } else {
+            console.info('Still within 30 minutes of last sync.')
+        }
+
+        // resetting back to ready for a sync.
+    } else {
+        console.error(`Please use set or check values. Not ${method}`)
+    }
+
+}
+
 async function triggerSyncDaily() {
     console.time('fullSync')
-    //let isSignedIn = getUserProperty('isSignedIn');
     var service = getOAuthService();
     let syncCount = +getUserProperty('syncCount');
     console.log(syncCount)
@@ -48,19 +90,23 @@ async function triggerSyncDaily() {
         // updates anything needed if they're not on the latest version.
         await updateScripts();
         userData();
+        syncStartTime('check')
 
         if (syncCount >= 5) {
             await resetFullSyncStatus();
             setUserProperty('syncCount', '0')
-        } else {
+        }
+
+        await getOrgData();
+        let updateSheet = await updateSpreadsheet(getFullSyncStatus());
+
+        if (updateSheet === 'success') {
+            syncStartTime('set')
             syncCount++;
             setUserProperty('syncCount', syncCount)
         }
 
-        let updatedOnlySync = getFullSyncStatus();
-        console.log(updatedOnlySync);
-        await getOrgData();
-        await updateSpreadsheet(updatedOnlySync);
+
 
 
     } else {
@@ -86,25 +132,26 @@ async function updateSpreadsheetFromSidebar() {
         await updateScripts();
         let updatedOnlySync = getFullSyncStatus();
         userData();
+        syncStartTime('check')
 
         const updateResponse = await updateSpreadsheet(updatedOnlySync);
 
-        if (updateResponse != 'success') {
+        // make this handle the errors better
+        if (updateResponse === 'actively syncing') {
+            sheetsUiError('Actively Syncing', 'Metrics for Ministry is currently syncing. Try again in 5 minutes. If the issue persists, click Add-ons > Metrics for Ministry > Force Full Sync then attempt to sync again on the sidebar.')
 
 
-            console.log({updateResponse})
+        } else if (updateResponse.error) {
+            console.log({ updateResponse })
 
-            if (updateResponse.error === '403 -- You do not have access to this resource'){
+            if (updateResponse.error === '403 -- You do not have access to this resource') {
                 sheetsUiError('An Error occured while trying to sync', 'One or more of the modules you selected you do not have access to. Verify your Planning Center Account has access to all the modules enabled under Info > Modules Enabled.')
             } else {
                 sheetsUiError('An Error occured while trying to sync', JSON.stringify(updateResponse.error))
             }
-
+        } else {
+            sheetsUiError("Something has gone wrong", "It appears that something has gone wrong. Refresh the page and try again. If the issue still persists email hello@savvytoolbelt.com with a description of the issue and a timestamp of when you tried to sync.")
         }
-
-
-    } else {
-        sheetsUiError("Not Signed In", "It appears that you're not signed in. Try to Authorize again. If the issue persists email hello@savvytoolbelt.com for help.")
     }
 
 }
@@ -130,7 +177,7 @@ async function syncModule(tabInfo, getDataFunction, onlyUpdated, additionalHeade
     return object
 }
 
-async function initialListSync(){
+async function initialListSync() {
     const tabs = tabNamesReturn();
 
     await syncModule(tabs.people.listTab, getLists, false)
@@ -282,7 +329,7 @@ async function updateSpreadsheet(onlyUpdated) {
 
             setUserProperty('syncStatus', "ready");
             setLastSyncTime();
-            console.log(syncStateText);
+            console.log(syncStateText)
             setUserProperty('syncUpdatedOnly', 'true')
             setUserProperty('lastSyncStatus', JSON.stringify(syncStateText))
 
@@ -302,6 +349,8 @@ async function updateSpreadsheet(onlyUpdated) {
 
     } else {
         console.log("actively syncing.")
+
+        return 'actively syncing'
     }
 
 }

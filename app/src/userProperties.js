@@ -19,6 +19,7 @@
  * @param {string} syncCount - Incrementer that  managers how many syncs before resetting the full sync status.
  * @param {string} syncUpdatedOnly - true if we are only syncing updated content.
  * @param {string} currentVersion - 
+ * @param {string} syncStartTime - logging the sync start time of the current attempt
 
  ********************************************/
 
@@ -38,6 +39,7 @@ function newUserUserProperties() {
     setUserProperty('syncStatus', "notSignedIn")
     setUserProperty('setupStatus', 'true')
     setUserProperty('syncCount', '0');
+    setUserProperty('syncStartTime','0')
 }
 
 

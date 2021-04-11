@@ -3,7 +3,7 @@ async function updateScripts(currentVersion = null, oldVersion, updating = false
     const mostRecentVersion = scriptProperties.getProperty('mostRecentVersion');
     currentVersion = getUserProperty('currentVersion');
 
-    console.log({currentVersion, mostRecentVersion})
+    console.log({ currentVersion, mostRecentVersion })
 
     let updateText = ''
 
@@ -38,27 +38,25 @@ async function updateScripts(currentVersion = null, oldVersion, updating = false
             return console.log(`Failed to update current version. error: ${error}`)
         }
 
-    } else if(currentVersion == "v1.2.0") {
-
-
+    } else if (currentVersion == "v1.2.0") {
         currentVersion = "v1.2.1"
         setUserProperty('currentVersion', currentVersion);
         return updateScripts(currentVersion, oldVersion, true);
 
-    } else if(currentVersion == "v1.2.1") {
+    } else if (currentVersion == "v1.2.1") {
         try {
-            
+
             // update to 1.2.2
             addCheckinsSheet();
-            syncCheckins();    
+            syncCheckins();
             currentVersion = "v1.2.2"
             setUserProperty('currentVersion', currentVersion);
             return updateScripts(currentVersion, oldVersion, true);
 
-        } catch (error){
-            return console.log(`Failed to update current version. error: ${error}`)
+        } catch (error) {
+            return console.log(`Failed to update to version 1.2.2. error: ${error}`)
         }
-    } else if(currentVersion == "v1.2.2") {
+    } else if (currentVersion == "v1.2.2") {
         try {
 
             addTriggers();
@@ -66,15 +64,15 @@ async function updateScripts(currentVersion = null, oldVersion, updating = false
             syncGroups();
 
             currentVersion = 'v1.3.0';
-    
+
             setUserProperty('currentVersion', currentVersion);
             return updateScripts(currentVersion, oldVersion, true);
 
-        } catch (error){
-            return console.log(`Failed to update current version. error: ${error}`)
+        } catch (error) {
+            return console.log(`Failed to version 1.3.0. error: ${error}`)
         }
 
-    } else if(currentVersion == "v1.3.0") {
+    } else if (currentVersion == "v1.3.0") {
         try {
 
             const updateListPeople = async () => {
@@ -86,27 +84,41 @@ async function updateScripts(currentVersion = null, oldVersion, updating = false
                 await syncModule(tabs.people.listTab, getLists, false)
                 dataValidation(tabs.people.listTab.name)
             }
-            
+
 
             await updateListPeople()
 
             currentVersion = 'v1.4.0';
-    
+
             setUserProperty('currentVersion', currentVersion);
             return updateScripts(currentVersion, oldVersion, true);
-    
-        } catch (error){
-            return console.log(`Failed to update current version. error: ${error}`)
+
+        } catch (error) {
+            return console.log(`Failed to update to version 1.4.0 error: ${error}`)
         }
 
     } else if (currentVersion == "v1.4.0") {
         try {
+            currentVersion = 'v1.4.1';
+            setUserProperty('currentVersion', currentVersion);
+            return updateScripts(currentVersion, oldVersion, true);
+
+        } catch (error) {
+            return console.log(`Failed to update to version 1.4.1. error: ${error}`)
+        }
+    } else if (currentVersion == "v1.4.1") {
+
+        try {
+            // updating to fix bug in actively syncing.
+            // Issue #98
+            // https://github.com/coltoneshaw/Metrics-For-Ministry/issues/98
+            resetFullSyncStatus()
+
             currentVersion = mostRecentVersion;
             setUserProperty('currentVersion', currentVersion);
-            console.log('No updates to be made here.')
             console.log("Updated to the current version");
 
-            console.log( {
+            console.log({
                 'oldVersion': oldVersion,
                 "newVersion": currentVersion
             })
@@ -114,9 +126,10 @@ async function updateScripts(currentVersion = null, oldVersion, updating = false
                 'oldVersion': oldVersion,
                 "newVersion": currentVersion
             }
-        } catch (error ){
+        } catch (error) {
             return console.log(`Failed to update current version. error: ${error}`)
         }
+
     } else {
         currentVersion = "v1.0.9"
         setUserProperty('currentVersion', currentVersion);

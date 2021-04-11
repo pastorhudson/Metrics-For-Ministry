@@ -137,7 +137,9 @@ async function updateSpreadsheetFromSidebar() {
         const updateResponse = await updateSpreadsheet(updatedOnlySync);
 
         // make this handle the errors better
-        if (updateResponse === 'actively syncing') {
+        if(updateResponse === 'success') {
+            sheetsUiError('Sync completed successfully', 'You should now see each tab populated with your information! If you have any questions check out www.metricsforministry.com')
+        } else if (updateResponse === 'actively syncing') {
             sheetsUiError('Actively Syncing', 'Metrics for Ministry is currently syncing. Try again in 5 minutes. If the issue persists, click Add-ons > Metrics for Ministry > Force Full Sync then attempt to sync again on the sidebar.')
 
 
@@ -150,6 +152,7 @@ async function updateSpreadsheetFromSidebar() {
                 sheetsUiError('An Error occured while trying to sync', JSON.stringify(updateResponse.error))
             }
         } else {
+            
             sheetsUiError("Something has gone wrong", "It appears that something has gone wrong. Refresh the page and try again. If the issue still persists email hello@savvytoolbelt.com with a description of the issue and a timestamp of when you tried to sync.")
         }
     }

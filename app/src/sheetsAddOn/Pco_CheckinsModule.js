@@ -63,7 +63,10 @@ async function getHeadcountsJoinedData(onlyUpdated, tab) {
             console.log('Headcounts --- Nothing to Sync')
         } else {
             const EVENTS = apiCall.included.filter((e) => { if (e.type == "Event") { return e } });
-            const HEADCOUNT_API = apiCall.included.filter((e) => { if (e.type == "Headcount") { return e } });
+            // const HEADCOUNT_API = apiCall.included.filter((e) => { if (e.type == "Headcount") { return e } });
+
+            // need to investigate if headcount data can be included in the above call.
+            const HEADCOUNT_API = await getHeadcounts();
 
             apiCall.data.forEach(eventTime => {
                 const { attributes, relationships, id: EventTimeID } = eventTime
@@ -73,6 +76,8 @@ async function getHeadcountsJoinedData(onlyUpdated, tab) {
 
                 let eventData = EVENTS.find(e => e.id === event.data.id);
 
+                // update the headcount object here to include additional headcount types.
+                // this was previously working, now it just syncs the below counts.
                 let counts = { guest_count, regular_count, volunteer_count }
 
                 const headcount = (headcounts, headcountObject = {}) => {

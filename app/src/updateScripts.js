@@ -1,6 +1,6 @@
 async function updateScripts(currentVersion = null, oldVersion, updating = false) {
     var scriptProperties = PropertiesService.getScriptProperties();
-    const mostRecentVersion = scriptProperties.getProperty('mostRecentVersion');
+    const mostRecentVersion = scriptProperties.getProperty('dev_mostRecentVersion');
     currentVersion = getUserProperty('currentVersion');
 
     console.log({ currentVersion, mostRecentVersion })
@@ -107,13 +107,27 @@ async function updateScripts(currentVersion = null, oldVersion, updating = false
             return console.log(`Failed to update to version 1.4.1. error: ${error}`)
         }
     } else if (currentVersion == "v1.4.1") {
-
         try {
             // updating to fix bug in actively syncing.
             // Issue #98
             // https://github.com/coltoneshaw/Metrics-For-Ministry/issues/98
             resetFullSyncStatus()
 
+            currentVersion = 'v1.4.2';
+            setUserProperty('currentVersion', currentVersion);
+            return updateScripts(currentVersion, oldVersion, true);
+
+        } catch (error) {
+            return console.log(`Failed to update to version 1.4.2. error: ${error}`)
+        }
+    } else if (currentVersion == "v1.4.2") {
+
+        try {
+            // version 1.4.3
+            // resetting the full sync status so everyone can have their sheet fixed
+            // syncing giving to add the designation tab.
+            await resetFullSyncStatus()
+            await syncGiving()
             currentVersion = mostRecentVersion;
             setUserProperty('currentVersion', currentVersion);
             console.log("Updated to the current version");

@@ -24,7 +24,6 @@ async function getHeadcounts() {
 
     })
 
-    console.log(dataArray)
     return dataArray;
 }
 
@@ -60,7 +59,7 @@ async function getHeadcountsJoinedData(onlyUpdated, tab) {
         const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/event_times", onlyUpdated, true, "&include=event,headcounts");
 
         if (apiCall.length == 0) {
-            console.log('Headcounts --- Nothing to Sync')
+            console.info('Headcounts --- Nothing to Sync')
         } else {
             const EVENTS = apiCall.included.filter((e) => { if (e.type == "Event") { return e } });
             // const HEADCOUNT_API = apiCall.included.filter((e) => { if (e.type == "Headcount") { return e } });
@@ -148,7 +147,7 @@ async function getCheckIns(onlyUpdated, tab) {
 
 
         if (apiCall.length == 0) {
-            console.log('Checkins --- Nothing to Sync')
+            console.info('Checkins --- Nothing to Sync')
         } else {
             const CHECK_INS = apiCall.data;
             const LOCATIONS = apiCall.included.filter((e) => { if (e.type == "Location") { return e } });

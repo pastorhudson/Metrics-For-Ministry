@@ -1,5 +1,20 @@
 # Changelog
 
+## [v1.4.3](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/v1.4.3) (2021-04-13)
+
+[Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.4.2...v1.4.3)
+
+**Fixed bugs:**
+
+- Headcounts only syncs the default headcount types [\#102](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/102)
+- Stacks data on top of each other during the sync process [\#101](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/101)
+- `'Error: TypeError: data.concat is not a function'` - Groups [\#100](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/100)
+- 'Error: TypeError: Cannot read property `'forEach'` of undefined' [\#97](https://github.com/coltoneshaw/Metrics-For-Ministry/issues/97)
+
+**Merged pull requests:**
+
+- V1.4.3 [\#105](https://github.com/coltoneshaw/Metrics-For-Ministry/pull/105) ([coltoneshaw](https://github.com/coltoneshaw))
+
 ## [v1.4.2](https://github.com/coltoneshaw/Metrics-For-Ministry/tree/v1.4.2) (2021-04-11)
 
 [Full Changelog](https://github.com/coltoneshaw/Metrics-For-Ministry/compare/v1.4.1...v1.4.2)

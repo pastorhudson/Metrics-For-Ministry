@@ -24,7 +24,6 @@ async function getHeadcounts() {
 
     })
 
-    console.log(dataArray)
     return dataArray;
 }
 
@@ -60,10 +59,13 @@ async function getHeadcountsJoinedData(onlyUpdated, tab) {
         const apiCall = await pcoApiCall("https://api.planningcenteronline.com/check-ins/v2/event_times", onlyUpdated, true, "&include=event,headcounts");
 
         if (apiCall.length == 0) {
-            console.log('Headcounts --- Nothing to Sync')
+            console.info('Headcounts --- Nothing to Sync')
         } else {
             const EVENTS = apiCall.included.filter((e) => { if (e.type == "Event") { return e } });
-            const HEADCOUNT_API = apiCall.included.filter((e) => { if (e.type == "Headcount") { return e } });
+            // const HEADCOUNT_API = apiCall.included.filter((e) => { if (e.type == "Headcount") { return e } });
+
+            // need to investigate if headcount data can be included in the above call.
+            const HEADCOUNT_API = await getHeadcounts();
 
             apiCall.data.forEach(eventTime => {
                 const { attributes, relationships, id: EventTimeID } = eventTime
@@ -73,6 +75,8 @@ async function getHeadcountsJoinedData(onlyUpdated, tab) {
 
                 let eventData = EVENTS.find(e => e.id === event.data.id);
 
+                // update the headcount object here to include additional headcount types.
+                // this was previously working, now it just syncs the below counts.
                 let counts = { guest_count, regular_count, volunteer_count }
 
                 const headcount = (headcounts, headcountObject = {}) => {
@@ -143,7 +147,7 @@ async function getCheckIns(onlyUpdated, tab) {
 
 
         if (apiCall.length == 0) {
-            console.log('Checkins --- Nothing to Sync')
+            console.info('Checkins --- Nothing to Sync')
         } else {
             const CHECK_INS = apiCall.data;
             const LOCATIONS = apiCall.included.filter((e) => { if (e.type == "Location") { return e } });

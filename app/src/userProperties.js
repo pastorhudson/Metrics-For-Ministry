@@ -53,7 +53,7 @@ function newUserUserProperties() {
 function setUserProperty(property, propertyValue) {
     var setUserProperty = PropertiesService.getUserProperties();
     setUserProperty.setProperty(property, propertyValue);
-    Logger.log(getUserProperty(property));
+    console.log(property, '----', getUserProperty(property));
 }
 
 
@@ -387,6 +387,7 @@ function tabNamesReturn() {
                 "name": "Donations",
                 "headers": [
                     "Donation ID",
+                    "Designation ID",
                     "Person ID",
                     //"Updated At",
                     "Received At",

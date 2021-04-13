@@ -30,3 +30,5 @@ Total : 42 files,  4709 codes, 466 comments, 1416 blanks, all 6591 lines
 | helperData | 1 | 175 | 0 | 52 | 227 |
 
 
+## Changelog
+- Added designation ID to giving

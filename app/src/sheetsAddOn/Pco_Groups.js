@@ -80,9 +80,6 @@ async function getGroups(onlyUpdated, tab) {
 
                 let tagObject = {}
 
-                // need to refactor this code to grab an Array of URLs then push them out and remove this await.
-                // let groupTags = await pcoApiCall(`https://api.planningcenteronline.com/groups/v2/groups/${group.id}/tags`, false, false, '')
-
                 let groupTags = groupTagsAPICall.find(e => e.meta.parent.id == group.id).data
 
                 for (tagGroup of TAG_GROUPS) {

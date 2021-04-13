@@ -54,7 +54,7 @@ async function getGivingDonations(onlyUpdated, tab) {
      */
 
     let data = [];
-    const id_attribute = "Donation ID"
+    const id_attribute = "Designation ID"
 
     try {
         const timezone = getUserProperty('time_zone')
@@ -101,6 +101,7 @@ async function getGivingDonations(onlyUpdated, tab) {
 
                     let donationElement = {
                         'Donation ID': donationID,
+                        'Designation ID' : designation.id,
                         'Person ID': (person.data != null) ? relationships.person.data.id : 'anon',
                         'Received At': received_at,
                         'Date': Utilities.formatDate(new Date(received_at), timezone, "yyyy-MM-dd"),

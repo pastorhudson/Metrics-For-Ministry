@@ -22,14 +22,15 @@ function dailySyncAdd() {
 }
 
 function resetFullSyncStatus() {
-    setUserProperty('syncUpdatedOnly', 'false');
+    setUserProperty('syncUpdatedOnly', 'false')
     setUserProperty('syncStatus', 'ready')
+    setUserProperty('syncCount', '0')
 }
 
 function getFullSyncStatus() {
-    let syncStatus = JSON.parse(getUserProperty('syncUpdatedOnly'));
-    console.log(syncStatus)
-    return syncStatus;
+    let onlyUpdatedSync = JSON.parse(getUserProperty('syncUpdatedOnly'));
+    console.info({onlyUpdatedSync})
+    return onlyUpdatedSync;
 }
 
 function triggerSync() {
@@ -42,13 +43,10 @@ function getCurrentMillis() {
     return startTime
 }
 
-function testmysync() {
-    syncStartTime('set')
-}
 
 function getStartTime() {
     const syncStartTime = +getUserProperty('syncStartTime')
-    console.log(syncStartTime)
+    console.info({syncStartTime})
 }
 
 
@@ -83,7 +81,7 @@ async function triggerSyncDaily() {
     console.time('fullSync')
     var service = getOAuthService();
     let syncCount = +getUserProperty('syncCount');
-    console.log(syncCount)
+    console.info({syncCount})
 
     if (service.hasAccess()) {
 
@@ -95,6 +93,7 @@ async function triggerSyncDaily() {
         if (syncCount >= 5) {
             await resetFullSyncStatus();
             setUserProperty('syncCount', '0')
+            syncCount = 0;
         }
 
         await getOrgData();
@@ -105,9 +104,6 @@ async function triggerSyncDaily() {
             syncCount++;
             setUserProperty('syncCount', syncCount)
         }
-
-
-
 
     } else {
         console.log('Trigger Sync Daily: The user does not have access.');
@@ -219,7 +215,7 @@ async function syncPeople(onlyUpdated = false) {
     return syncStateText;
 }
 
-async function syncGiving(onlyUpdated = true) {
+async function syncGiving(onlyUpdated = false) {
     const tabs = tabNamesReturn();
     let syncStateText = {}
 
@@ -280,6 +276,7 @@ async function syncGroups(onlyUpdated = false) {
 
 async function updateSpreadsheet(onlyUpdated) {
     let syncStatus = getUserProperty('syncStatus')
+    console.log({onlyUpdated})
 
     if (syncStatus == "ready") {
         let syncStateText = {};

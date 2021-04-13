@@ -56,14 +56,14 @@ function promiseApiWithTimeout(url, offset, includeURL, updatedAt, retries = 5, 
             console.log(headers);
             return resolve(promiseApiWithTimeout(url, offset, includeURL, updatedAt, retries - 1, retryPeriod * 1000))
         }
-        else if(responseCode == 403) {
+        else if (responseCode == 403) {
             // handle 403 error here.
-            console.error({ responseCode, listCallContent:  listCallContent.errors[0].detail})
+            console.error({ responseCode, listCallContent: listCallContent.errors[0].detail })
             return reject(`403 -- ${listCallContent.errors[0].detail}`)
-            
+
         } else {
             console.error('Failed to get the information.')
-            console.error({ responseCode, listCallContent:  listCallContent.errors[0].detail })
+            console.error({ responseCode, listCallContent: listCallContent.errors[0].detail })
             return reject(`${responseCode} -- ${listCallContent.errors[0].detail}`)
         }
 
@@ -184,23 +184,22 @@ async function pcoApiCall(url, onlyUpdated, include, includeURL) {
 
 
 function compareWithSpreadsheet(apiCallData, idAttribute, tabInfo) {
-
     const spreadsheetData = getSpreadsheetDataByName(tabInfo.name)
-    let dataArray = [...spreadsheetData]
+
+    let dataArray = []
+    let apiArray = []
 
     apiCallData.forEach(api => {
-        dataArray.find((element, index) => {
-            if (element[idAttribute] === api[idAttribute]) {
-                dataArray.splice(index, 1, api)
-            } else {
-                dataArray.push(api)
-            }
+        let spreadsheetMatch = spreadsheetData.find((element, index) => +element[idAttribute] == +api[idAttribute]);
+        if(spreadsheetMatch){
+            let index = spreadsheetData.indexOf(spreadsheetMatch)
+            spreadsheetData.splice(index, 1)
+        }
 
-        })
-
+        apiArray.push(api)
     })
-
-    return dataArray
+        dataArray.push(...spreadsheetData, ...apiArray)
+        return dataArray
 }
 
 
@@ -317,9 +316,6 @@ async function fetchAllDataLoop(requestArray, include, data = [], included = [],
         return fetchAllDataLoop(failedRequestArray, include, data, included, retryPeriod * 1000)
     }
 
-
-
-
     return {
         data,
         included
@@ -357,7 +353,7 @@ async function groups_pcoApiCall(urlArray) {
         })
 
         let fetchedData = await promiseApiWithTimeout(groupsRequestArray[0].url, 0, '', '')
-        // if (fetchedData.body.data.length == 0) { console.log('Nothing to sync'); return [] }
+        if (fetchedData.body.data.length == 0) { console.log('Nothing to sync'); return [] }
 
         let firstFetchBody = fetchedData.body
 

@@ -118,21 +118,22 @@ async function getListsWithPeople(onlyUpdated, tab) {
 
         let listsToSync = syncTheseLists()
 
-        console.log(listsToSync)
-
         if(listsToSync.length === 0 || listsToSync === undefined){ return statusReturn([], `Sync Successful`, onlyUpdated, tab, id_attribute) }
         
         for (list of listsToSync) {
             let listId = list["List ID"]
             listApiCall = await pcoApiCall(`https://api.planningcenteronline.com/people/v2/lists/${listId}/people`, false, true, "&fields[Person]=id");
+            if (listApiCall.length !== 0) {
+                listApiCall.data.forEach(person => {
+                    let personArray = {
+                        'Person ID': person.id,
+                        'List ID': list['List ID']
+                    }
+                    data.push(personArray)
+                })
 
-            listApiCall.data.forEach(person => {
-                let personArray = {
-                    'Person ID': person.id,
-                    'List ID': list['List ID']
-                }
-                data.push(personArray)
-            })
+            }
+            
         }
     } catch (error) {
        return statusReturn(data, `Error: ${error}`, onlyUpdated, tab, id_attribute)
